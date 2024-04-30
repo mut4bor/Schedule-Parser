@@ -1,6 +1,6 @@
 import express from 'express'
 import path from 'path'
-import { result } from './src/api/scheduleParser.js'
+import { content, result } from './src/api/scheduleParser.js'
 const app = express()
 const __dirname = path.resolve()
 const PORT = process.env.PORT || 3000

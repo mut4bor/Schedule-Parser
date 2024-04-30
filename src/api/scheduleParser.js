@@ -2,35 +2,40 @@ import excelToJson from 'convert-excel-to-json'
 import path from 'path'
 
 const __dirname = path.resolve()
-const filePath = path.join(__dirname, 'src', 'api', 'files', 'schedule_2.xlsx')
+const filePath = path.join(__dirname, 'fileBase', 'schedule_8.xlsx')
 
 // https://www.npmjs.com/package/convert-excel-to-json
 
 export const result = excelToJson({
   sourceFile: filePath,
   header: {
-    rows: 4,
+    rows: 5,
   },
-  sheets: ['29.04.- 04.05.'],
-  columnToKey: {
-    A: 'Дата',
-    B: 'День недели',
-    C: 'Время',
-    D: 'Группа 201',
-    E: 'Группа 202',
-    F: 'Группа 203',
-    G: 'Группа 204',
-    H: 'Группа 205',
-    I: 'Группа 206',
-    J: 'Группа 207',
-    K: 'Группа 208',
-    L: 'Группа 209',
-    M: 'Группа 210',
-    N: 'Группа 211',
-    O: 'Группа 212',
-    P: 'Группа 213',
-    Q: 'Группа 214',
-  },
+  range: 'A1:Z35',
 })
-
-// console.log(result)
+export const content = Object.values(result).map((item) => {
+  const group = item.map((item, index) => {
+    const date = item.A
+    const day = item.B
+    const time = item.C
+    const name = item.F || ''
+    const classDate = date || day ? `${date} - ${day}` : undefined
+    const classTimeName = time || name ? `${time} - ${name}` : undefined
+    return {
+      date: classDate,
+      class: classTimeName,
+    }
+  })
+  const combined = []
+  for (let i = 0; i < group.length; i += 5) {
+    combined.push({
+      date: group[i]?.date,
+      1: group[i]?.class,
+      2: group[i + 1]?.class,
+      3: group[i + 2]?.class,
+      4: group[i + 3]?.class,
+      5: group[i + 4]?.class,
+    })
+  }
+  return combined
+})
