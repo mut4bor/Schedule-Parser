@@ -7,9 +7,9 @@
     <list default="true" id="045f74e1-2247-4178-a65f-5fc41b3fcc03" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/api/handleSchedulesDownload.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/api/handleSchedulesDownload.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/api/scheduleParser.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/api/scheduleParser.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,24 +39,24 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
-    "javascript.nodejs.core.library.configured.version": "21.7.2",
-    "javascript.nodejs.core.library.typings.version": "20.12.7",
-    "last_opened_file_path": "Z:/Sites/schedule-parser",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.stylelint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.stylelint": "",
-    "nodejs_package_manager_path": "npm",
-    "prettierjs.PrettierConfiguration.Package": "Z:\\Sites\\schedule-parser\\node_modules\\prettier",
-    "settings.editor.selected.configurable": "reference.settingsdialog.textmate.bundles",
-    "ts.external.directory.path": "Z:\\Soft\\WebStorm 2024.1.1\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;javascript.nodejs.core.library.configured.version&quot;: &quot;21.7.2&quot;,
+    &quot;javascript.nodejs.core.library.typings.version&quot;: &quot;20.12.7&quot;,
+    &quot;last_opened_file_path&quot;: &quot;Z:/Sites/schedule-parser&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.stylelint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.stylelint&quot;: &quot;&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;prettierjs.PrettierConfiguration.Package&quot;: &quot;Z:\\Sites\\schedule-parser\\node_modules\\prettier&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settingsdialog.textmate.bundles&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;Z:\\Soft\\WebStorm 2024.1.1\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="Z:\Sites\schedule-parser" />
@@ -85,11 +85,26 @@
       <workItem from="1714425622789" duration="7399000" />
       <workItem from="1714484290939" duration="10792000" />
       <workItem from="1714498259754" duration="4164000" />
-      <workItem from="1714605875135" duration="6770000" />
+      <workItem from="1714605875135" duration="7253000" />
+      <workItem from="1714613222475" duration="3000" />
+      <workItem from="1714669458496" duration="6807000" />
+      <workItem from="1714676649329" duration="52000" />
+      <workItem from="1714677965444" duration="16431000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>

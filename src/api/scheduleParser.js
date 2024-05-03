@@ -2,40 +2,82 @@ import excelToJson from 'convert-excel-to-json'
 import path from 'path'
 
 const __dirname = path.resolve()
-const filePath = path.join(__dirname, 'fileBase', 'schedule_6.xlsx')
+const filePath = path.join(__dirname, 'fileBase', 'schedule_2.xlsx')
 
 const unParsedJson = excelToJson({
   sourceFile: filePath,
   header: {
-    rows: 5,
+    rows: 3,
   },
   range: 'A1:Z35',
 })
-
+const groupedData = {}
 const parsedJson = {}
-Object.values(unParsedJson).forEach((item, index) => {
-  const group = item.map((item, index) => {
-    const { A: date, B: day, C: time, F: name } = item
-    const classDate = `${date ? date : ''} - ${day ? day : ''}`
-    const classTimeName = `${time ? time : ''} - ${name ? name : ''}`
-    return {
-      date: classDate,
-      class: classTimeName,
+const weeks = {}
+
+const flatten = (arr) => arr.reduce((acc, item) => acc.concat(item), [])
+
+const groupByDay = (data, groupNumber) => {
+  let currentDay = null
+  const groupLetter = getGroupKeys()[groupNumber]
+  data.forEach((item) => {
+    const group = item[groupLetter] || ''
+    if (item.A) {
+      currentDay = `${item.A}(${item.B})`
+      groupedData[currentDay] = { [item.C]: group }
+    } else if (currentDay) {
+      groupedData[currentDay] = { ...groupedData[currentDay], [item.C]: group }
     }
   })
+}
 
-  const combined = {}
-  for (let i = 0; i < group.length; i += 5) {
-    combined[group[i]?.date] = {
-      1: group[i]?.class,
-      2: group[i + 1]?.class,
-      3: group[i + 2]?.class,
-      4: group[i + 3]?.class,
-      5: group[i + 4]?.class,
+const getDateKeys = (data) => {
+  const dates = []
+  Object.keys(data).forEach((key) => {
+    const formattedKey = key.replaceAll('.', '').replaceAll(' ', '')
+    const keyWithDots = formattedKey.slice(0, 2) + '.' + formattedKey.slice(2, -2) + '.' + formattedKey.slice(-2)
+    dates.push(keyWithDots)
+  })
+  return dates
+}
+
+const groupByWeek = (groupedData) => {
+  let currentWeek = {}
+  let weekIndex = 0
+  const dateKeys = getDateKeys(unParsedJson)
+  Object.entries(groupedData).forEach(([date, times]) => {
+    if (date.includes('Пн.')) {
+      currentWeek = {}
+      const key = dateKeys[weekIndex++]
+      weeks[key] = currentWeek
+    }
+    currentWeek[date] = times
+  })
+}
+
+const getGroupKeys = () => {
+  const swapped = {}
+  const obj = flatten(Object.values(unParsedJson))[0]
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      const value = obj[key].match(/\d+/)
+      if (value !== null) {
+        swapped[value] = key
+      }
     }
   }
-  const key = Object.keys(unParsedJson)[index]
-  parsedJson[key] = combined
-})
+  return swapped
+}
+
+const processData = () => {
+  const data = flatten(Object.values(unParsedJson))
+  groupByDay(data, 203)
+  groupByWeek(groupedData)
+  Object.keys(getGroupKeys(unParsedJson)).forEach((key) => {
+    parsedJson[key] = weeks
+  })
+}
+
+processData()
 
 export { parsedJson, unParsedJson }

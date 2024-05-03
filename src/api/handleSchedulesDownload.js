@@ -6,6 +6,7 @@ import path from 'path'
 const __dirname = path.resolve()
 
 const pageUrl = 'http://lesgaft.spb.ru/ru/schedule'
+downloadFile(pageUrl)
 
 async function downloadFile(url) {
   try {
@@ -46,6 +47,3 @@ async function downloadFile(url) {
     console.error('Ошибка при загрузке файлов:', error)
   }
 }
-
-// Загрузка файлов
-downloadFile(pageUrl)
