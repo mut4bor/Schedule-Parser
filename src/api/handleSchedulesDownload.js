@@ -1,49 +1,50 @@
 import axios from 'axios'
 import { parse } from 'node-html-parser'
-import fs from 'fs'
+import dotenv from 'dotenv'
 import path from 'path'
+import fs from 'fs'
 
 const __dirname = path.resolve()
+const envPath = path.resolve(__dirname, '.env')
 
-const pageUrl = 'http://lesgaft.spb.ru/ru/schedule'
-downloadFile(pageUrl)
+dotenv.config({ path: envPath })
 
-async function downloadFile(url) {
-  try {
-    const response = await axios.get(url)
-    const html = response.data
+const pageUrl = process.env.URL
 
-    const root = parse(html)
-    const fileLinkElements = root.querySelectorAll('a[href$=".xlsx"]')
+try {
+  const response = await axios.get(pageUrl)
+  const html = response.data
 
-    if (fileLinkElements.length > 0) {
-      for (const fileLinkElement of fileLinkElements) {
-        const index = fileLinkElements.indexOf(fileLinkElement)
-        const fileUrl = fileLinkElement.getAttribute('href')
-        const fileName = `schedule_${index + 1}.xlsx`
-        const filePath = path.join(__dirname, 'src', 'api', 'files', fileName)
+  const root = parse(html)
+  const fileLinkElements = root.querySelectorAll('a[href$=".xlsx"]')
 
-        const fileResponse = await axios({
-          method: 'get',
-          url: fileUrl,
-          responseType: 'stream',
-        })
+  if (fileLinkElements.length > 0) {
+    for (const fileLinkElement of fileLinkElements) {
+      const index = fileLinkElements.indexOf(fileLinkElement)
+      const fileUrl = fileLinkElement.getAttribute('href')
+      const fileName = `schedule_${index + 1}.xlsx`
+      const filePath = path.join(__dirname, 'docs', 'XLSXFiles', fileName)
 
-        const writer = fs.createWriteStream(filePath)
-        fileResponse.data.pipe(writer)
+      const fileResponse = await axios({
+        method: 'get',
+        url: fileUrl,
+        responseType: 'stream',
+      })
 
-        writer.on('finish', () => {
-          console.log(`Файл ${fileName} успешно загружен.`)
-        })
+      const writer = fs.createWriteStream(filePath)
+      fileResponse.data.pipe(writer)
 
-        writer.on('error', (err) => {
-          console.error(`Ошибка при сохранении файла ${fileName}:`, err)
-        })
-      }
-    } else {
-      console.error('Ссылки на файлы не найдены.')
+      writer.on('finish', () => {
+        console.log(`Файл ${fileName} успешно загружен.`)
+      })
+
+      writer.on('error', (err) => {
+        console.error(`Ошибка при сохранении файла ${fileName}:`, err)
+      })
     }
-  } catch (error) {
-    console.error('Ошибка при загрузке файлов:', error)
+  } else {
+    console.error('Ссылки на файлы не найдены.')
   }
+} catch (error) {
+  console.error('Ошибка при загрузке файлов:', error)
 }

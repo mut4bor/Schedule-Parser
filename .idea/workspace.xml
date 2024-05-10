@@ -7,6 +7,11 @@
     <list default="true" id="045f74e1-2247-4178-a65f-5fc41b3fcc03" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/api/handleSchedulesDownload.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/api/handleSchedulesDownload.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/api/scheduleParser.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/api/scheduleParser.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/static/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,6 +37,9 @@
   &quot;associatedIndex&quot;: 2
 }</component>
   <component name="ProjectId" id="2fmg0GvIHoCPF9sUq0zH3Xq75H2" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -59,6 +67,8 @@
       <recent name="Z:\Sites\schedule-parser" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="Z:\Sites\schedule-parser\src\api" />
+      <recent name="Z:\Sites\schedule-parser\docs\scheduleXLSXFiles" />
       <recent name="Z:\Sites\schedule-parser\fileBase" />
       <recent name="Z:\Sites\schedule-parser\src" />
     </key>
@@ -87,7 +97,18 @@
       <workItem from="1714669458496" duration="6807000" />
       <workItem from="1714676649329" duration="52000" />
       <workItem from="1714677965444" duration="16725000" />
-      <workItem from="1715274268331" duration="14270000" />
+      <workItem from="1715274268331" duration="14327000" />
+      <workItem from="1715370838891" duration="1504000" />
+      <workItem from="1715375000406" duration="227000" />
+      <workItem from="1715375237294" duration="100000" />
+      <workItem from="1715375346450" duration="29000" />
+      <workItem from="1715375383814" duration="397000" />
+      <workItem from="1715375792323" duration="70000" />
+      <workItem from="1715375870930" duration="34000" />
+      <workItem from="1715375912709" duration="109000" />
+      <workItem from="1715376030549" duration="895000" />
+      <workItem from="1715376943147" duration="230000" />
+      <workItem from="1715377183341" duration="871000" />
     </task>
     <servers />
   </component>

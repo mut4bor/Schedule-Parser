@@ -14,7 +14,7 @@ const fileNames = [
 ]
 
 const processDataForFile = (fileName) => {
-  const filePath = path.join(__dirname, 'fileBase', fileName)
+  const filePath = path.join(__dirname, 'docs', 'XLSXFiles', fileName)
   const unParsedJson = excelToJson({
     sourceFile: filePath,
     header: {
