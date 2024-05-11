@@ -3,7 +3,7 @@ import styles from './style.module.scss';
 
 export const Header = () => {
   return (
-    <header className={styles.qhfhq}>
+    <header className={styles.header}>
       <HeaderLogo />
     </header>
   );

@@ -16,26 +16,27 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.(ts|tsx)$/,
-        use: ['ts-loader'],
+        test: /\.tsx?$/,
+        use: 'ts-loader',
         exclude: /node_modules/,
       },
       {
-        test: /\.(sass|css|scss)$/,
-        use: ['style-loader', 'css-loader', 'sass-loader'],
-      },
-      {
-        test: /\.module.scss$/,
+        test: /\.module\.s?css$/,
         use: [
           'style-loader',
-          'css-loader',
           {
-            loader: 'sass-loader',
+            loader: 'css-loader',
             options: {
               modules: true,
             },
           },
+          'sass-loader',
         ],
+      },
+      {
+        test: /\.s?css$/,
+        exclude: /\.module\.s?css$/,
+        use: ['style-loader', 'css-loader', 'sass-loader'],
       },
       {
         test: /\.(svg|ico|gif|png|jpg|jpeg)$/,
