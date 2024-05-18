@@ -17,11 +17,13 @@
   "dependencies": {
     "@eslint/eslintrc": "^3.0.2",
     "axios": "^1.6.8",
+    "body-parser": "^1.20.2",
     "dotenv": "^16.4.5",
     "eslint": "^9.1.1",
     "express": "^4.19.2",
     "mongodb": "^6.6.2",
     "mongoose": "^8.4.0",
+    "node-fetch": "^3.3.2",
     "node-html-parser": "^6.1.13",
     "prettier": "^3.2.5",
     "ts-node": "^10.9.2"

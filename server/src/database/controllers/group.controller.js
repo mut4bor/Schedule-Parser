@@ -1,4 +1,4 @@
-import { Group } from '../models/group.model.js'
+import { Group } from "../models/group.model.js"
 
 const getAllGroups = async (req, res) => {
   try {
@@ -21,8 +21,9 @@ const getGroupById = async (req, res) => {
 
 const createGroup = async (req, res) => {
   try {
-    const group = await Group.create(req.body)
-    res.status(200).json(group)
+    const group = new Group(req.body)
+    await group.save()
+    res.status(201).json(group)
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
@@ -33,7 +34,7 @@ const updateGroupById = async (req, res) => {
     const { id } = req.params
     const group = await Group.findByIdAndUpdate(id, req.body)
     if (!group) {
-      return res.status(404).json({ message: 'Group not found' })
+      return res.status(404).json({ message: "Group not found" })
     }
     const updatedGroup = await Group.findById(id)
     res.status(200).json(updatedGroup)
@@ -47,12 +48,21 @@ const deleteGroupById = async (req, res) => {
     const { id } = req.params
     const group = await Group.findByIdAndDelete(id, req.body)
     if (!group) {
-      return res.status(404).json({ message: 'Group not found' })
+      return res.status(404).json({ message: "Group not found" })
     }
-    res.status(200).json({ message: 'Group deleted successfully' })
+    res.status(200).json({ message: "Group deleted successfully" })
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
 }
 
-export { getAllGroups, getGroupById, createGroup, updateGroupById, deleteGroupById }
+const deleteAllGroups = async (req, res) => {
+  try {
+    const group = await Group.deleteMany({})
+    res.status(200).json({ message: "All groups deleted successfully" })
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+}
+
+export { getAllGroups, getGroupById, createGroup, updateGroupById, deleteGroupById, deleteAllGroups }

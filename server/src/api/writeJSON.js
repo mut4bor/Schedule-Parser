@@ -1,13 +1,26 @@
-import path from 'path'
-import { writeFileSync } from 'fs'
 import { allData } from './scheduleParser.js'
 
-const __dirname = path.resolve()
-const jsonPath = path.join(__dirname, 'docs', 'JSONFiles', 'schedule.json')
+import fetch from 'node-fetch'
 
-try {
-  writeFileSync(jsonPath, JSON.stringify(allData, null, 2), 'utf8')
-  console.log('Data successfully saved to disk')
-} catch (error) {
-  console.log('An error has occurred ', error)
-}
+const url = 'http://localhost:3000/api/groups'
+
+Object.entries(allData).forEach(([group, weeks]) => {
+  const data = {
+    group: group,
+    date: weeks,
+  }
+  fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log('Success:', group)
+    })
+    .catch((error) => {
+      console.error('Error:', error)
+    })
+})

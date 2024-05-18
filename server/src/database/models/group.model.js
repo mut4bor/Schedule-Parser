@@ -1,17 +1,17 @@
 import mongoose from 'mongoose'
 
-const groupSchema = mongoose.Schema(
+const groupSchema = new mongoose.Schema(
   {
     group: {
       type: Number,
       required: [true, 'Please enter group number'],
     },
     date: {
-      type: String,
+      type: Object,
       required: [true, 'Please enter date'],
     },
   },
-  { timeStemps: true },
+  { timestamps: true },
 )
 
 export const Group = mongoose.model('Group', groupSchema)
