@@ -1,6 +1,6 @@
 import express from 'express'
 import { mongoose } from 'mongoose'
-import { groupRouter } from './routes/group.route.js'
+import { groupRouter } from './src/database/routes/group.route.js'
 const app = express()
 const PORT = process.env.PORT || 3000
 
