@@ -7,10 +7,10 @@ const url = process.env.FETCH_URL
 
 Object.entries(data).forEach(([group, weeks]) => {
   const dataToFetch = {
-    group: group,
+    group: typeof group === 'string' ? group : group.toString(),
     date: weeks,
   }
-  fetch(url, {
+  fetch(url + '/groups', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

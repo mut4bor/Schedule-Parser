@@ -3,7 +3,7 @@ import mongoose from 'mongoose'
 const groupSchema = new mongoose.Schema(
   {
     group: {
-      type: Number,
+      type: String,
       required: [true, 'Please enter group number'],
     },
     date: {

@@ -4,7 +4,7 @@ useEnv()
 
 const url = process.env.FETCH_URL
 
-fetch(url, {
+fetch(url + '/groups', {
   method: 'DELETE',
 })
   .then(() => console.log('Successfully deleted!'))
