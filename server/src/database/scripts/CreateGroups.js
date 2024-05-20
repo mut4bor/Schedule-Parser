@@ -1,12 +1,12 @@
-import { allData } from '../../api/scheduleParser.js'
+import { data } from '../../api/scheduleParser.js'
 import fetch from 'node-fetch'
 import { useEnv } from '../../hooks/useEnv.js'
 useEnv()
 
 const url = process.env.FETCH_URL
 
-Object.entries(allData).forEach(([group, weeks]) => {
-  const data = {
+Object.entries(data).forEach(([group, weeks]) => {
+  const dataToFetch = {
     group: group,
     date: weeks,
   }
@@ -15,10 +15,10 @@ Object.entries(allData).forEach(([group, weeks]) => {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(data),
+    body: JSON.stringify(dataToFetch),
   })
     .then((response) => response.json())
-    .then((data) => {
+    .then(() => {
       console.log('Success:', group)
     })
     .catch((error) => {

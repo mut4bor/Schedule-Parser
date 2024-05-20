@@ -9,9 +9,9 @@
     "start": "node index.js",
     "lint": "npx eslint ./src",
     "format": "npx eslint ./src --fix",
+    "delete": "node src/database/scripts/DeleteAllGroups.js",
     "download": "node src/database/scripts/downloadSchedules.js",
     "create": "node src/database/scripts/CreateGroups.js",
-    "delete": "node src/database/scripts/DeleteAllGroups.js",
     "refresh": "npm run delete && npm run download && npm run create"
   },
   "keywords": [],
