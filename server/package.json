@@ -9,7 +9,10 @@
     "start": "node index.js",
     "lint": "npx eslint ./src",
     "format": "npx eslint ./src --fix",
-    "refresh": "node src/api/handleSchedulesDownload.js && node src/api/writeJSON.js"
+    "download": "node src/database/scripts/downloadSchedules.js",
+    "create": "node src/database/scripts/CreateGroups.js",
+    "delete": "node src/database/scripts/DeleteAllGroups.js",
+    "refresh": "npm run delete && npm run download && npm run create"
   },
   "keywords": [],
   "author": "",
@@ -21,6 +24,7 @@
     "dotenv": "^16.4.5",
     "eslint": "^9.1.1",
     "express": "^4.19.2",
+    "moment-timezone": "^0.5.45",
     "mongodb": "^6.6.2",
     "mongoose": "^8.4.0",
     "node-fetch": "^3.3.2",

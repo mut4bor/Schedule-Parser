@@ -1,8 +1,9 @@
-import { allData } from './scheduleParser.js'
-
+import { allData } from '../../api/scheduleParser.js'
 import fetch from 'node-fetch'
+import { useEnv } from '../../hooks/useEnv.js'
+useEnv()
 
-const url = 'http://localhost:3000/api/groups'
+const url = process.env.FETCH_URL
 
 Object.entries(allData).forEach(([group, weeks]) => {
   const data = {

@@ -9,7 +9,7 @@ const envPath = path.resolve(__dirname, '.env')
 
 dotenv.config({ path: envPath })
 
-const pageUrl = process.env.URL
+const pageUrl = process.env.UNIVERSITY_URL
 
 try {
   const response = await axios.get(pageUrl)
