@@ -4,22 +4,19 @@ import path from 'path'
 const __dirname = path.resolve()
 
 const processDataForFile = (fileName, rowsToCut, type) => {
-  const getUnparsedJson = () => {
-    const filePath = path.join(__dirname, 'docs', 'XLSXFiles', fileName)
-    const unParsedJson = excelToJson({
-      sourceFile: filePath,
-      header: {
-        rows: rowsToCut,
-      },
-    })
-    return unParsedJson
-  }
+  const filePath = path.join(__dirname, 'docs', 'XLSXFiles', fileName)
+  const unParsedJson = excelToJson({
+    sourceFile: filePath,
+    header: {
+      rows: rowsToCut,
+    },
+  })
 
   const flatten = (arr) => arr.reduce((acc, item) => acc.concat(item), [])
 
   const getGroupKeys = () => {
     const swapped = {}
-    const obj = flatten(Object.values(getUnparsedJson()))[0]
+    const obj = flatten(Object.values(unParsedJson))[0]
     Object.entries(obj).forEach(([key, value]) => {
       if (typeof value === 'string' && value.includes('Группа') && value !== null) {
         const trimmedValue = value.replace('Группа', '').trim()
@@ -33,7 +30,7 @@ const processDataForFile = (fileName, rowsToCut, type) => {
 
   const getDateKeys = () => {
     const dates = {}
-    Object.keys(getUnparsedJson()).forEach((key) => {
+    Object.keys(unParsedJson).forEach((key) => {
       const formattedKey = key.replaceAll('.', '').replaceAll(' ', '')
       const keyWithDots = formattedKey.slice(0, 2) + '.' + formattedKey.slice(2, -2) + '.' + formattedKey.slice(-2)
       dates[keyWithDots] = {}
@@ -82,22 +79,23 @@ const processDataForFile = (fileName, rowsToCut, type) => {
       const auditory = item[getNextTwoLetters(groupLetter).class] || ''
       const teacher = item[getNextTwoLetters(groupLetter).teacher] || ''
       const subject = type === 1 ? item[groupLetter] || '' : `${className} ${auditory} ${teacher}`.trim()
-
-      if (date && date.length < 7) {
-        currentDay = `${date.substring(0, 5)} (${weekDay})`
-        groupedData[currentDay] = { [time]: subject }
-      } else if (currentDay) {
-        groupedData[currentDay] = { ...groupedData[currentDay], [time]: subject }
+      if (time !== undefined) {
+        if (date && date.length < 7) {
+          currentDay = `${date.substring(0, 5)} (${weekDay})`
+          groupedData[currentDay] = { [time]: subject }
+        } else if (currentDay) {
+          groupedData[currentDay] = { ...groupedData[currentDay], [time]: subject }
+        }
       }
     })
     return groupedData
   }
 
   const getGroupWeekDays = (groupNumber) => {
-    const data = flatten(Object.values(getUnparsedJson()))
-    const groupLetter = getGroupKeys(getUnparsedJson())[groupNumber]
+    const data = flatten(Object.values(unParsedJson))
+    const groupLetter = getGroupKeys(unParsedJson)[groupNumber]
     const groupedData = extractGroupedData(data, groupLetter, type)
-    const weekDates = getDateKeys(getUnparsedJson())
+    const weekDates = getDateKeys(unParsedJson)
     const weekDatesKeys = Object.keys(weekDates)
     let weekIndex = 0
     let currentWeek = {}
@@ -115,7 +113,7 @@ const processDataForFile = (fileName, rowsToCut, type) => {
 
   const processData = () => {
     const data = {}
-    const groupKeys = Object.keys(getGroupKeys(getUnparsedJson()))
+    const groupKeys = Object.keys(getGroupKeys(unParsedJson))
 
     groupKeys.forEach((groupKey) => {
       data[groupKey] = getGroupWeekDays(groupKey)
@@ -167,21 +165,19 @@ const fileNames3 = [
   'schedule_29.xlsx',
 ]
 const allData = processDataForAllFiles(fileNames1, 3, 1)
-// const secondData = processDataForAllFiles(fileNames2, 2, 2)
-// const thirdData = processDataForAllFiles(fileNames3, 3, 2)
+const secondData = processDataForAllFiles(fileNames2, 2, 2)
+const thirdData = processDataForAllFiles(fileNames3, 3, 2)
 
-// const data = {
-//   ...allData,
-//   ...secondData,
-//   ...thirdData,
-// }
-
-try {
-  fs.writeFileSync(path.join(__dirname, 'docs', 'allData.json'), JSON.stringify(allData, null, 2), 'utf8')
-  // fs.writeFileSync(path.join(__dirname, 'docs', 'secondData.json'), JSON.stringify(secondData, null, 2), 'utf8')
-  // fs.writeFileSync(path.join(__dirname, 'docs', 'thirdData.json'), JSON.stringify(thirdData, null, 2), 'utf8')
-  console.log('Data successfully saved to disk')
-} catch (error) {
-  console.log('An error has occurred ', error)
+const data = {
+  ...allData,
+  ...secondData,
+  ...thirdData,
 }
-// export { data }
+
+// try {
+//   fs.writeFileSync(path.join(__dirname, 'docs', 'data.json'), JSON.stringify(data, null, 2), 'utf8')
+//   console.log('Data successfully saved to disk')
+// } catch (error) {
+//   console.log('An error has occurred ', error)
+// }
+export { data }
