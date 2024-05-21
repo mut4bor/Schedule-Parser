@@ -1,13 +1,10 @@
 import axios from 'axios'
 import { parse } from 'node-html-parser'
-import dotenv from 'dotenv'
 import path from 'path'
 import fs from 'fs'
-
+import { useEnv } from '../../hooks/useEnv.js'
+useEnv()
 const __dirname = path.resolve()
-const envPath = path.resolve(__dirname, '.env')
-
-dotenv.config({ path: envPath })
 
 const pageUrl = process.env.UNIVERSITY_URL
 
@@ -19,7 +16,7 @@ try {
   const fileLinkElements = root.querySelectorAll('a[href$=".xlsx"]')
 
   if (fileLinkElements.length > 0) {
-    for (const fileLinkElement of fileLinkElements) {
+    fileLinkElements.forEach(async (fileLinkElement) => {
       const index = fileLinkElements.indexOf(fileLinkElement)
       const fileUrl = fileLinkElement.getAttribute('href')
       const fileName = `schedule_${index + 1}.xlsx`
@@ -41,7 +38,7 @@ try {
       writer.on('error', (err) => {
         console.error(`Ошибка при сохранении файла ${fileName}:`, err)
       })
-    }
+    })
   } else {
     console.error('Ссылки на файлы не найдены.')
   }

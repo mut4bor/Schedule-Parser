@@ -61,7 +61,13 @@ const deleteAllGroups = async (req, res) => {
     await Group.deleteMany({})
     res.status(200).json({ message: 'All groups deleted successfully' })
   } catch (error) {
-    res.status(500).json({ message: error.message })
+    if (error.response) {
+      console.error('Error:', error.response.status, error.response.data)
+    } else if (error.request) {
+      console.error('No response received:', error.request)
+    } else {
+      console.error('Error:', error.message)
+    }
   }
 }
 

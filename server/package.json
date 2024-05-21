@@ -11,10 +11,8 @@
     "format": "npx eslint ./src --fix",
     "delete": "node src/database/scripts/DeleteAllGroups.js",
     "download": "node src/database/scripts/downloadSchedules.js",
-    "create": "node src/database/scripts/CreateGroups.js",
     "update": "node src/database/scripts/UpdateGroups.js",
-    "refresh": "npm run download && npm run update",
-    "recreate": "npm run delete && npm run download && npm run create"
+    "refresh": "npm run download && npm run update"
   },
   "keywords": [],
   "author": "",

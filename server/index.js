@@ -3,7 +3,9 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import { mongoose } from 'mongoose'
 import { groupRouter } from './src/database/routes/group.route.js'
-import { data } from './src/api/scheduleParser.js'
+import { useEnv } from './src/hooks/useEnv.js'
+useEnv()
+
 const app = express()
 const PORT = process.env.PORT || 3000
 const __dirname = path.resolve()
@@ -17,18 +19,14 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__public, 'index.html'))
 })
 
-app.get('/api/parsed', (req, res) => {
-  res.json(data)
-})
-
 app.get('*', (req, res) => {
   res.sendFile(path.join(__public, 'error.html'))
 })
 
+const mongodbURL = process.env.MONGODB_URL
+
 mongoose
-  .connect(
-    'mongodb+srv://admin:PLc2KFZvOCFpi0Rz@scheduleparserdb.xr1qrva.mongodb.net/Node-API?retryWrites=true&w=majority&appName=scheduleParserDB',
-  )
+  .connect(mongodbURL)
   .then(() => {
     console.log('Connected to database!')
     app.listen(PORT, () => console.log(`Server running on port ${PORT}...`))
