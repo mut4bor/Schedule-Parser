@@ -152,12 +152,12 @@ const dataToProcess = {
   },
 }
 
-const allData = processDataForAllFiles(dataToProcess.firstData)
+const firstData = processDataForAllFiles(dataToProcess.firstData)
 const secondData = processDataForAllFiles(dataToProcess.secondData)
 const thirdData = processDataForAllFiles(dataToProcess.thirdData)
 
 const data = {
-  ...allData,
+  ...firstData,
   ...secondData,
   ...thirdData,
 }
