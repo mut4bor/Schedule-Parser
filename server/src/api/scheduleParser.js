@@ -3,8 +3,8 @@ import excelToJson from 'convert-excel-to-json'
 import path from 'path'
 const __dirname = path.resolve()
 
-const processDataForFile = (fileName, rowsToCut, type) => {
-  const filePath = path.join(__dirname, 'docs', 'XLSXFiles', fileName)
+const processDataForFile = (fileSerialNumber, rowsToCut, type) => {
+  const filePath = path.join(__dirname, 'docs', 'XLSXFiles', `schedule_${fileSerialNumber}.xlsx`)
   const unParsedJson = excelToJson({
     sourceFile: filePath,
     header: {
@@ -78,7 +78,7 @@ const processDataForFile = (fileName, rowsToCut, type) => {
       const className = item[groupLetter] || ''
       const auditory = item[getNextTwoLetters(groupLetter).class] || ''
       const teacher = item[getNextTwoLetters(groupLetter).teacher] || ''
-      const subject = type === 1 ? item[groupLetter] || '' : `${className} ${auditory} ${teacher}`.trim()
+      const subject = type === 'oneCell' ? item[groupLetter] || '' : `${className} ${auditory} ${teacher}`.trim()
       if (time !== undefined) {
         if (date && date.length < 7) {
           currentDay = `${date.substring(0, 5)} (${weekDay})`
@@ -124,7 +124,7 @@ const processDataForFile = (fileName, rowsToCut, type) => {
   return processData()
 }
 
-const processDataForAllFiles = (fileNames, rowsToCut, type) => {
+const processDataForAllFiles = ({ fileNames: fileNames, rowsToCut: rowsToCut, type: type }) => {
   let data = {}
   fileNames.forEach((fileName) => {
     Object.entries(processDataForFile(fileName, rowsToCut, type)).forEach(([group, schedule]) => {
@@ -134,39 +134,27 @@ const processDataForAllFiles = (fileNames, rowsToCut, type) => {
   return data
 }
 
-const fileNames1 = [
-  'schedule_1.xlsx',
-  'schedule_2.xlsx',
-  'schedule_3.xlsx',
-  'schedule_4.xlsx',
-  'schedule_5.xlsx',
-  'schedule_6.xlsx',
-  'schedule_7.xlsx',
-  'schedule_8.xlsx',
-]
-const fileNames2 = ['schedule_9.xlsx', 'schedule_10.xlsx', 'schedule_11.xlsx', 'schedule_12.xlsx']
-const fileNames3 = [
-  'schedule_13.xlsx',
-  'schedule_14.xlsx',
-  'schedule_15.xlsx',
-  'schedule_16.xlsx',
-  'schedule_17.xlsx',
-  'schedule_18.xlsx',
-  'schedule_19.xlsx',
-  'schedule_20.xlsx',
-  'schedule_21.xlsx',
-  'schedule_22.xlsx',
-  'schedule_23.xlsx',
-  'schedule_24.xlsx',
-  'schedule_25.xlsx',
-  'schedule_26.xlsx',
-  'schedule_27.xlsx',
-  'schedule_28.xlsx',
-  'schedule_29.xlsx',
-]
-const allData = processDataForAllFiles(fileNames1, 3, 1)
-const secondData = processDataForAllFiles(fileNames2, 2, 2)
-const thirdData = processDataForAllFiles(fileNames3, 3, 2)
+const dataToProcess = {
+  firstData: {
+    fileNames: [1, 2, 3, 4, 5, 6, 7, 8],
+    rowsToCut: 3,
+    type: 'oneCell',
+  },
+  secondData: {
+    fileNames: [9, 10, 11, 12],
+    rowsToCut: 2,
+    type: 'multipleCell',
+  },
+  thirdData: {
+    fileNames: [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29],
+    rowsToCut: 3,
+    type: 'multipleCell',
+  },
+}
+
+const allData = processDataForAllFiles(dataToProcess.firstData)
+const secondData = processDataForAllFiles(dataToProcess.secondData)
+const thirdData = processDataForAllFiles(dataToProcess.thirdData)
 
 const data = {
   ...allData,
