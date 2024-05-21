@@ -3,7 +3,7 @@ import excelToJson from 'convert-excel-to-json'
 import path from 'path'
 const __dirname = path.resolve()
 
-const processDataForFile = (fileSerialNumber, rowsToCut, type) => {
+const processDataForFile = ({ fileSerialNumber: fileSerialNumber, rowsToCut: rowsToCut, type: type }) => {
   const filePath = path.join(__dirname, 'docs', 'XLSXFiles', `schedule_${fileSerialNumber}.xlsx`)
   const unParsedJson = excelToJson({
     sourceFile: filePath,
@@ -14,28 +14,23 @@ const processDataForFile = (fileSerialNumber, rowsToCut, type) => {
 
   const flatten = (arr) => arr.reduce((acc, item) => acc.concat(item), [])
 
-  const getGroupKeys = () => {
-    const swapped = {}
+  const getGroupKeys = (unParsedJson) => {
     const obj = flatten(Object.values(unParsedJson))[0]
-    Object.entries(obj).forEach(([key, value]) => {
-      if (typeof value === 'string' && value.includes('Группа') && value !== null) {
-        const trimmedValue = value.replace('Группа', '').trim()
-        swapped[trimmedValue] = key
-      } else {
-        delete swapped[value]
-      }
-    })
-    return swapped
+    return Object.fromEntries(
+      Object.entries(obj)
+        .filter(([_, value]) => typeof value === 'string' && value.includes('Группа'))
+        .map(([key, value]) => [value.replace('Группа', '').trim(), key]),
+    )
   }
 
-  const getDateKeys = () => {
-    const dates = {}
-    Object.keys(unParsedJson).forEach((key) => {
-      const formattedKey = key.replaceAll('.', '').replaceAll(' ', '')
-      const keyWithDots = formattedKey.slice(0, 2) + '.' + formattedKey.slice(2, -2) + '.' + formattedKey.slice(-2)
-      dates[keyWithDots] = {}
-    })
-    return dates
+  const getDateKeys = (unParsedJson) => {
+    return Object.fromEntries(
+      Object.keys(unParsedJson).map((key) => {
+        const formattedKey = key.replace(/\./g, '').replace(/ /g, '')
+        const keyWithDots = `${formattedKey.slice(0, 2)}.${formattedKey.slice(2, -2)}.${formattedKey.slice(-2)}`
+        return [keyWithDots, {}]
+      }),
+    )
   }
 
   function parseSubjectTime(dateString) {
@@ -124,10 +119,12 @@ const processDataForFile = (fileSerialNumber, rowsToCut, type) => {
   return processData()
 }
 
-const processDataForAllFiles = ({ fileNames: fileNames, rowsToCut: rowsToCut, type: type }) => {
+const processDataForAllFiles = ({ fileSerialNumbers: fileSerialNumbers, rowsToCut: rowsToCut, type: type }) => {
   let data = {}
-  fileNames.forEach((fileName) => {
-    Object.entries(processDataForFile(fileName, rowsToCut, type)).forEach(([group, schedule]) => {
+  fileSerialNumbers.forEach((fileSerialNumber) => {
+    Object.entries(
+      processDataForFile({ fileSerialNumber: fileSerialNumber, rowsToCut: rowsToCut, type: type }),
+    ).forEach(([group, schedule]) => {
       data[group] = schedule
     })
   })
@@ -136,17 +133,17 @@ const processDataForAllFiles = ({ fileNames: fileNames, rowsToCut: rowsToCut, ty
 
 const dataToProcess = {
   firstData: {
-    fileNames: [1, 2, 3, 4, 5, 6, 7, 8],
+    fileSerialNumbers: [1, 2, 3, 4, 5, 6, 7, 8],
     rowsToCut: 3,
     type: 'oneCell',
   },
   secondData: {
-    fileNames: [9, 10, 11, 12],
+    fileSerialNumbers: [9, 10, 11, 12],
     rowsToCut: 2,
     type: 'multipleCell',
   },
   thirdData: {
-    fileNames: [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29],
+    fileSerialNumbers: [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29],
     rowsToCut: 3,
     type: 'multipleCell',
   },
