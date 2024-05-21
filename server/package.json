@@ -12,7 +12,9 @@
     "delete": "node src/database/scripts/DeleteAllGroups.js",
     "download": "node src/database/scripts/downloadSchedules.js",
     "create": "node src/database/scripts/CreateGroups.js",
-    "refresh": "npm run delete && npm run download && npm run create"
+    "update": "node src/database/scripts/UpdateGroups.js",
+    "refresh": "npm run download && npm run update",
+    "recreate": "npm run delete && npm run download && npm run create"
   },
   "keywords": [],
   "author": "",
@@ -24,13 +26,11 @@
     "dotenv": "^16.4.5",
     "eslint": "^9.1.1",
     "express": "^4.19.2",
-    "moment-timezone": "^0.5.45",
     "mongodb": "^6.6.2",
     "mongoose": "^8.4.0",
     "node-fetch": "^3.3.2",
     "node-html-parser": "^6.1.13",
-    "prettier": "^3.2.5",
-    "ts-node": "^10.9.2"
+    "prettier": "^3.2.5"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",

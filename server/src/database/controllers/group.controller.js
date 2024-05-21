@@ -19,27 +19,6 @@ const getGroupById = async (req, res) => {
   }
 }
 
-const getGroupByName = async (req, res) => {
-  try {
-    const { name } = req.params
-    const group = await Group.findOne({
-      group: name,
-    })
-    res.status(200).json(group)
-  } catch (error) {
-    res.status(500).json({ message: error.message })
-  }
-}
-
-const getGroupNames = async (req, res) => {
-  try {
-    const groups = await Group.find({}, { group: 1, _id: 0 })
-    res.status(200).json(groups)
-  } catch (error) {
-    res.status(500).json({ message: error.message })
-  }
-}
-
 const createGroup = async (req, res) => {
   try {
     const group = new Group(req.body)
@@ -79,20 +58,11 @@ const deleteGroupById = async (req, res) => {
 
 const deleteAllGroups = async (req, res) => {
   try {
-    const group = await Group.deleteMany({})
+    await Group.deleteMany({})
     res.status(200).json({ message: 'All groups deleted successfully' })
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
 }
 
-export {
-  getAllGroups,
-  getGroupById,
-  getGroupByName,
-  getGroupNames,
-  createGroup,
-  updateGroupById,
-  deleteGroupById,
-  deleteAllGroups,
-}
+export { getAllGroups, getGroupById, createGroup, updateGroupById, deleteGroupById, deleteAllGroups }
