@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": "./src",
     "paths": {
-      "@/*": ["*"],
+      "@/*": ["*"]
     },
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
@@ -20,5 +20,5 @@
     "noEmit": false,
     "jsx": "react-jsx"
   },
-  "include": ["src", "declarations.d.ts"]
+  "include": ["src", "declarations.d.ts", "src/react-app-env.d.ts"]
 }

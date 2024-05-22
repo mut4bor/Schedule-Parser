@@ -1,6 +1,7 @@
 import path from 'path'
 import express from 'express'
 import bodyParser from 'body-parser'
+import cors from 'cors'
 import { mongoose } from 'mongoose'
 import { groupRouter } from './src/database/routes/group.route.js'
 import { useEnv } from './src/hooks/useEnv.js'
@@ -10,7 +11,8 @@ const app = express()
 const PORT = process.env.PORT || 3000
 const __dirname = path.resolve()
 const __public = path.join(__dirname, 'public')
-
+app.use(cors())
+app.options('*', cors())
 app.use(bodyParser.json({ limit: '50mb' }))
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true, parameterLimit: 50000 }))
 app.use('/api', groupRouter)
