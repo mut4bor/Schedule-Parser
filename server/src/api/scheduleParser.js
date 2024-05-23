@@ -1,129 +1,136 @@
-import fs from 'fs'
-import excelToJson from 'convert-excel-to-json'
 import path from 'path'
+import { getJsonFromXLSX } from './getJsonFromXLSX.js'
+
 const __dirname = path.resolve()
 
-const processDataForFile = ({ fileSerialNumber: fileSerialNumber, rowsToCut: rowsToCut, type: type }) => {
-  const filePath = path.join(__dirname, 'docs', 'XLSXFiles', `schedule_${fileSerialNumber}.xlsx`)
-  const unParsedJson = excelToJson({
-    sourceFile: filePath,
-    header: {
-      rows: rowsToCut,
-    },
-  })
+const processDataForFile = ({
+  fileSerialNumber: fileSerialNumber,
+  rowsToCut: rowsToCut,
+  type: type,
+}) => {
+  const filePath = path.join(
+    __dirname,
+    'docs',
+    'XLSXFiles',
+    `schedule_${fileSerialNumber}.xlsx`,
+  )
 
-  const flatten = (arr) => arr.reduce((acc, item) => acc.concat(item), [])
+  const unParsedJson = getJsonFromXLSX(filePath, rowsToCut)
 
-  const getGroupKeys = (unParsedJson) => {
-    const obj = flatten(Object.values(unParsedJson))[0]
+  const getGroupLetters = (unParsedJson) => {
+    const obj = Object.values(unParsedJson)[0][rowsToCut + 1]
+    const excludedKeys = ['A', 'B', 'C']
+
     return Object.fromEntries(
       Object.entries(obj)
-        .filter(([_, value]) => typeof value === 'string' && value.includes('Группа'))
-        .map(([key, value]) => [value.replace('Группа', '').trim(), key]),
+        .filter(([key, _]) => !excludedKeys.includes(key))
+        .map(([key, value]) => [value, key]),
     )
   }
 
   const getDateKeys = (unParsedJson) => {
     return Object.fromEntries(
       Object.keys(unParsedJson).map((key) => {
-        const formattedKey = key.replace(/\./g, '').replace(/ /g, '')
+        const formattedKey = key.replace(/\./g, '').replace(/\s+/g, '').trim()
         const keyWithDots = `${formattedKey.slice(0, 2)}.${formattedKey.slice(2, -2)}.${formattedKey.slice(-2)}`
         return [keyWithDots, {}]
       }),
     )
   }
 
-  function parseSubjectTime(dateString) {
-    const date = new Date(dateString)
-
-    if (!isNaN(date.getTime())) {
-      date.setHours(date.getHours() + 3)
-      let minutes = date.getUTCMinutes()
-      minutes = Math.ceil(minutes / 15) * 15
-      if (minutes === 60) {
-        date.setHours(date.getHours() + 1)
-        minutes = 0
-      }
-      const hours = date.getUTCHours().toString().padStart(2, '0')
-      return `${hours}:${minutes.toString().padStart(2, '0')}`
-    }
-    return dateString
-  }
-
   function getNextTwoLetters(letter) {
-    let charCode = letter.charCodeAt(0)
+    const charCode = letter.charCodeAt(0)
 
     if (charCode === 90) {
       return 'YZ'
     }
 
-    let nextLetter1 = String.fromCharCode(charCode + 1)
-    let nextLetter2 = String.fromCharCode(charCode + 2)
+    const nextLetter1 = String.fromCharCode(charCode + 1)
+    const nextLetter2 = String.fromCharCode(charCode + 2)
 
-    return { class: nextLetter1, teacher: nextLetter2 }
+    return { auditory: nextLetter1, teacher: nextLetter2 }
   }
 
-  const extractGroupedData = (data, groupLetter, type) => {
+  const extractGroupedData = (unParsedJson, groupLetter, type) => {
     const groupedData = {}
-    let currentDay = null
-    data.forEach((item) => {
-      const date = item.A
-      const weekDay = item.B
-      const time = parseSubjectTime(item.C)
+
+    const processItem = (item) => {
+      const { A, B, C } = item
+      const date = `${typeof A === 'string' ? A.substring(0, 5) : A} (${B})`
+      const time = C
+      const { auditory, teacher } = getNextTwoLetters(groupLetter)
       const className = item[groupLetter] || ''
-      const auditory = item[getNextTwoLetters(groupLetter).class] || ''
-      const teacher = item[getNextTwoLetters(groupLetter).teacher] || ''
-      const subject = type === 'oneCell' ? item[groupLetter] || '' : `${className} ${auditory} ${teacher}`.trim()
-      if (time !== undefined) {
-        if (date && date.length < 7) {
-          currentDay = `${date.substring(0, 5)} (${weekDay})`
-          groupedData[currentDay] = { [time]: subject }
-        } else if (currentDay) {
-          groupedData[currentDay] = { ...groupedData[currentDay], [time]: subject }
+      const subject =
+        type === 'oneCell'
+          ? item[groupLetter] || ''
+          : `${className} ${item[auditory] || ''} ${item[teacher] || ''}`.trim()
+
+      return { date, time, subject }
+    }
+
+    Object.values(unParsedJson).forEach((row) => {
+      Object.values(row).forEach((item) => {
+        const { date, time, subject } = processItem(item)
+
+        if (!groupedData[date]) {
+          groupedData[date] = {}
         }
-      }
+
+        groupedData[date][time] = subject
+      })
     })
+
     return groupedData
   }
 
-  const getGroupWeekDays = (groupNumber) => {
-    const data = flatten(Object.values(unParsedJson))
-    const groupLetter = getGroupKeys(unParsedJson)[groupNumber]
-    const groupedData = extractGroupedData(data, groupLetter, type)
+  const getGroupWeekDays = (unParsedJson, groupNumber) => {
+    const groupLetter = getGroupLetters(unParsedJson)[groupNumber]
+    const groupedData = extractGroupedData(unParsedJson, groupLetter, type)
     const weekDates = getDateKeys(unParsedJson)
     const weekDatesKeys = Object.keys(weekDates)
     let weekIndex = 0
     let currentWeek = {}
+    const isWeekday = (date) => /(Пн\.|Вт\.|Ср\.|Чт\.|Пт\.|Сб\.)/.test(date)
 
     Object.entries(groupedData).forEach(([date, schedule]) => {
-      if (date.includes('Пн.')) {
-        const weekKey = weekDatesKeys[weekIndex++]
-        currentWeek = {}
-        weekDates[weekKey] = currentWeek
+      if (isWeekday(date)) {
+        if (date.includes('Пн.')) {
+          const weekKey = weekDatesKeys[weekIndex++]
+          currentWeek = {}
+          weekDates[weekKey] = currentWeek
+        }
+
+        currentWeek[date] = schedule
       }
-      currentWeek[date] = schedule
     })
     return weekDates
   }
 
   const processData = () => {
     const data = {}
-    const groupKeys = Object.keys(getGroupKeys(unParsedJson))
+    const groupNames = Object.keys(getGroupLetters(unParsedJson))
 
-    groupKeys.forEach((groupKey) => {
-      data[groupKey] = getGroupWeekDays(groupKey)
+    groupNames.forEach((groupKey) => {
+      data[groupKey] = getGroupWeekDays(unParsedJson, groupKey)
     })
     return data
   }
-
   return processData()
 }
 
-const processDataForAllFiles = ({ fileSerialNumbers: fileSerialNumbers, rowsToCut: rowsToCut, type: type }) => {
-  let data = {}
+const processDataForAllFiles = ({
+  fileSerialNumbers: fileSerialNumbers,
+  rowsToCut: rowsToCut,
+  type: type,
+}) => {
+  const data = {}
   fileSerialNumbers.forEach((fileSerialNumber) => {
     Object.entries(
-      processDataForFile({ fileSerialNumber: fileSerialNumber, rowsToCut: rowsToCut, type: type }),
+      processDataForFile({
+        fileSerialNumber: fileSerialNumber,
+        rowsToCut: rowsToCut,
+        type: type,
+      }),
     ).forEach(([group, schedule]) => {
       data[group] = schedule
     })
@@ -143,8 +150,13 @@ const dataToProcess = {
     type: 'multipleCell',
   },
   thirdData: {
-    fileSerialNumbers: [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29],
+    fileSerialNumbers: [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26],
     rowsToCut: 3,
+    type: 'multipleCell',
+  },
+  fourthData: {
+    fileSerialNumbers: [27, 28, 29],
+    rowsToCut: 2,
     type: 'multipleCell',
   },
 }
@@ -152,17 +164,24 @@ const dataToProcess = {
 const firstData = processDataForAllFiles(dataToProcess.firstData)
 const secondData = processDataForAllFiles(dataToProcess.secondData)
 const thirdData = processDataForAllFiles(dataToProcess.thirdData)
+const fourthData = processDataForAllFiles(dataToProcess.fourthData)
 
 const data = {
   ...firstData,
   ...secondData,
   ...thirdData,
+  ...fourthData,
 }
 
 // try {
-//   fs.writeFileSync(path.join(__dirname, 'docs', 'data.json'), JSON.stringify(data, null, 2), 'utf8')
+//   fs.writeFileSync(
+//     path.join(__dirname, 'docs', 'data.json'),
+//     JSON.stringify(data, null, 2),
+//     'utf8',
+//   )
 //   console.log('Data successfully saved to disk')
 // } catch (error) {
 //   console.log('An error has occurred ', error)
 // }
+
 export { data }
