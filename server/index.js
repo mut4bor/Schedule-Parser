@@ -6,7 +6,6 @@ import { mongoose } from 'mongoose'
 import { router } from './src/database/routes/route.js'
 import { useEnv } from './src/hooks/useEnv.js'
 useEnv()
-import { data } from './src/api/scheduleParser.js'
 
 const app = express()
 const PORT = process.env.PORT || 3000

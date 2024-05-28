@@ -14,7 +14,53 @@ const processDataForFile = ({
     `schedule_${fileSerialNumber}.xlsx`,
   )
 
-  const unParsedJson = getJsonFromXLSX(filePath, rowsToCut)
+  const jsonFromXLSX = getJsonFromXLSX(filePath, rowsToCut)
+
+  const jsonWithTrimmedKeys = {}
+  Object.entries(jsonFromXLSX).forEach(([key, value]) => {
+    const formattedKey = key.replace(/\./g, '').replace(/\s+/g, '').trim()
+    const keyWithDots = `${formattedKey.slice(0, 2)}.${formattedKey.slice(2, -2)}.${formattedKey.slice(-2)}`
+    jsonWithTrimmedKeys[keyWithDots] = value
+  })
+
+  const getPreviousWeekRange = () => {
+    const today = new Date()
+    const dayOfWeek = today.getDay()
+
+    const firstDayOfPreviousWeek = new Date(today)
+    const diffToMonday = (dayOfWeek + 6) % 7
+    firstDayOfPreviousWeek.setDate(today.getDate() - diffToMonday - 7)
+
+    const lastDayOfPreviousWeek = new Date(firstDayOfPreviousWeek)
+    lastDayOfPreviousWeek.setDate(firstDayOfPreviousWeek.getDate() + 5)
+
+    const format = (date) => {
+      const day = String(date.getDate()).padStart(2, '0')
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      return `${day}.${month}`
+    }
+
+    return `${format(firstDayOfPreviousWeek)}-${format(lastDayOfPreviousWeek)}`
+  }
+
+  function removePreviousScheduleEntries(schedule, targetKey) {
+    const scheduleKeys = Object.keys(schedule)
+    const targetIndex = scheduleKeys.indexOf(targetKey)
+
+    if (targetIndex !== -1) {
+      const keysToRemove = scheduleKeys.slice(0, targetIndex)
+      keysToRemove.forEach((key) => {
+        delete schedule[key]
+      })
+    }
+
+    return schedule
+  }
+
+  const unParsedJson = removePreviousScheduleEntries(
+    jsonWithTrimmedKeys,
+    getPreviousWeekRange(),
+  )
 
   const getGroupLetters = (unParsedJson) => {
     const obj = Object.values(unParsedJson)[0][rowsToCut + 1]
@@ -49,7 +95,7 @@ const processDataForFile = ({
 
     const processItem = (item) => {
       const { A, B, C } = item
-      const date = `${typeof A === 'string' ? A.substring(0, 5) : A} (${B})`
+      const date = `${A} (${B})`
       const time = C
 
       const subject = groupLetters
@@ -57,6 +103,7 @@ const processDataForFile = ({
           return item[letter] || ''
         })
         .join(' ')
+        .trim()
 
       return { date, time, subject }
     }
@@ -107,27 +154,20 @@ const processDataForFile = ({
     const weekDates = getDateKeys(unParsedJson)
     const weekDatesKeys = Object.keys(weekDates)
 
-    let weekIndex = 0
-    let currentWeek = {}
-    const isWeekday = (date) => /(Пн\.|Вт\.|Ср\.|Чт\.|Пт\.|Сб\.)/.test(date)
+    const days = {}
 
-    const datesBetweenWeekKeys = weekDatesKeys.map((item) => {
-      console.log(getDaysInRange(item))
-
-      return getDaysInRange(item)
+    weekDatesKeys.forEach((item) => {
+      days[item] = getDaysInRange(item)
     })
 
     Object.entries(groupedData).forEach(([date, schedule]) => {
-      if (isWeekday(date)) {
-        if (date.includes('Пн.')) {
-          const weekKey = weekDatesKeys[weekIndex++]
-          currentWeek = {}
-          weekDates[weekKey] = currentWeek
+      Object.entries(days).forEach(([key, value]) => {
+        if (value.includes(date.substring(0, 5))) {
+          weekDates[key][date] = schedule
         }
-
-        currentWeek[date] = schedule
-      }
+      })
     })
+
     return weekDates
   }
 
