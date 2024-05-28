@@ -27,28 +27,26 @@ const fetchGroupNames = await fetch(`${url}/names`, {
     return error
   })
 
-const isDatabaseEmpty = !fetchGroupNames.length
+const dataEntries = Object.entries(data)
 
-Object.entries(data).forEach(([group, weeks]) => {
+dataEntries.forEach(([group, weeks], index) => {
   const dataToFetch = {
-    group: typeof group === 'string' ? group : group.toString(),
+    group: group,
     date: weeks,
+    index: index + 1,
   }
 
-  const options = {
-    method: isDatabaseEmpty ? 'POST' : 'PUT',
-    url: isDatabaseEmpty ? '' : `${fetchGroupNames.find((groupObject) => groupObject.group === group)._id}`,
-    successText: isDatabaseEmpty ? 'created' : 'updated',
-  }
-
-  fetch(`${url}/groups/${options.url}`, {
-    method: options.method,
-    headers: {
-      'Content-Type': 'application/json',
-      'x-admin-password': password,
+  fetch(
+    `${url}/groups/${fetchGroupNames.find((groupObject) => groupObject.group === group)._id}`,
+    {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-admin-password': password,
+      },
+      body: JSON.stringify(dataToFetch),
     },
-    body: JSON.stringify(dataToFetch),
-  })
+  )
     .then(async (response) => {
       if (!response.ok) {
         const errorData = await response.json()
@@ -57,7 +55,7 @@ Object.entries(data).forEach(([group, weeks]) => {
       return response.json()
     })
     .then(() => {
-      console.log(`Successfully ${options.successText}!: ${group}`)
+      console.log(`Successfully updated!: ${group}`)
     })
     .catch((error) => {
       console.error('Error:', error)

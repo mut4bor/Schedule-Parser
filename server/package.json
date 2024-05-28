@@ -12,6 +12,7 @@
     "delete": "node src/database/scripts/DeleteAllGroups.js",
     "download": "node src/database/scripts/downloadSchedules.js",
     "update": "node src/database/scripts/UpdateGroups.js",
+    "create": "node src/database/scripts/createGroups.js",
     "refresh": "npm run download && npm run update"
   },
   "keywords": [],

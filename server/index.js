@@ -3,7 +3,7 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import cors from 'cors'
 import { mongoose } from 'mongoose'
-import { groupRouter } from './src/database/routes/group.route.js'
+import { router } from './src/database/routes/route.js'
 import { useEnv } from './src/hooks/useEnv.js'
 useEnv()
 import { data } from './src/api/scheduleParser.js'
@@ -22,13 +22,10 @@ app.use(
     parameterLimit: 50000,
   }),
 )
-app.use('/api', groupRouter)
+app.use('/api', router)
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__public, 'index.html'))
-})
-app.get('/data', (req, res) => {
-  res.json(data)
 })
 
 app.get('*', (req, res) => {

@@ -6,7 +6,6 @@ const __dirname = path.resolve()
 const processDataForFile = ({
   fileSerialNumber: fileSerialNumber,
   rowsToCut: rowsToCut,
-  type: type,
 }) => {
   const filePath = path.join(
     __dirname,
@@ -21,11 +20,18 @@ const processDataForFile = ({
     const obj = Object.values(unParsedJson)[0][rowsToCut + 1]
     const excludedKeys = ['A', 'B', 'C']
 
-    return Object.fromEntries(
-      Object.entries(obj)
-        .filter(([key, _]) => !excludedKeys.includes(key))
-        .map(([key, value]) => [value, key]),
-    )
+    const result = {}
+
+    Object.entries(obj)
+      .filter(([key, _]) => !excludedKeys.includes(key))
+      .forEach(([key, value]) => {
+        if (!result[value]) {
+          result[value] = []
+        }
+        result[value].push(key)
+      })
+
+    return result
   }
 
   const getDateKeys = (unParsedJson) => {
@@ -38,32 +44,19 @@ const processDataForFile = ({
     )
   }
 
-  function getNextTwoLetters(letter) {
-    const charCode = letter.charCodeAt(0)
-
-    if (charCode === 90) {
-      return 'YZ'
-    }
-
-    const nextLetter1 = String.fromCharCode(charCode + 1)
-    const nextLetter2 = String.fromCharCode(charCode + 2)
-
-    return { auditory: nextLetter1, teacher: nextLetter2 }
-  }
-
-  const extractGroupedData = (unParsedJson, groupLetter, type) => {
+  const extractGroupedData = (unParsedJson, groupLetters) => {
     const groupedData = {}
 
     const processItem = (item) => {
       const { A, B, C } = item
       const date = `${typeof A === 'string' ? A.substring(0, 5) : A} (${B})`
       const time = C
-      const { auditory, teacher } = getNextTwoLetters(groupLetter)
-      const className = item[groupLetter] || ''
-      const subject =
-        type === 'oneCell'
-          ? item[groupLetter] || ''
-          : `${className} ${item[auditory] || ''} ${item[teacher] || ''}`.trim()
+
+      const subject = groupLetters
+        .map((letter) => {
+          return item[letter] || ''
+        })
+        .join(' ')
 
       return { date, time, subject }
     }
@@ -83,14 +76,46 @@ const processDataForFile = ({
     return groupedData
   }
 
+  const getDaysInRange = (range) => {
+    const [start, end] = range.split('-')
+    const [startDay, startMonth] = start.split('.').map(Number)
+    const [endDay, endMonth] = end.split('.').map(Number)
+
+    const startDate = new Date(
+      new Date().getFullYear(),
+      startMonth - 1,
+      startDay,
+    )
+    const endDate = new Date(new Date().getFullYear(), endMonth - 1, endDay)
+
+    const dates = []
+    let currentDate = startDate
+
+    while (currentDate <= endDate) {
+      let day = currentDate.getDate().toString().padStart(2, '0')
+      let month = (currentDate.getMonth() + 1).toString().padStart(2, '0')
+      dates.push(`${day}.${month}`)
+      currentDate.setDate(currentDate.getDate() + 1)
+    }
+
+    return dates
+  }
+
   const getGroupWeekDays = (unParsedJson, groupNumber) => {
-    const groupLetter = getGroupLetters(unParsedJson)[groupNumber]
-    const groupedData = extractGroupedData(unParsedJson, groupLetter, type)
+    const groupLetters = getGroupLetters(unParsedJson)[groupNumber]
+    const groupedData = extractGroupedData(unParsedJson, groupLetters)
     const weekDates = getDateKeys(unParsedJson)
     const weekDatesKeys = Object.keys(weekDates)
+
     let weekIndex = 0
     let currentWeek = {}
     const isWeekday = (date) => /(Пн\.|Вт\.|Ср\.|Чт\.|Пт\.|Сб\.)/.test(date)
+
+    const datesBetweenWeekKeys = weekDatesKeys.map((item) => {
+      console.log(getDaysInRange(item))
+
+      return getDaysInRange(item)
+    })
 
     Object.entries(groupedData).forEach(([date, schedule]) => {
       if (isWeekday(date)) {
@@ -138,26 +163,26 @@ const processDataForAllFiles = ({
   return data
 }
 
+function getNumbersInRange(start, end) {
+  return Array.from({ length: end - start + 1 }, (_, i) => start + i)
+}
+
 const dataToProcess = {
   firstData: {
-    fileSerialNumbers: [1, 2, 3, 4, 5, 6, 7, 8],
+    fileSerialNumbers: getNumbersInRange(1, 8),
     rowsToCut: 3,
-    type: 'oneCell',
   },
   secondData: {
-    fileSerialNumbers: [9, 10, 11, 12],
+    fileSerialNumbers: getNumbersInRange(9, 12),
     rowsToCut: 2,
-    type: 'multipleCell',
   },
   thirdData: {
-    fileSerialNumbers: [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26],
+    fileSerialNumbers: getNumbersInRange(13, 26),
     rowsToCut: 3,
-    type: 'multipleCell',
   },
   fourthData: {
-    fileSerialNumbers: [27, 28, 29],
+    fileSerialNumbers: getNumbersInRange(27, 29),
     rowsToCut: 2,
-    type: 'multipleCell',
   },
 }
 
@@ -172,16 +197,5 @@ const data = {
   ...thirdData,
   ...fourthData,
 }
-
-// try {
-//   fs.writeFileSync(
-//     path.join(__dirname, 'docs', 'data.json'),
-//     JSON.stringify(data, null, 2),
-//     'utf8',
-//   )
-//   console.log('Data successfully saved to disk')
-// } catch (error) {
-//   console.log('An error has occurred ', error)
-// }
 
 export { data }

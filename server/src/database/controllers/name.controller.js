@@ -14,7 +14,7 @@ const getGroupByName = async (req, res) => {
 
 const getGroupNames = async (req, res) => {
   try {
-    const groups = await Group.find({}, { group: 1, _id: 1 })
+    const groups = await Group.find({}, { group: 1, _id: 1, index: 1 })
     res.status(200).json(groups)
   } catch (error) {
     res.status(500).json({ message: error.message })
