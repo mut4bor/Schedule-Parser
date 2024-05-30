@@ -1,11 +1,9 @@
 import * as style from './style.module.scss'
-import { useGetGroupByIDQuery } from '@/shared/redux/slices/apiSlice'
 import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
-import { getCurrentWeekRange } from '@/shared/hooks/getCurrentWeekRange'
 import { GroupNavigation, GroupButtonList } from '@/entities/group'
-import { useAppDispatch, useAppSelector } from '@/shared/redux/hooks'
-import { navigationValueChanged } from '@/shared/redux/slices/navigationSlice'
+import { getCurrentWeekRange } from '@/shared/hooks/getCurrentWeekRange'
+import { useGetGroupByIDQuery, useAppDispatch, useAppSelector, navigationValueChanged } from '@/shared/redux'
 
 export const GroupPage = () => {
   const dispatch = useAppDispatch()

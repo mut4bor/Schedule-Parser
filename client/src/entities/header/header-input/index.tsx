@@ -1,20 +1,16 @@
 import * as style from './style.module.scss'
-import { SVG } from '@/shared/ui/SVG'
-import { useGetNamesQuery } from '@/shared/redux/slices/apiSlice'
-import { useDispatch } from 'react-redux'
-import { searchValueChanged } from '@/shared/redux/slices/searchSlice'
-import { useDebouncedCallback } from 'use-debounce'
 import { useEffect, useState } from 'react'
-import { useAppSelector } from '@/shared/redux/hooks'
-import { IName } from '@/shared/redux/slices/types'
 import { Link } from 'react-router-dom'
+import { useDebouncedCallback } from 'use-debounce'
+import { IName, useGetNamesQuery, useAppDispatch, searchValueChanged, useAppSelector } from '@/shared/redux'
+import { SVG } from '@/shared/ui/SVG'
 
 export const HeaderInput = () => {
   const [inputState, setInputState] = useState({
     value: '',
     focused: false,
   })
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const { data, error } = useGetNamesQuery()
 
   const [parsedData, setParsedData] = useState<IName[]>()

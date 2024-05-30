@@ -1,9 +1,5 @@
 import * as style from './style.module.scss'
-
-type GroupButtonProps = {
-  children: React.ReactNode
-  onClick: () => void
-}
+import { GroupButtonProps } from './types'
 
 export const GroupButton = (props: GroupButtonProps) => {
   const { children, onClick } = props

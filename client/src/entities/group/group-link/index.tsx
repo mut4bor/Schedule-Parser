@@ -1,10 +1,6 @@
-import { IName } from '@/shared/redux/slices/types'
 import * as style from './style.module.scss'
+import { GroupLinkProps } from './types'
 import { Link } from 'react-router-dom'
-
-type GroupLinkProps = {
-  data: IName
-}
 
 export const GroupLink = (props: GroupLinkProps) => {
   const {

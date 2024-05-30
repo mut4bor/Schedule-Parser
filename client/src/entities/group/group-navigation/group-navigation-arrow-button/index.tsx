@@ -1,10 +1,9 @@
-import { SVG } from '@/shared/ui/SVG'
 import * as style from './style.module.scss'
 import { PaginationButtonProps } from './types'
-import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
-import { useAppDispatch, useAppSelector } from '@/shared/redux/hooks'
-import { navigationValueChanged } from '@/shared/redux/slices/navigationSlice'
+import { useNavigate } from 'react-router-dom'
+import { navigationValueChanged, useAppDispatch, useAppSelector } from '@/shared/redux'
+import { SVG } from '@/shared/ui/SVG'
 
 export const GroupArrow = (props: PaginationButtonProps) => {
   const {

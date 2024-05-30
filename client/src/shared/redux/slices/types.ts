@@ -1,9 +1,9 @@
-export interface IName {
+export type IName = {
   _id: string
   group: string
   index: number
 }
-export interface IGroup {
+export type IGroup = {
   _id: string
   group: string
   index: number

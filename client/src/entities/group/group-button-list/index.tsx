@@ -1,9 +1,7 @@
 import * as style from './style.module.scss'
-import { useGetGroupByIDQuery } from '@/shared/redux/slices/apiSlice'
 import { useParams } from 'react-router-dom'
 import { GroupButton } from '@/entities/group'
-import { useAppDispatch, useAppSelector } from '@/shared/redux/hooks'
-import { navigationValueChanged } from '@/shared/redux/slices/navigationSlice'
+import { useGetGroupByIDQuery, useAppDispatch, useAppSelector, navigationValueChanged } from '@/shared/redux'
 
 export const GroupButtonList = () => {
   const dispatch = useAppDispatch()

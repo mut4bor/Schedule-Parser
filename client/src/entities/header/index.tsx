@@ -1,16 +1,20 @@
-import { HeaderInput } from './header-input'
 import * as style from './style.module.scss'
-import { Link } from 'react-router-dom'
+import { HeaderContact } from './header-contact'
+import { HeaderHeading } from './header-heading'
+import { HeaderInput } from './header-input'
 
 export const Header = () => {
   return (
-    <header className={style.header}>
-      <div className={style.container}>
-        <Link to={'/'} title="На главную">
-          <h1 className={style.heading}>Расписание НГУ им. Лесгафта</h1>
-        </Link>
-        <HeaderInput />
-      </div>
-    </header>
+    <>
+      <header className={style.header}>
+        <HeaderContact />
+        <div className={style.wrapper}>
+          <div className={style.container}>
+            <HeaderHeading />
+            <HeaderInput />
+          </div>
+        </div>
+      </header>
+    </>
   )
 }

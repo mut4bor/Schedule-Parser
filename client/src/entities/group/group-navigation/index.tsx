@@ -1,9 +1,8 @@
 import * as style from './style.module.scss'
-import { useGetGroupByIDQuery } from '@/shared/redux/slices/apiSlice'
 import { useParams } from 'react-router-dom'
 import { GroupArrow } from './group-navigation-arrow-button'
 import { GroupCenterButton } from './group-navigation-center-button'
-import { useGetNamesQuery } from '@/shared/redux/slices/apiSlice'
+import { useGetGroupByIDQuery, useGetNamesQuery } from '@/shared/redux'
 
 export const GroupNavigation = () => {
   const { groupId } = useParams()

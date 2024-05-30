@@ -2,12 +2,20 @@
 
 @media (min-width: $pageWidth320) {
   .header {
-    background: $darkGray;
     min-height: $headerHeight;
     display: flex;
+    flex-direction: column;
+    border-radius: 0 0 0.5rem 0.5rem;
+    justify-content: center;
+  }
+
+  .wrapper {
+    display: flex;
+    flex: 1 0 auto;
+    width: 100%;
     align-items: center;
     justify-content: center;
-    border-radius: 0 0 0.5rem 0.5rem;
+    background: $darkGray;
   }
   .container {
     width: 100%;
@@ -18,12 +26,6 @@
     align-items: center;
     gap: 1rem 0.5rem;
     flex-wrap: wrap;
-  }
-
-  .heading {
-    display: flex;
-    font-size: 2rem;
-    color: $white;
   }
 }
 

@@ -1,6 +1,6 @@
 import * as style from './style.module.scss'
-import { useGetNamesQuery } from '@/shared/redux/slices/apiSlice'
 import { GroupLink } from '@/entities/group'
+import { useGetNamesQuery } from '@/shared/redux'
 
 export const MainPage = () => {
   const { data, error } = useGetNamesQuery()

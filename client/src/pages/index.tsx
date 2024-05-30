@@ -1,11 +1,11 @@
 import { Header } from '@/entities/header'
-import { store } from '@/shared/redux/store'
-import { Provider } from 'react-redux'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import { BASE_URL } from '@/shared/config'
+import { Provider } from 'react-redux'
 import { MainPage } from './main'
 import { GroupPage } from './group'
 import { ErrorPage } from './error'
+import { BASE_URL } from '@/shared/config'
+import { store } from '@/shared/redux'
 
 export const Routing = () => {
   const router = createBrowserRouter([
