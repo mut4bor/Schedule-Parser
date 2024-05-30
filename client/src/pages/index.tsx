@@ -4,12 +4,12 @@ import { Provider } from 'react-redux'
 import { MainPage } from './main'
 import { GroupPage } from './group'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { BASE_URL } from '@/shared/config'
 
 export const Routing = () => {
-  const baseURL = process.env.REACT_APP_BASE_URL
   const router = createBrowserRouter([
     {
-      path: baseURL,
+      path: BASE_URL,
       element: (
         <>
           <Header />
@@ -18,7 +18,7 @@ export const Routing = () => {
       ),
     },
     {
-      path: `${baseURL}/:groupId`,
+      path: `${BASE_URL}/:groupId`,
       element: (
         <>
           <Header />

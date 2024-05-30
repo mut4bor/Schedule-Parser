@@ -1,4 +1,4 @@
-import style from './style.module.scss'
+import * as style from './style.module.scss'
 import { useGetNamesQuery } from '@/shared/redux/slices/apiSlice'
 import { GroupLink } from '@/entities/group'
 
