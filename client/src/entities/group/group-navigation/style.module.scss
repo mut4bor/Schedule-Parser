@@ -1,0 +1,10 @@
+@import '@/shared/vars/vars';
+
+@media (min-width: $pageWidth320) {
+  .navigation {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    justify-content: center;
+  }
+}

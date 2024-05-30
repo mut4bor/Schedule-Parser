@@ -1,0 +1,13 @@
+@import '@/shared/vars/vars';
+
+.button {
+  font-size: 1.6rem;
+  display: flex;
+  padding: 1rem;
+  background: $darkGray;
+  color: $white;
+  flex: 1 0 auto;
+  border-radius: 0.5rem;
+  justify-content: center;
+  align-items: center;
+}

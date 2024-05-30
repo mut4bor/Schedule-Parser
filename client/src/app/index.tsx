@@ -1,13 +1,12 @@
-import { Suspense } from "react";
-import { Routing } from "@/pages";
-import "@fontsource/forum";
-import "@fontsource/playfair-display";
-import "./index.scss";
+import { Suspense } from 'react'
+import { Routing } from '@/pages'
+import '@fontsource/montserrat'
+import './index.scss'
 
 export function App() {
   return (
-    <Suspense fallback={"Loading..."}>
+    <Suspense fallback={'Loading...'}>
       <Routing />
     </Suspense>
-  );
+  )
 }

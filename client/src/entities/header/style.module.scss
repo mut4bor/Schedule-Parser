@@ -1,3 +1,39 @@
-.header {
-  background: #3b181e;
+@import '@/shared/vars/vars';
+
+@media (min-width: $pageWidth320) {
+  .header {
+    background: $darkGray;
+    min-height: $headerHeight;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0 0 0.5rem 0.5rem;
+  }
+  .container {
+    width: 100%;
+    max-width: $containerWidth;
+    padding: 1rem $containerPaddingX;
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: center;
+    gap: 1rem 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .heading {
+    display: flex;
+    font-size: 2rem;
+    color: $white;
+  }
+}
+
+@media (min-width: $pageWidth768) {
+  .container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: $pageWidth1024) {
+  .container {
+    grid-template-columns: 1fr 2fr;
+  }
 }
