@@ -1,10 +1,11 @@
 import { Header } from '@/entities/header'
 import { store } from '@/shared/redux/store'
 import { Provider } from 'react-redux'
-import { MainPage } from './main'
-import { GroupPage } from './group'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { BASE_URL } from '@/shared/config'
+import { MainPage } from './main'
+import { GroupPage } from './group'
+import { ErrorPage } from './error'
 
 export const Routing = () => {
   const router = createBrowserRouter([
@@ -16,13 +17,25 @@ export const Routing = () => {
           <MainPage />
         </>
       ),
+      errorElement: (
+        <>
+          <Header />
+          <ErrorPage />
+        </>
+      ),
     },
     {
       path: `${BASE_URL}/:groupId`,
       element: (
         <>
           <Header />
-          <GroupPage />{' '}
+          <GroupPage />
+        </>
+      ),
+      errorElement: (
+        <>
+          <Header />
+          <ErrorPage />
         </>
       ),
     },

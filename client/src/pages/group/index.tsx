@@ -10,7 +10,7 @@ import { navigationValueChanged } from '@/shared/redux/slices/navigationSlice'
 export const GroupPage = () => {
   const dispatch = useAppDispatch()
   const { groupId } = useParams()
-  const { data: groupData, error } = useGetGroupByIDQuery(groupId ?? '')
+  const { data: groupData, error: groupError } = useGetGroupByIDQuery(groupId ?? '')
 
   const { firstDay, lastDay } = getCurrentWeekRange()
   const range = `${firstDay}-${lastDay}`

@@ -2,6 +2,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const webpack = require('webpack')
 const path = require('path')
 const fs = require('fs')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 const dotenv = require('dotenv').config({ path: __dirname + '/.env' })
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -107,7 +108,12 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
+      hash: true,
+      publicPath: '/',
       template: path.join(__dirname, 'public', 'index.html'),
+    }),
+    new CopyWebpackPlugin({
+      patterns: [{ from: 'public/favicon.png', to: 'favicon.png' }],
     }),
     new webpack.DefinePlugin({
       'process.env': JSON.stringify(dotenv.parsed),
