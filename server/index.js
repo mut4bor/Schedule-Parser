@@ -11,6 +11,8 @@ const app = express()
 const PORT = process.env.PORT || 3000
 const __dirname = path.resolve()
 const __public = path.join(__dirname, 'public')
+const __build = path.join(__dirname, '../', 'client', 'build')
+app.use(express.static(__build))
 app.use(cors())
 app.options('*', cors())
 app.use(bodyParser.json({ limit: '50mb' }))
@@ -23,12 +25,8 @@ app.use(
 )
 app.use('/api', router)
 
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__public, 'index.html'))
-})
-
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__public, 'error.html'))
+app.get('/*', (req, res) => {
+  res.sendFile(path.join(__build, 'index.html'))
 })
 
 const mongodbURL = process.env.MONGODB_URL

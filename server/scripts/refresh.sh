@@ -1,2 +1,2 @@
 #!/bin/bash
-npm run refresh
+npm run update
