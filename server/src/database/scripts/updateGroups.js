@@ -1,4 +1,4 @@
-import { data } from '../../api/scheduleParser.js'
+import { data } from '../../api/getData.js'
 import fetch from 'node-fetch'
 import { useEnv } from '../../hooks/useEnv.js'
 useEnv()

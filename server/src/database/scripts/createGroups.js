@@ -1,39 +1,52 @@
-import { data } from '../../api/scheduleParser.js'
 import fetch from 'node-fetch'
 import { useEnv } from '../../hooks/useEnv.js'
+import { data } from '../../api/getData.js'
+
 useEnv()
 
 const url = process.env.FETCH_URL
 const password = process.env.X_ADMIN_PASSWORD
 
-const dataEntries = Object.entries(data)
+async function sendData(dataToFetch) {
+  try {
+    const response = await fetch(`${url}/groups`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-admin-password': password,
+      },
+      body: JSON.stringify(dataToFetch),
+    })
 
-dataEntries.forEach(([group, weeks], index) => {
-  const dataToFetch = {
-    group: group,
-    date: weeks,
-    index: index + 1,
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(`Error ${response.status}: ${errorData.message}`)
+    }
+
+    console.log(`Successfully created!: ${dataToFetch.group}`)
+  } catch (error) {
+    console.error('Error:', error)
   }
+}
 
-  fetch(`${url}/groups`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-admin-password': password,
-    },
-    body: JSON.stringify(dataToFetch),
-  })
-    .then(async (response) => {
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(`Error ${response.status}: ${errorData.message}`)
+async function processData() {
+  for (const [educationType, facultyData] of Object.entries(data)) {
+    for (const [faculty, courseData] of Object.entries(facultyData)) {
+      for (const [course, groupData] of Object.entries(courseData)) {
+        for (const [group, dates] of Object.entries(groupData)) {
+          const dataToFetch = {
+            educationType,
+            faculty,
+            course,
+            group,
+            dates,
+          }
+
+          await sendData(dataToFetch)
+        }
       }
-      return response.json()
-    })
-    .then(() => {
-      console.log(`Successfully created!: ${group}`)
-    })
-    .catch((error) => {
-      console.error('Error:', error)
-    })
-})
+    }
+  }
+}
+
+processData()
