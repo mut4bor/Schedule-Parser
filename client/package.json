@@ -55,9 +55,7 @@
     "webpack-dev-server": "^5.0.4"
   },
   "dependencies": {
-    "@fontsource/forum": "^5.0.20",
     "@fontsource/montserrat": "^5.0.18",
-    "@fontsource/playfair-display": "^5.0.23",
     "@reduxjs/toolkit": "^2.2.5",
     "@typescript-eslint/eslint-plugin": "^7.7.0",
     "@vitejs/plugin-react": "^4.2.1",
