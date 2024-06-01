@@ -1,4 +1,5 @@
 import { Group } from '../models/group.model.js'
+import { getFilterParams } from './getFilterParams.js'
 
 const getGroupNames = async (req, res) => {
   try {

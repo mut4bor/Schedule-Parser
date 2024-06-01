@@ -2,6 +2,13 @@ import { API_URL, X_ADMIN_PASSWORD } from '@/shared/config'
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { IName, IGroup } from './types'
 
+const groupsPath = `/groups`
+const namesPath = `/names`
+const educationTypePath = `/educationType`
+const getParams = (params: string | void) => {
+  return `${params ? `?${params}` : ''}`
+}
+
 const api = createApi({
   reducerPath: 'api',
 
@@ -10,9 +17,9 @@ const api = createApi({
   }),
 
   endpoints: (builder) => ({
-    getNames: builder.query<IName[], void>({
-      query: () => ({
-        url: '/names',
+    getNames: builder.query<IName[], string | void>({
+      query: (params) => ({
+        url: `${namesPath}${getParams(params)}`,
         headers: {
           'x-admin-password': X_ADMIN_PASSWORD,
         },
@@ -20,7 +27,7 @@ const api = createApi({
     }),
     getGroupByName: builder.query<IGroup, string>({
       query: (groupNumber) => ({
-        url: `/names/${groupNumber}`,
+        url: `${namesPath}/${groupNumber}`,
         headers: {
           'x-admin-password': X_ADMIN_PASSWORD,
         },
@@ -28,7 +35,7 @@ const api = createApi({
     }),
     getGroups: builder.query<IGroup[], void>({
       query: () => ({
-        url: '/groups',
+        url: `${groupsPath}`,
         headers: {
           'x-admin-password': X_ADMIN_PASSWORD,
         },
@@ -36,7 +43,31 @@ const api = createApi({
     }),
     getGroupByID: builder.query<IGroup, string>({
       query: (groupNumber) => ({
-        url: `/groups/${groupNumber}`,
+        url: `${groupsPath}/${groupNumber}`,
+        headers: {
+          'x-admin-password': X_ADMIN_PASSWORD,
+        },
+      }),
+    }),
+    getEducationTypes: builder.query<string[], void>({
+      query: () => ({
+        url: `${educationTypePath}`,
+        headers: {
+          'x-admin-password': X_ADMIN_PASSWORD,
+        },
+      }),
+    }),
+    getFaculties: builder.query<string[], string>({
+      query: (params) => ({
+        url: `${educationTypePath}/faculty${getParams(params)}`,
+        headers: {
+          'x-admin-password': X_ADMIN_PASSWORD,
+        },
+      }),
+    }),
+    getCourses: builder.query<string[], string>({
+      query: (params) => ({
+        url: `${educationTypePath}/faculty/course${getParams(params)}`,
         headers: {
           'x-admin-password': X_ADMIN_PASSWORD,
         },
@@ -45,6 +76,14 @@ const api = createApi({
   }),
 })
 
-export const { useGetNamesQuery, useGetGroupByNameQuery, useGetGroupsQuery, useGetGroupByIDQuery } = api
+export const {
+  useGetNamesQuery,
+  useGetGroupByNameQuery,
+  useGetGroupsQuery,
+  useGetGroupByIDQuery,
+  useGetEducationTypesQuery,
+  useGetFacultiesQuery,
+  useGetCoursesQuery,
+} = api
 
 export default api

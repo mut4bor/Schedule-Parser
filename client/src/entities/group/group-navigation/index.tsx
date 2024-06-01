@@ -5,8 +5,8 @@ import { GroupCenterButton } from './group-navigation-center-button'
 import { useGetGroupByIDQuery, useGetNamesQuery } from '@/shared/redux'
 
 export const GroupNavigation = () => {
-  const { groupId } = useParams()
-  const { data: groupData, error: groupError } = useGetGroupByIDQuery(groupId ?? '')
+  const { groupID } = useParams()
+  const { data: groupData, error: groupError } = useGetGroupByIDQuery(groupID ?? '')
   const { data: namesData, error: namesError } = useGetNamesQuery()
 
   if (!groupData || !namesData) {

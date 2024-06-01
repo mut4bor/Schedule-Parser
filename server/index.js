@@ -4,17 +4,17 @@ import bodyParser from 'body-parser'
 import cors from 'cors'
 import mongoose from 'mongoose'
 import { router } from './src/database/routes/route.js'
-import { data } from './src/api/getData.js'
 import { useEnv } from './src/hooks/useEnv.js'
 useEnv()
 
 const app = express()
 const PORT = process.env.PORT || 3000
 const __dirname = path.resolve()
-const __public = path.join(__dirname, 'public')
-const __build = path.join(__dirname, '../', 'client', 'build')
+const __client = path.join(__dirname, '../', 'client')
+const __clientBuild = path.join(__client, 'build')
+const __clientPublic = path.join(__client, 'public')
 
-app.use(express.static(__build))
+app.use(express.static(__clientBuild))
 app.use(cors())
 app.options('*', cors())
 app.use(bodyParser.json({ limit: '50mb' }))
@@ -26,14 +26,10 @@ app.use(
   }),
 )
 
-app.get('/data', (req, res) => {
-  res.json(data)
-})
-
 app.use('/api', router)
 
 app.get('/*', (req, res) => {
-  res.sendFile(path.join(__build, 'index.html'))
+  res.sendFile(path.join(__clientBuild, 'index.html'))
 })
 
 const mongodbURL = process.env.MONGODB_URL

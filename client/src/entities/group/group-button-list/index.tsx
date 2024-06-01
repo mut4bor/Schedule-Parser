@@ -5,8 +5,8 @@ import { useGetGroupByIDQuery, useAppDispatch, useAppSelector, navigationValueCh
 
 export const GroupButtonList = () => {
   const dispatch = useAppDispatch()
-  const { groupId } = useParams()
-  const { data, error } = useGetGroupByIDQuery(groupId ?? '')
+  const { groupID } = useParams()
+  const { data, error } = useGetGroupByIDQuery(groupID ?? '')
 
   const picked = useAppSelector((store) => store.navigation.navigationValue)
 

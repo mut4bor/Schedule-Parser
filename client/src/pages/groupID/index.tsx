@@ -5,10 +5,10 @@ import { GroupNavigation, GroupButtonList } from '@/entities/group'
 import { getDaysInRange, getCurrentWeekRange } from '@/shared/hooks'
 import { useGetGroupByIDQuery, useAppDispatch, useAppSelector, navigationValueChanged } from '@/shared/redux'
 
-export const GroupPage = () => {
+export const GroupIDPage = () => {
   const dispatch = useAppDispatch()
-  const { groupId } = useParams()
-  const { data: groupData, error: groupError } = useGetGroupByIDQuery(groupId ?? '')
+  const { groupID } = useParams()
+  const { data: groupData, error: groupError } = useGetGroupByIDQuery(groupID ?? '')
 
   const { monday, saturday } = getCurrentWeekRange()
   const range = `${monday}-${saturday}`
@@ -37,12 +37,10 @@ export const GroupPage = () => {
       }
       dispatch(navigationValueChanged({ ...picked, group: groupData._id }))
     }
-  }, [groupData, dispatch, range, groupId])
-
+  }, [groupData, dispatch, range, groupID])
   if (!groupData) {
     return <div className=""></div>
   }
-
   return (
     <div className={style.container}>
       <GroupNavigation />

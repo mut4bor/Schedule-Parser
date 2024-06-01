@@ -1,7 +1,7 @@
 import * as style from './style.module.scss'
 import { PaginationButtonProps } from './types'
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { navigationValueChanged, useAppDispatch, useAppSelector } from '@/shared/redux'
 import { SVG } from '@/shared/ui/SVG'
 
@@ -10,6 +10,7 @@ export const GroupArrow = (props: PaginationButtonProps) => {
     buttonType,
     data: { groupData, namesData },
   } = props
+  const { educationType, faculty, course, groupID } = useParams()
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const navigationValue = useAppSelector((store) => store.navigation.navigationValue)
@@ -140,7 +141,7 @@ export const GroupArrow = (props: PaginationButtonProps) => {
         return item.index === currentIndex
       })?._id
 
-      navigate(`/${idToNavigate}`)
+      navigate(`/${[educationType, faculty, course, idToNavigate].join('/')}`)
       return
     }
   }
