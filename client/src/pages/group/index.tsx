@@ -22,7 +22,6 @@ export const GroupPage = () => {
       const currentWeekIndex = daysRange.findIndex(
         (subArray) => subArray.includes(monday) && subArray.includes(saturday),
       )
-      console.log(currentWeekIndex)
       const currentWeek = scheduleKeys[currentWeekIndex]
       if (currentWeek) {
         const currentDate = new Date()
