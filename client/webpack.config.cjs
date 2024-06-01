@@ -11,6 +11,7 @@ module.exports = {
   devServer: {
     hot: true,
     liveReload: true,
+    historyApiFallback: true,
     open: true,
     port: '3000',
     static: {
