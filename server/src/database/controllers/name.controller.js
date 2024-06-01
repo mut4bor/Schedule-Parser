@@ -1,5 +1,16 @@
 import { Group } from '../models/group.model.js'
 
+const getGroupNames = async (req, res) => {
+  try {
+    const names = await Group.find(getFilterParams(req), {
+      dates: 0,
+    })
+    res.status(200).json(names)
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+}
+
 const getGroupByName = async (req, res) => {
   try {
     const { name } = req.params
@@ -12,18 +23,4 @@ const getGroupByName = async (req, res) => {
   }
 }
 
-const getGroupNames = async (req, res) => {
-  try {
-    const groups = await Group.find(
-      {},
-      {
-        dates: 0,
-      },
-    )
-    res.status(200).json(groups)
-  } catch (error) {
-    res.status(500).json({ message: error.message })
-  }
-}
-
-export { getGroupByName, getGroupNames }
+export { getGroupNames, getGroupByName }

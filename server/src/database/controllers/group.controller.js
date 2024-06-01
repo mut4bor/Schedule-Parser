@@ -1,21 +1,9 @@
 import { Group } from '../models/group.model.js'
+import { getFilterParams } from './getFilterParams.js'
 
 const getAllGroups = async (req, res) => {
   try {
-    if (Object.keys(req.query).length === 0) {
-      const groups = await Group.find({})
-      return res.status(200).json(groups)
-    }
-
-    const filter = {}
-    for (const key in req.query) {
-      if (Object.hasOwnProperty.call(req.query, key)) {
-        filter[key] = req.query[key]
-      }
-    }
-
-    const groups = await Group.find(filter)
-
+    const groups = await Group.find(getFilterParams(req))
     res.status(200).json(groups)
   } catch (error) {
     res.status(500).json({ message: error.message })

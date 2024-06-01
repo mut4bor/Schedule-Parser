@@ -1,4 +1,4 @@
-export type IName = {
+interface IBase {
   index: number
   _id: string
   educationType: string
@@ -10,21 +10,16 @@ export type IName = {
   __v: number
 }
 
-export type IGroup = {
-  index: number
-  _id: string
-  educationType: string
-  faculty: string
-  course: string
-  group: string
-  dates: {
-    [week: string]: {
-      [day: string]: {
-        [time: string]: string
-      }
+interface ISchedule {
+  [week: string]: {
+    [day: string]: {
+      [time: string]: string
     }
   }
-  createdAt: string
-  updatedAt: string
-  __v: number
+}
+
+export type IName = IBase
+
+export interface IGroup extends IBase {
+  dates: ISchedule
 }

@@ -11,6 +11,11 @@ import {
   getGroupByName,
   getGroupNames,
 } from '../controllers/name.controller.js'
+import {
+  getUniqueEducationTypes,
+  getUniqueFaculties,
+  getUniqueCourses,
+} from '../controllers/distinctData.controller.js'
 import { useEnv } from '../../hooks/useEnv.js'
 useEnv()
 
@@ -28,15 +33,23 @@ const checkPassword = (req, res, next) => {
 
 const groupsPath = `/groups`
 const namesPath = `/names`
+const educationTypePath = `/educationType`
 
-router.get(groupsPath, checkPassword, getAllGroups)
-router.get(`${groupsPath}/:id`, checkPassword, getGroupById)
-router.post(groupsPath, checkPassword, createGroup)
-router.put(`${groupsPath}/:id`, checkPassword, updateGroupById)
-router.delete(groupsPath, checkPassword, deleteAllGroups)
-router.delete(`${groupsPath}/:id`, checkPassword, deleteGroupById)
+router.use(groupsPath, checkPassword)
+router.get(groupsPath, getAllGroups)
+router.get(`${groupsPath}/:id`, getGroupById)
+router.post(groupsPath, createGroup)
+router.put(`${groupsPath}/:id`, updateGroupById)
+router.delete(groupsPath, deleteAllGroups)
+router.delete(`${groupsPath}/:id`, deleteGroupById)
 
-router.get(namesPath, checkPassword, getGroupNames)
-router.get(`${namesPath}/:name`, checkPassword, getGroupByName)
+router.use(namesPath, checkPassword)
+router.get(namesPath, getGroupNames)
+router.get(`${namesPath}/:name`, getGroupByName)
+
+router.use(educationTypePath, checkPassword)
+router.get(educationTypePath, getUniqueEducationTypes)
+router.get(`${educationTypePath}/faculty`, getUniqueFaculties)
+router.get(`${educationTypePath}/faculty/course`, getUniqueCourses)
 
 export { router }
