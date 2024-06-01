@@ -27,37 +27,36 @@ const fetchGroupNames = await fetch(`${url}/names`, {
     return error
   })
 
-const dataEntries = Object.entries(data)
-
-dataEntries.forEach(([group, weeks], index) => {
-  const dataToFetch = {
-    group: group,
-    date: weeks,
-    index: index + 1,
-  }
-
-  fetch(
-    `${url}/groups/${fetchGroupNames.find((groupObject) => groupObject.group === group)._id}`,
-    {
+async function putData(dataToFetch) {
+  try {
+    const idToFetch = `${fetchGroupNames.find((groupData) => groupData.group === dataToFetch.group)._id}`
+    const response = await fetch(`${url}/groups/${idToFetch}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         'x-admin-password': password,
       },
       body: JSON.stringify(dataToFetch),
-    },
-  )
-    .then(async (response) => {
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(`Error ${response.status}: ${errorData.message}`)
-      }
-      return response.json()
     })
-    .then(() => {
-      console.log(`Successfully updated!: ${group}`)
-    })
-    .catch((error) => {
-      console.error('Error:', error)
-    })
-})
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(`Error ${response.status}: ${errorData.message}`)
+    }
+    console.log(`Successfully updated!: ${dataToFetch.group}`)
+  } catch (error) {
+    console.error('Error:', error)
+  }
+}
+async function sendData() {
+  const promises = data.map(async (groupObject, index) => {
+    groupObject['index'] = index
+    await putData(groupObject)
+  })
+  try {
+    await Promise.all(promises)
+  } catch (error) {
+    console.error('Error:', error)
+  }
+}
+
+sendData()

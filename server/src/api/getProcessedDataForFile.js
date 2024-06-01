@@ -11,16 +11,17 @@ export const getProcessedDataForFile = async (filePath) => {
       jsonWithTrimmedKeys[keyWithDots] = value
     })
 
-    const getPreviousWeekRange = () => {
+    const getCurrentWeekRange = () => {
       const today = new Date()
       const dayOfWeek = today.getDay()
 
-      const firstDayOfPreviousWeek = new Date(today)
       const diffToMonday = (dayOfWeek + 6) % 7
-      firstDayOfPreviousWeek.setDate(today.getDate() - diffToMonday - 7)
 
-      const lastDayOfPreviousWeek = new Date(firstDayOfPreviousWeek)
-      lastDayOfPreviousWeek.setDate(firstDayOfPreviousWeek.getDate() + 5)
+      const mondayOfCurrentWeek = new Date(today)
+      mondayOfCurrentWeek.setDate(today.getDate() - diffToMonday)
+
+      const saturdayOfCurrentWeek = new Date(mondayOfCurrentWeek)
+      saturdayOfCurrentWeek.setDate(mondayOfCurrentWeek.getDate() + 5)
 
       const format = (date) => {
         const day = String(date.getDate()).padStart(2, '0')
@@ -28,16 +29,51 @@ export const getProcessedDataForFile = async (filePath) => {
         return `${day}.${month}`
       }
 
-      return `${format(firstDayOfPreviousWeek)}-${format(lastDayOfPreviousWeek)}`
+      return {
+        monday: format(mondayOfCurrentWeek),
+        saturday: format(saturdayOfCurrentWeek),
+      }
     }
 
-    function removePreviousScheduleEntries(schedule, targetKey) {
-      const scheduleKeys = Object.keys(schedule)
-      const targetIndex = scheduleKeys.indexOf(targetKey)
+    const getDaysInRange = (range) => {
+      const [start, end] = range.split('-')
+      const [startDay, startMonth] = start.split('.').map(Number)
+      const [endDay, endMonth] = end.split('.').map(Number)
+      const currentYear = new Date().getFullYear()
 
-      if (targetIndex !== -1) {
-        const keysToRemove = scheduleKeys.slice(0, targetIndex)
-        keysToRemove.forEach((key) => {
+      const startDate = new Date(currentYear, startMonth - 1, startDay)
+      const endDate = new Date(currentYear, endMonth - 1, endDay)
+
+      if (startDate > endDate) {
+        throw new Error('The start date must be before the end date.')
+      }
+
+      const dates = []
+      const currentDate = new Date(startDate)
+
+      while (currentDate <= endDate) {
+        const day = String(currentDate.getDate()).padStart(2, '0')
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0')
+        dates.push(`${day}.${month}`)
+        currentDate.setDate(currentDate.getDate() + 1)
+      }
+
+      return dates
+    }
+
+    const removePreviousScheduleEntries = (schedule, { monday, saturday }) => {
+      const scheduleKeys = Object.keys(schedule)
+
+      const daysRange = scheduleKeys.map((item) => getDaysInRange(item))
+
+      const currentWeekIndex = daysRange.findIndex(
+        (subArray) => subArray.includes(monday) && subArray.includes(saturday),
+      )
+
+      if (currentWeekIndex !== -1) {
+        const previousWeekIndex = Math.max(0, currentWeekIndex - 1)
+
+        scheduleKeys.slice(0, previousWeekIndex).forEach((key) => {
           delete schedule[key]
         })
       }
@@ -47,7 +83,7 @@ export const getProcessedDataForFile = async (filePath) => {
 
     const unParsedJson = removePreviousScheduleEntries(
       jsonWithTrimmedKeys,
-      getPreviousWeekRange(),
+      getCurrentWeekRange(),
     )
 
     const getGroupLetters = (unParsedJson) => {
@@ -123,31 +159,6 @@ export const getProcessedDataForFile = async (filePath) => {
       })
 
       return groupedData
-    }
-
-    const getDaysInRange = (range) => {
-      const [start, end] = range.split('-')
-      const [startDay, startMonth] = start.split('.').map(Number)
-      const [endDay, endMonth] = end.split('.').map(Number)
-
-      const startDate = new Date(
-        new Date().getFullYear(),
-        startMonth - 1,
-        startDay,
-      )
-      const endDate = new Date(new Date().getFullYear(), endMonth - 1, endDay)
-
-      const dates = []
-      let currentDate = startDate
-
-      while (currentDate <= endDate) {
-        let day = currentDate.getDate().toString().padStart(2, '0')
-        let month = (currentDate.getMonth() + 1).toString().padStart(2, '0')
-        dates.push(`${day}.${month}`)
-        currentDate.setDate(currentDate.getDate() + 1)
-      }
-
-      return dates
     }
 
     const getGroupWeekDays = (unParsedJson, groupNumber) => {

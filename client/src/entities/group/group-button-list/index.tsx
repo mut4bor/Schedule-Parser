@@ -14,8 +14,8 @@ export const GroupButtonList = () => {
     return <div className=""></div>
   }
 
-  const isDayPicked = picked.day && data.date[picked.week] && data.date[picked.week][picked.day]
-  const isWeekPicked = picked.week && data.date[picked.week]
+  const isDayPicked = picked.day && data.dates[picked.week] && data.dates[picked.week][picked.day]
+  const isWeekPicked = picked.week && data.dates[picked.week]
 
   const renderButtons = (items: string[], type: 'week' | 'day') => {
     return items.map((item, key) => (
@@ -40,13 +40,13 @@ export const GroupButtonList = () => {
 
   const handleRender = () => {
     if (isDayPicked) {
-      return renderTexts(Object.entries(data.date[picked.week][picked.day]))
+      return renderTexts(Object.entries(data.dates[picked.week][picked.day]))
     }
     if (isWeekPicked) {
-      return renderButtons(Object.keys(data.date[picked.week]), 'day')
+      return renderButtons(Object.keys(data.dates[picked.week]), 'day')
     }
-    if (data.date) {
-      return renderButtons(Object.keys(data.date), 'week')
+    if (data.dates) {
+      return renderButtons(Object.keys(data.dates), 'week')
     }
     return null
   }

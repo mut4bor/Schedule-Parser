@@ -1,13 +1,23 @@
 export type IName = {
-  _id: string
-  group: string
   index: number
+  _id: string
+  educationType: string
+  faculty: string
+  course: string
+  group: string
+  createdAt: string
+  updatedAt: string
+  __v: number
 }
+
 export type IGroup = {
-  _id: string
-  group: string
   index: number
-  date: {
+  _id: string
+  educationType: string
+  faculty: string
+  course: string
+  group: string
+  dates: {
     [week: string]: {
       [day: string]: {
         [time: string]: string

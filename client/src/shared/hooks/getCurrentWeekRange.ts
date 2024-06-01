@@ -1,4 +1,4 @@
-export const getCurrentWeekRange = (): { firstDay: string; lastDay: string } => {
+export const getCurrentWeekRange = (): { monday: string; saturday: string } => {
   const today = new Date()
   const dayOfWeek = today.getDay()
   const firstDayOfWeek = new Date(today)
@@ -17,7 +17,7 @@ export const getCurrentWeekRange = (): { firstDay: string; lastDay: string } => 
   }
 
   return {
-    firstDay: format(firstDayOfWeek),
-    lastDay: format(lastDayOfWeek),
+    monday: format(firstDayOfWeek),
+    saturday: format(lastDayOfWeek),
   }
 }

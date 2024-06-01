@@ -2,13 +2,25 @@ import mongoose from 'mongoose'
 
 const groupSchema = new mongoose.Schema(
   {
+    educationType: {
+      type: String,
+      required: [true, 'Please enter educationType'],
+    },
+    faculty: {
+      type: String,
+      required: [true, 'Please enter faculty'],
+    },
+    course: {
+      type: String,
+      required: [true, 'Please enter course'],
+    },
     group: {
       type: String,
       required: [true, 'Please enter group number'],
     },
-    date: {
+    dates: {
       type: Object,
-      required: [true, 'Please enter date'],
+      required: [true, 'Please enter dates'],
     },
     index: {
       type: Number,

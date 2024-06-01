@@ -27,8 +27,8 @@ export const GroupCenterButton = () => {
     const dash = makeTextSpan('—', style.dash)
 
     const result = [group]
-    const isDayPicked = picked.day && data.date[picked.week] && data.date[picked.week][picked.day]
-    const isWeekPicked = picked.week && data.date[picked.week]
+    const isDayPicked = picked.day && data.dates[picked.week] && data.dates[picked.week][picked.day]
+    const isWeekPicked = picked.week && data.dates[picked.week]
 
     if (isWeekPicked) {
       result.push(dash, week)
@@ -42,8 +42,8 @@ export const GroupCenterButton = () => {
   }
 
   const centerButtonClickHandler = () => {
-    const isDayPicked = picked.day && data.date[picked.week] && data.date[picked.week][picked.day]
-    const isWeekPicked = picked.week && data.date[picked.week]
+    const isDayPicked = picked.day && data.dates[picked.week] && data.dates[picked.week][picked.day]
+    const isWeekPicked = picked.week && data.dates[picked.week]
     if (isDayPicked) {
       dispatch(navigationValueChanged({ ...picked, day: '' }))
       return

@@ -40,23 +40,23 @@ export const GroupArrow = (props: PaginationButtonProps) => {
         },
       }))
     }
-    if (!!groupData.date) {
+    if (!!groupData.dates) {
       setNavigationLimits((previousState) => ({
         ...previousState,
 
         week: {
-          min: Object.keys(groupData.date)[0],
-          max: Object.keys(groupData.date).slice(-1)[0],
+          min: Object.keys(groupData.dates)[0],
+          max: Object.keys(groupData.dates).slice(-1)[0],
         },
       }))
     }
-    if (!!groupData.date[navigationValue.week]) {
+    if (!!groupData.dates[navigationValue.week]) {
       setNavigationLimits((previousState) => ({
         ...previousState,
 
         day: {
-          min: Object.keys(groupData.date[navigationValue.week])[0],
-          max: Object.keys(groupData.date[navigationValue.week]).slice(-1)[0],
+          min: Object.keys(groupData.dates[navigationValue.week])[0],
+          max: Object.keys(groupData.dates[navigationValue.week]).slice(-1)[0],
         },
       }))
     }
@@ -94,11 +94,11 @@ export const GroupArrow = (props: PaginationButtonProps) => {
     const changeIndex = (currentIndex: number) => {
       return isArrowDisabled() ? currentIndex : buttonType === 'increase' ? currentIndex + 1 : currentIndex - 1
     }
-    const isGroupPicked = !!groupData.date && !!navigationValue.group
-    const isWeekPicked = isGroupPicked && !!groupData.date[navigationValue.week]
-    const isDayPicked = isWeekPicked && !!groupData.date[navigationValue.week][navigationValue.day]
-    const weeks = Object.keys(groupData.date)
-    const days = !!navigationValue.week && Object.keys(groupData.date[navigationValue.week])
+    const isGroupPicked = !!groupData.dates && !!navigationValue.group
+    const isWeekPicked = isGroupPicked && !!groupData.dates[navigationValue.week]
+    const isDayPicked = isWeekPicked && !!groupData.dates[navigationValue.week][navigationValue.day]
+    const weeks = Object.keys(groupData.dates)
+    const days = !!navigationValue.week && Object.keys(groupData.dates[navigationValue.week])
 
     if (isDayPicked && days) {
       const currentIndex = days.indexOf(navigationValue.day)

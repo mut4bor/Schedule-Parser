@@ -79,9 +79,7 @@ try {
           fileResponse.data.pipe(writer)
 
           writer.on('finish', () => {
-            console.log(
-              `Файл ${fileName} успешно загружен в папку ${path.join(parentDir, sectionTitle, courseDir)}.`,
-            )
+            console.log(`Файл ${fileName} успешно загружен!`)
           })
 
           writer.on('error', (err) => {
