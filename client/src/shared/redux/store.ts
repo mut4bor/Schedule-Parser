@@ -3,12 +3,14 @@ import { setupListeners } from '@reduxjs/toolkit/query'
 import api from './slices/apiSlice'
 import searchSlice from './slices/searchSlice'
 import navigationSlice from './slices/navigationSlice'
+import routerSlice from './slices/routerSlice'
 
 export const store = configureStore({
   reducer: {
     [api.reducerPath]: api.reducer,
     search: searchSlice,
     navigation: navigationSlice,
+    router: routerSlice,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(api.middleware),
 })

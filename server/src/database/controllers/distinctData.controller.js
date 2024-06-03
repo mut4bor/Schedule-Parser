@@ -18,17 +18,31 @@ const getUniqueEducationTypes = async (req, res) => {
 
 const getUniqueFaculties = async (req, res) => {
   try {
-    const uniqueFaculties = await Group.distinct(
-      'faculty',
-      getFilterParams(req),
-    )
-    if (uniqueFaculties.length === 0) {
+    const records = await Group.find(getFilterParams(req), {
+      educationType: 1,
+      faculty: 1,
+      _id: 0,
+    })
+
+    if (records.length === 0) {
       res.status(404).json({
         message: 'No unique courses found for the specified criteria.',
       })
       return
     }
-    res.status(200).json(uniqueFaculties)
+
+    const uniqueRecordsMap = {}
+
+    records.forEach((record) => {
+      const key = `${record.faculty}_${record.educationType}`
+      if (!uniqueRecordsMap[key]) {
+        uniqueRecordsMap[key] = record
+      }
+    })
+
+    const uniqueRecords = Object.values(uniqueRecordsMap)
+
+    res.status(200).json(uniqueRecords)
   } catch (error) {
     res.status(500).json({ message: error.message })
   }

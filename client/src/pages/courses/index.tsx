@@ -1,13 +1,18 @@
 import * as style from './style.module.scss'
-import { useGetCoursesQuery } from '@/shared/redux'
-import { Link, useParams } from 'react-router-dom'
+import { useAppDispatch, useAppSelector, routerValueChanged, useGetCoursesQuery } from '@/shared/redux'
+import { Link, useNavigate } from 'react-router-dom'
+import { FACULTIES_PATH, GROUPS_PATH } from '@/shared/config'
 
 export const CoursesPage = () => {
-  const { educationType, faculty } = useParams()
+  const navigate = useNavigate()
+  const dispatch = useAppDispatch()
+  const routerValue = useAppSelector((store) => store.router.routerValue)
+  const { educationType, faculty } = routerValue
 
-  if (!educationType || !faculty) {
-    return <div className=""></div>
+  if (!faculty) {
+    navigate(FACULTIES_PATH)
   }
+
   const searchParams = new URLSearchParams({
     educationType: educationType,
     faculty: faculty,
@@ -18,13 +23,18 @@ export const CoursesPage = () => {
 
   return (
     <div className={style.container}>
-      {data.map((item, key) => {
-        return (
-          <Link to={`/${educationType}/${faculty}/${item}`} className={style.link} key={key}>
-            {item}
-          </Link>
-        )
-      })}
+      {data.map((item, key) => (
+        <Link
+          to={GROUPS_PATH}
+          onClick={() => {
+            dispatch(routerValueChanged({ ...routerValue, course: item }))
+          }}
+          className={style.link}
+          key={key}
+        >
+          {item}
+        </Link>
+      ))}
     </div>
   )
 }

@@ -19,6 +19,17 @@
     grid-template-columns: repeat(1, 1fr);
     gap: 1rem;
   }
+  .link {
+    font-size: 1.6rem;
+    display: flex;
+    padding: 1rem;
+    background: $darkGray;
+    color: $white;
+    flex: 1 0 auto;
+    border-radius: 0.5rem;
+    justify-content: center;
+    align-items: center;
+  }
 }
 @media (min-width: $pageWidth768) {
   .main {

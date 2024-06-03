@@ -1,32 +1,37 @@
 import * as style from './style.module.scss'
-import { GroupLink } from '@/entities/group'
-import { useGetNamesQuery } from '@/shared/redux'
-import { useParams } from 'react-router-dom'
+import { useAppSelector, useGetNamesQuery } from '@/shared/redux'
+import { Link, useNavigate } from 'react-router-dom'
+import { COURSES_PATH } from '@/shared/config'
 
 export const GroupsPage = () => {
-  const { educationType, faculty, course } = useParams()
+  const navigate = useNavigate()
+  const routerValue = useAppSelector((store) => store.router.routerValue)
+  const { educationType, faculty, course } = routerValue
 
-  if (!educationType || !faculty || !course) {
-    return <div className=""></div>
+  if (!course) {
+    navigate(COURSES_PATH)
   }
+
   const searchParams = new URLSearchParams({
     educationType: educationType,
     faculty: faculty,
     course: course,
   }).toString()
 
-  const { data, error } = useGetNamesQuery(searchParams)
+  const { data: namesData, error: namesError } = useGetNamesQuery(searchParams)
 
-  if (!data) return <div className=""></div>
+  if (!namesData) return <div className=""></div>
 
-  const sortedData = [...data].sort((a, b) => a.index - b.index)
+  const sortedNamesData = [...namesData].sort((a, b) => a.index - b.index)
 
   return (
     <div className={style.container}>
       <div className={style.main}>
-        {sortedData.map((item, key) => {
-          return <GroupLink path={`/${educationType}/${faculty}/${course}/${item._id}`} key={key} data={item} />
-        })}
+        {sortedNamesData.map((item, key) => (
+          <Link to={`/${item._id}`} className={style.link} key={key}>
+            {item.group}
+          </Link>
+        ))}
       </div>
     </div>
   )

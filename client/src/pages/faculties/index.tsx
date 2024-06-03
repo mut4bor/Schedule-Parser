@@ -1,11 +1,15 @@
 import * as style from './style.module.scss'
-import { useGetFacultiesQuery } from '@/shared/redux'
-import { Link, useParams } from 'react-router-dom'
+import { useAppDispatch, useAppSelector, routerValueChanged, useGetFacultiesQuery } from '@/shared/redux'
+import { Link, useNavigate } from 'react-router-dom'
+import { BASE_URL, COURSES_PATH } from '@/shared/config'
 
 export const FacultiesPage = () => {
-  const { educationType } = useParams()
+  const navigate = useNavigate()
+  const dispatch = useAppDispatch()
+  const routerValue = useAppSelector((store) => store.router.routerValue)
+  const { educationType } = routerValue
   if (!educationType) {
-    return <div className=""></div>
+    navigate(BASE_URL)
   }
   const searchParams = new URLSearchParams({
     educationType: educationType,
@@ -16,13 +20,18 @@ export const FacultiesPage = () => {
 
   return (
     <div className={style.container}>
-      {data.map((item, key) => {
-        return (
-          <Link to={`/${educationType}/${item}`} className={style.link} key={key}>
-            {item}
-          </Link>
-        )
-      })}
+      {data.map((item, key) => (
+        <Link
+          to={COURSES_PATH}
+          onClick={() => {
+            dispatch(routerValueChanged({ ...routerValue, faculty: item.faculty }))
+          }}
+          className={style.link}
+          key={key}
+        >
+          {item.faculty}
+        </Link>
+      ))}
     </div>
   )
 }

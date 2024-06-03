@@ -1,13 +1,13 @@
 import { Header } from '@/entities/header'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Provider } from 'react-redux'
-import { EducationTypesPage } from './educationTypes'
+import { MainPage } from './main'
 import { FacultiesPage } from './faculties'
 import { CoursesPage } from './courses'
 import { GroupsPage } from './groups'
 import { GroupIDPage } from './groupID'
 import { ErrorPage } from './error'
-import { BASE_URL } from '@/shared/config'
+import { BASE_URL, FACULTIES_PATH, COURSES_PATH, GROUPS_PATH, GROUP_ID_PATH } from '@/shared/config'
 import { store } from '@/shared/redux'
 
 export const Routing = () => {
@@ -17,7 +17,7 @@ export const Routing = () => {
       element: (
         <>
           <Header />
-          <EducationTypesPage />
+          <MainPage />
         </>
       ),
       errorElement: (
@@ -28,7 +28,7 @@ export const Routing = () => {
       ),
     },
     {
-      path: `${BASE_URL}/:educationType`,
+      path: `${BASE_URL}${FACULTIES_PATH}`,
       element: (
         <>
           <Header />
@@ -43,7 +43,7 @@ export const Routing = () => {
       ),
     },
     {
-      path: `${BASE_URL}/:educationType/:faculty`,
+      path: `${BASE_URL}${COURSES_PATH}`,
       element: (
         <>
           <Header />
@@ -58,7 +58,7 @@ export const Routing = () => {
       ),
     },
     {
-      path: `${BASE_URL}/:educationType/:faculty/:course`,
+      path: `${BASE_URL}${GROUPS_PATH}`,
       element: (
         <>
           <Header />
@@ -73,7 +73,7 @@ export const Routing = () => {
       ),
     },
     {
-      path: `${BASE_URL}/:educationType/:faculty/:course/:groupID`,
+      path: `${BASE_URL}${GROUP_ID_PATH}`,
       element: (
         <>
           <Header />

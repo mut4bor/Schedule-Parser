@@ -3,7 +3,7 @@ import React from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { GroupButton } from '@/entities/group'
 import { useGetGroupByIDQuery, useAppDispatch, useAppSelector, navigationValueChanged } from '@/shared/redux'
-
+import { GROUPS_PATH } from '@/shared/config'
 export const GroupCenterButton = () => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
@@ -53,7 +53,7 @@ export const GroupCenterButton = () => {
       dispatch(navigationValueChanged({ ...picked, week: '' }))
       return
     }
-    navigate('/')
+    navigate(GROUPS_PATH)
   }
 
   return <GroupButton onClick={centerButtonClickHandler}> {centerButtonTextHandler()}</GroupButton>
