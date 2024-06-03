@@ -2,7 +2,6 @@ import { Header } from '@/entities/header'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import { MainPage } from './main'
-import { FacultiesPage } from './faculties'
 import { CoursesPage } from './courses'
 import { GroupsPage } from './groups'
 import { GroupIDPage } from './groupID'
@@ -27,21 +26,7 @@ export const Routing = () => {
         </>
       ),
     },
-    {
-      path: `${BASE_URL}${FACULTIES_PATH}`,
-      element: (
-        <>
-          <Header />
-          <FacultiesPage />
-        </>
-      ),
-      errorElement: (
-        <>
-          <Header />
-          <ErrorPage />
-        </>
-      ),
-    },
+
     {
       path: `${BASE_URL}${COURSES_PATH}`,
       element: (

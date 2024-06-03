@@ -8,12 +8,14 @@
     margin: 0 auto;
     max-width: $containerWidth;
     flex: 1 0 auto;
-    justify-content: center;
-    align-items: center;
     gap: 2rem;
   }
-  .link {
-    font-size: 2rem;
-    color: $white;
+  .faculty {
+    display: flex;
+    flex-direction: column;
+    background: $darkGray;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    gap: 1rem;
   }
 }

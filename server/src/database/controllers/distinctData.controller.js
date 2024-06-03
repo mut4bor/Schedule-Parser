@@ -33,16 +33,19 @@ const getUniqueFaculties = async (req, res) => {
 
     const uniqueRecordsMap = {}
 
-    records.forEach((record) => {
-      const key = `${record.faculty}_${record.educationType}`
-      if (!uniqueRecordsMap[key]) {
-        uniqueRecordsMap[key] = record
+    const result = records.reduce((acc, { educationType, faculty }) => {
+      if (!acc[educationType]) {
+        acc[educationType] = new Set()
       }
-    })
+      acc[educationType].add(faculty)
+      return acc
+    }, {})
 
-    const uniqueRecords = Object.values(uniqueRecordsMap)
+    const finalResult = Object.fromEntries(
+      Object.entries(result).map(([key, value]) => [key, Array.from(value)]),
+    )
 
-    res.status(200).json(uniqueRecords)
+    res.status(200).json(finalResult)
   } catch (error) {
     res.status(500).json({ message: error.message })
   }

@@ -57,7 +57,7 @@ const api = createApi({
         },
       }),
     }),
-    getFaculties: builder.query<{ educationType: string; faculty: string }[], string | void>({
+    getFaculties: builder.query<{ [educationType: string]: [faculties: string][] }, string | void>({
       query: (params) => ({
         url: `${educationTypePath}/faculty${getParams(params)}`,
         headers: {
