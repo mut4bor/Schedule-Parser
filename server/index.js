@@ -28,6 +28,7 @@ app.use(
 )
 
 app.use('/api', router)
+
 app.get('/data', (req, res) => {
   res.json(data)
 })
