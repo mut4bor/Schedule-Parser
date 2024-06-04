@@ -1,39 +1,17 @@
 import * as style from './style.module.scss'
-import { FacultyListProps } from './types'
-import { Link } from 'react-router-dom'
-import { useAppDispatch, useAppSelector, routerValueChanged } from '@/shared/redux'
-import { COURSES_PATH } from '@/shared/config'
+import { FacultyProps } from '../types'
+import { FacultyLink } from '../faculty-link'
 
-export const FacultyList = (props: FacultyListProps) => {
-  const dispatch = useAppDispatch()
-  const routerValue = useAppSelector((store) => store.router.routerValue)
-  const { data } = props
-  const { educationType, faculties } = data
+export const FacultyList = (props: FacultyProps) => {
+  const {
+    data: { educationType, faculties },
+  } = props
+
   return (
-    <div className={style.list}>
-      {faculties.map((faculty, key) => {
-        const splittedFaculty = faculty.toString().split(',')
-        return (
-          <Link
-            to={COURSES_PATH}
-            onClick={() => {
-              dispatch(
-                routerValueChanged({
-                  ...routerValue,
-                  educationType: educationType,
-                  faculty: faculty,
-                }),
-              )
-            }}
-            className={style.faculty}
-            key={key}
-          >
-            {splittedFaculty.map((item, key) => (
-              <p key={key}>{item}</p>
-            ))}
-          </Link>
-        )
-      })}
+    <div className={style.container}>
+      {faculties.map((faculty, key) => (
+        <FacultyLink data={{ educationType, faculty }} key={key} />
+      ))}
     </div>
   )
 }

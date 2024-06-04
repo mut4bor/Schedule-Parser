@@ -5,15 +5,10 @@
     display: flex;
     flex-direction: column;
     padding: 1rem $containerPaddingX;
-    margin: 0 auto;
-    max-width: $containerWidth;
-    flex: 1 0 auto;
     justify-content: center;
-    align-items: center;
+    flex: 1;
   }
-
   .main {
-    width: 100%;
     font-size: 2rem;
     display: grid;
     grid-template-columns: repeat(1, 1fr);
@@ -23,12 +18,23 @@
     font-size: 1.6rem;
     display: flex;
     padding: 1rem;
-    background: $darkGray;
+    background: $gray;
     color: $white;
-    flex: 1 0 auto;
-    border-radius: 0.5rem;
+    border-radius: 2rem;
     justify-content: center;
     align-items: center;
+    transition: 0.15s ease-in-out;
+    @media (hover: hover) {
+      &:hover {
+        background: $accentColor;
+        color: $backgroundColor;
+      }
+    }
+  }
+  .text {
+    width: 100%;
+    word-break: break-all;
+    text-align: center;
   }
 }
 @media (min-width: $pageWidth768) {
@@ -38,6 +44,6 @@
 }
 @media (min-width: $pageWidth1024) {
   .main {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
   }
 }

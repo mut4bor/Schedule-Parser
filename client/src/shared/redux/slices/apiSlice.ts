@@ -57,9 +57,9 @@ const api = createApi({
         },
       }),
     }),
-    getFaculties: builder.query<{ [educationType: string]: [faculties: string][] }, string | void>({
+    getFaculties: builder.query<{ [educationType: string]: [faculties: string][] }, void>({
       query: (params) => ({
-        url: `/faculty${getParams(params)}`,
+        url: `/faculty`,
         headers: {
           'x-admin-password': X_ADMIN_PASSWORD,
         },

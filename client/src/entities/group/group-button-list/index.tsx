@@ -1,6 +1,6 @@
 import * as style from './style.module.scss'
 import { GroupButtonListProps } from './types'
-import { GroupButton } from '@/entities/group'
+import { GroupButton } from '../group-button'
 import { useEffect } from 'react'
 import { getCurrentWeekRange, getDaysInRange } from '@/shared/hooks'
 import { useAppDispatch, useAppSelector, navigationValueChanged, routerValueChanged } from '@/shared/redux'

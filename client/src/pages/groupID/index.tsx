@@ -1,6 +1,7 @@
 import * as style from './style.module.scss'
 import { useParams } from 'react-router-dom'
-import { GroupNavigation, GroupButtonList } from '@/entities/group'
+import { GroupNavigation } from '@/entities/group/group-navigation'
+import { GroupButtonList } from '@/entities/group/group-button-list'
 import { useGetGroupByIDQuery } from '@/shared/redux'
 
 export const GroupIDPage = () => {

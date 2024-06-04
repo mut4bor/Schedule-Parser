@@ -1,7 +1,7 @@
 import * as style from './style.module.scss'
 import React from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { GroupButton } from '@/entities/group'
+import { GroupButton } from '../../group-button'
 import { useGetGroupByIDQuery, useAppDispatch, useAppSelector, navigationValueChanged } from '@/shared/redux'
 import { GROUPS_PATH } from '@/shared/config'
 export const GroupCenterButton = () => {

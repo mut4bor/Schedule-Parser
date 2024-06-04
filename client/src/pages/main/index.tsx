@@ -1,5 +1,5 @@
 import * as style from './style.module.scss'
-import { FacultyHeading, FacultyList } from '@/entities/faculty'
+import { Faculty } from '@/entities/faculty'
 import { useGetFacultiesQuery } from '@/shared/redux'
 
 export const MainPage = () => {
@@ -14,10 +14,7 @@ export const MainPage = () => {
   return (
     <div className={style.container}>
       {sortedFacultiesData.map(([educationType, faculties], key) => (
-        <div className={style.faculty} key={key}>
-          <FacultyHeading educationType={educationType} />
-          <FacultyList data={{ educationType, faculties }} />
-        </div>
+        <Faculty data={{ educationType, faculties }} key={key} />
       ))}
     </div>
   )
