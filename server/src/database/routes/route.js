@@ -34,10 +34,14 @@ const checkPassword = (req, res, next) => {
 const groupsPath = `/groups`
 const namesPath = `/names`
 const educationTypePath = `/educationType`
+const facultyPath = `/faculty`
+const coursePath = `/course`
 
 router.use(groupsPath, checkPassword)
 router.use(namesPath, checkPassword)
 router.use(educationTypePath, checkPassword)
+router.use(facultyPath, checkPassword)
+router.use(coursePath, checkPassword)
 
 router.get(groupsPath, getAllGroups)
 router.get(`${groupsPath}/:id`, getGroupById)
@@ -50,7 +54,7 @@ router.get(namesPath, getGroupNames)
 router.get(`${namesPath}/:name`, getGroupByName)
 
 router.get(educationTypePath, getUniqueEducationTypes)
-router.get(`${educationTypePath}/faculty`, getUniqueFaculties)
-router.get(`${educationTypePath}/faculty/course`, getUniqueCourses)
+router.get(facultyPath, getUniqueFaculties)
+router.get(coursePath, getUniqueCourses)
 
 export { router }

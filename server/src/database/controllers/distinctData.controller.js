@@ -31,8 +31,6 @@ const getUniqueFaculties = async (req, res) => {
       return
     }
 
-    const uniqueRecordsMap = {}
-
     const result = records.reduce((acc, { educationType, faculty }) => {
       if (!acc[educationType]) {
         acc[educationType] = new Set()
