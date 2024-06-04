@@ -36,6 +36,9 @@ const namesPath = `/names`
 const educationTypePath = `/educationType`
 
 router.use(groupsPath, checkPassword)
+router.use(namesPath, checkPassword)
+router.use(educationTypePath, checkPassword)
+
 router.get(groupsPath, getAllGroups)
 router.get(`${groupsPath}/:id`, getGroupById)
 router.post(groupsPath, createGroup)
@@ -43,11 +46,9 @@ router.put(`${groupsPath}/:id`, updateGroupById)
 router.delete(groupsPath, deleteAllGroups)
 router.delete(`${groupsPath}/:id`, deleteGroupById)
 
-router.use(namesPath, checkPassword)
 router.get(namesPath, getGroupNames)
 router.get(`${namesPath}/:name`, getGroupByName)
 
-router.use(educationTypePath, checkPassword)
 router.get(educationTypePath, getUniqueEducationTypes)
 router.get(`${educationTypePath}/faculty`, getUniqueFaculties)
 router.get(`${educationTypePath}/faculty/course`, getUniqueCourses)

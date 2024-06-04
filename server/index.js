@@ -6,6 +6,7 @@ import mongoose from 'mongoose'
 import { router } from './src/database/routes/route.js'
 import { useEnv } from './src/hooks/useEnv.js'
 useEnv()
+import { data } from './src/api/getData.js'
 
 const app = express()
 const PORT = process.env.PORT || 3000
@@ -27,6 +28,9 @@ app.use(
 )
 
 app.use('/api', router)
+app.get('/data', (req, res) => {
+  res.json(data)
+})
 
 app.get('/*', (req, res) => {
   res.sendFile(path.join(__clientBuild, 'index.html'))
