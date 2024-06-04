@@ -8,5 +8,12 @@
     padding: 2rem;
     border-radius: 0.5rem;
     gap: 1rem;
+    width: 100%;
+    max-width: 100%;
+  }
+}
+@media (min-width: $pageWidth1024) {
+  .container {
+    // width: calc((25% * var(--faculties-length)) + 1.5rem);
   }
 }

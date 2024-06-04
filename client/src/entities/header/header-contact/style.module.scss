@@ -28,5 +28,11 @@
   a {
     font-size: 1.4rem;
     color: $white;
+    transition: 0.15s ease-in-out;
+    @media (hover: hover) {
+      &:hover {
+        color: $accentColor;
+      }
+    }
   }
 }

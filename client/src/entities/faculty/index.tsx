@@ -9,7 +9,14 @@ export const Faculty = (props: FacultyProps) => {
   } = props
 
   return (
-    <div className={style.container}>
+    <div
+      className={style.container}
+      style={
+        {
+          '--faculties-length': faculties.length,
+        } as React.CSSProperties
+      }
+    >
       <FacultyHeading data={{ educationType }} />
       <FacultyList data={{ educationType, faculties }} />
     </div>
