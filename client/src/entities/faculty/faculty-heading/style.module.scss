@@ -1,4 +1,20 @@
-.heading {
-  display: flex;
-  font-size: 2rem;
+@import '@/shared/vars/vars';
+
+@media (min-width: $pageWidth320) {
+  .container {
+    display: flex;
+    align-items: center;
+    padding: 0 2rem 0;
+    background: $accentColor;
+    height: 5rem;
+    position: relative;
+    border-radius: 0.5rem;
+  }
+
+  .heading {
+    font-size: 2.3rem;
+    color: $backgroundColor;
+    font-weight: 400;
+    z-index: 1;
+  }
 }

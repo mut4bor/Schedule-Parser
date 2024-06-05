@@ -1,7 +1,15 @@
 @import '@/shared/vars/vars';
 
-.heading {
-  display: flex;
-  font-size: 2rem;
-  color: $white;
+@media (min-width: $pageWidth320) {
+  .heading {
+    display: flex;
+    font-size: 1.8rem;
+    color: $white;
+  }
+}
+
+@media (min-width: $pageWidth768) {
+  .heading {
+    font-size: 2rem;
+  }
 }

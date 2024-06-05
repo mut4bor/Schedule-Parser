@@ -5,5 +5,10 @@ export const FacultyHeading = (props: FacultyHeadingProps) => {
   const {
     data: { educationType },
   } = props
-  return <h2 className={style.heading}>{educationType}</h2>
+  return (
+    <div className={style.container}>
+      {/* <div className={style.flag}></div> */}
+      <h2 className={style.heading}>{educationType}</h2>
+    </div>
+  )
 }
