@@ -1,6 +1,6 @@
 import * as style from './style.module.scss'
 import { Courses } from '@/entities/courses'
-import { Groups } from '@/entities/group'
+import { Groups } from '@/entities/groups'
 import { useState } from 'react'
 export const CoursesPage = () => {
   const [coursesSkeletonIsEnabled, setCoursesSkeletonIsEnabled] = useState(true)
