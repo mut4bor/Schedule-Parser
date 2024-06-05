@@ -7,42 +7,17 @@ export const FacultyList = (props: FacultyProps) => {
     data: { educationType, faculties },
   } = props
 
-  const facultyElements = faculties.reduce((acc: JSX.Element[], faculty, index) => {
-    const Link = <FacultyLink data={{ educationType, faculty }} />
-    if (index < faculties.length - 1) {
-      acc.push(
-        <li
-          key={index}
-          className={style.wrapper}
-          style={
-            {
-              '--faculties-length': faculties.length,
-            } as React.CSSProperties
-          }
-        >
-          {Link}
-          <span className={style.pipe}></span>
-        </li>,
-      )
-    }
-    if (index === faculties.length - 1) {
-      acc.push(
-        <li
-          key={index}
-          className={style.wrapper}
-          style={
-            {
-              '--faculties-length': faculties.length,
-            } as React.CSSProperties
-          }
-        >
-          {Link}
-        </li>,
-      )
-    }
+  return (
+    <div className={style.container}>
+      {faculties.reduce((acc: JSX.Element[], faculty, index) => {
+        acc.push(<FacultyLink data={{ educationType, faculty }} key={`faculty-${index}`} />)
 
-    return acc
-  }, [])
+        if (index < faculties.length - 1) {
+          acc.push(<span className={style.pipe} key={`pipe-${index}`}></span>)
+        }
 
-  return <ul className={style.container}>{facultyElements}</ul>
+        return acc
+      }, [])}
+    </div>
+  )
 }

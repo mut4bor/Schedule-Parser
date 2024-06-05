@@ -7,13 +7,6 @@
     gap: 1rem;
     padding: 0 2rem 2rem;
   }
-  .wrapper {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    gap: 1rem;
-    flex: 1;
-  }
   .pipe {
     width: 100%;
     min-height: 0.3rem;
@@ -27,10 +20,6 @@
   .container {
     display: flex;
     flex-direction: row;
-  }
-  .wrapper {
-    flex-direction: row;
-    // width: calc((100% / var(--faculties-length)));
   }
   .pipe {
     min-height: 100%;

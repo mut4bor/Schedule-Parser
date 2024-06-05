@@ -1,17 +1,11 @@
 @import '@/shared/vars/vars';
 
-.wrapper {
-  display: flex;
-  flex: 1 0 auto;
-  width: 100%;
-  align-items: center;
-  justify-content: center;
-  background: $backgroundColor;
-}
 .container {
   width: 100%;
+  height: $contactsHeight;
   max-width: $containerWidth;
   padding: 0rem $containerPaddingX;
+  margin: 0 auto;
   display: flex;
   align-items: center;
   gap: 1rem 0.5rem;
