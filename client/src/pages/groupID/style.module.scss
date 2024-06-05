@@ -1,19 +1,25 @@
 @import '@/shared/vars/vars';
+@media (min-width: $pageWidth320) {
+  .container {
+    display: flex;
+    flex-direction: column;
+    padding: calc($headerHeightMobile + $contactsHeight + 1rem) $containerPaddingX 1rem;
+    margin: 0 auto;
+    max-width: $containerWidth;
+    font-size: 2rem;
+    gap: 1rem;
+  }
 
-.container {
-  display: flex;
-  flex-direction: column;
-  padding: 1rem $containerPaddingX;
-  margin: 0 auto;
-  max-width: $containerWidth;
-  font-size: 2rem;
-  gap: 1rem;
+  .loading {
+    font-size: 2rem;
+  }
+
+  .error {
+    font-size: 2rem;
+  }
 }
-
-.loading {
-  font-size: 2rem;
-}
-
-.error {
-  font-size: 2rem;
+@media (min-width: $pageWidth768) {
+  .container {
+    padding: calc($headerHeight + $contactsHeight + 1rem) $containerPaddingX 1rem;
+  }
 }

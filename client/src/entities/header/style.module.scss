@@ -2,11 +2,23 @@
 
 @media (min-width: $pageWidth320) {
   .header {
-    min-height: $headerHeight;
+    height: calc($headerHeightMobile + $contactsHeight);
+    background: $backgroundColor;
     display: flex;
+    width: 100%;
     flex-direction: column;
-    border-radius: 0 0 0.5rem 0.5rem;
     justify-content: center;
+    position: fixed;
+    top: 0;
+    transition: 0.3s ease-in-out;
+    z-index: 999;
+    &.hidden {
+      top: - calc($headerHeightMobile + $contactsHeight);
+    }
+
+    &.visible {
+      top: 0;
+    }
   }
 
   .wrapper {
@@ -16,6 +28,7 @@
     align-items: center;
     justify-content: center;
     background: $darkGray;
+    border-radius: 0 0 0.5rem 0.5rem;
   }
   .container {
     width: 100%;
@@ -30,6 +43,9 @@
 }
 
 @media (min-width: $pageWidth768) {
+  .header {
+    height: calc($headerHeight + $contactsHeight);
+  }
   .container {
     grid-template-columns: repeat(2, 1fr);
   }

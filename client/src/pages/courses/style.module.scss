@@ -4,7 +4,7 @@
   .container {
     display: flex;
     flex-direction: column;
-    padding: 1rem $containerPaddingX;
+    padding: calc($headerHeightMobile + $contactsHeight + 1rem) $containerPaddingX 1rem;
     margin: 0 auto;
     max-width: $containerWidth;
   }
@@ -13,6 +13,12 @@
     flex-direction: row;
     border-radius: 0.5rem;
     background: $darkGray;
-    max-height: calc(100vh - $headerHeight - $contactsHeight - 2rem);
+    overflow: auto;
+  }
+}
+
+@media (min-width: $pageWidth768) {
+  .container {
+    padding: calc($headerHeight + $contactsHeight + 1rem) $containerPaddingX 1rem;
   }
 }
