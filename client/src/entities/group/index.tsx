@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react'
 import * as style from './style.module.scss'
+import { GroupsProps } from './types'
 import { SkeletonParagraph } from '@/shared/ui'
+import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAppSelector, useGetNamesQuery } from '@/shared/redux'
 
-export const Groups = () => {
+export const Groups = ({ skeletonState, handleStateChange }: GroupsProps) => {
   const routerValue = useAppSelector((store) => store.router.routerValue)
   const { educationType, faculty, course } = routerValue
 
@@ -16,19 +17,17 @@ export const Groups = () => {
 
   const { data: namesData, error: namesError, isLoading, isFetching } = useGetNamesQuery(namesSearchParams)
 
-  const [showSkeleton, setShowSkeleton] = useState(true)
-
   useEffect(() => {
     const timer = setTimeout(() => {
-      setShowSkeleton(false)
+      handleStateChange(false)
     }, 300)
     return () => clearTimeout(timer)
-  }, [])
+  }, [skeletonState])
 
   return (
     <div className={style.container}>
       <div className={style.main}>
-        {!namesData || isLoading || isFetching || showSkeleton
+        {!namesData || isLoading || isFetching || skeletonState
           ? Array.from({ length: 12 }).map((item, key) => (
               <SkeletonParagraph style={{ height: '3.6rem', borderRadius: '2rem' }} key={key} />
             ))

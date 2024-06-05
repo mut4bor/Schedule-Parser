@@ -1,4 +1,4 @@
-interface IBase {
+export interface IName {
   index: number
   _id: string
   educationType: string
@@ -18,8 +18,6 @@ interface ISchedule {
   }
 }
 
-export type IName = IBase
-
-export interface IGroup extends IBase {
+export interface IGroup extends IName {
   dates: ISchedule
 }

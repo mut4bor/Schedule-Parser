@@ -1,25 +1,23 @@
 import * as style from './style.module.scss'
 import { Faculty } from '@/entities/faculty'
-import { useGetFacultiesQuery } from '@/shared/redux'
 import React, { useState, useEffect } from 'react'
+import { useGetFacultiesQuery } from '@/shared/redux'
 
 export const MainPage = () => {
   const { data: facultiesData, error: facultiesError, isLoading, isFetching } = useGetFacultiesQuery()
 
-  const isSkeleton = isLoading || isFetching
-
-  const [showSkeleton, setShowSkeleton] = useState(true)
+  const [skeletonIsEnabled, setSkeletonIsEnabled] = useState(true)
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setShowSkeleton(false)
+      setSkeletonIsEnabled(false)
     }, 300)
     return () => clearTimeout(timer)
   }, [])
 
   return (
     <div className={style.container}>
-      {!facultiesData || isSkeleton || showSkeleton
+      {!facultiesData || isLoading || isFetching || skeletonIsEnabled
         ? Array.from({ length: 3 }).map((_, index) => (
             <React.Fragment key={`faculty-${index}`}>
               <Faculty key={index} />
