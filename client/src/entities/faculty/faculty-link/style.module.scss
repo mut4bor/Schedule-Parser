@@ -1,6 +1,11 @@
 @import '@/shared/vars/vars';
 
 @media (min-width: $pageWidth320) {
+  .skeleton {
+    width: 100%;
+    padding: 1rem;
+    border-radius: 0.5rem;
+  }
   .link {
     width: 100%;
     padding: 1rem;

@@ -1,23 +1,26 @@
 import * as style from './style.module.scss'
 import { FacultyProps } from '../types'
 import { FacultyLink } from '../faculty-link'
+import React from 'react'
 
-export const FacultyList = (props: FacultyProps) => {
-  const {
-    data: { educationType, faculties },
-  } = props
+export const FacultyList = ({ data }: FacultyProps) => {
+  const { educationType, faculties } = data || {}
 
   return (
     <div className={style.container}>
-      {faculties.reduce((acc: JSX.Element[], faculty, index) => {
-        acc.push(<FacultyLink data={{ educationType, faculty }} key={`faculty-${index}`} />)
-
-        if (index < faculties.length - 1) {
-          acc.push(<span className={style.pipe} key={`pipe-${index}`}></span>)
-        }
-
-        return acc
-      }, [])}
+      {!data || !educationType || !faculties
+        ? Array.from({ length: 4 }).map((_, index, array) => (
+            <React.Fragment key={`faculty-${index}`}>
+              <FacultyLink />
+              {index < array.length - 1 && <span className={style.pipe}></span>}
+            </React.Fragment>
+          ))
+        : faculties.map((faculty, index) => (
+            <React.Fragment key={`faculty-${index}`}>
+              <FacultyLink data={{ educationType, faculty }} />
+              {index < faculties.length - 1 && <span className={style.pipe}></span>}
+            </React.Fragment>
+          ))}
     </div>
   )
 }

@@ -1,21 +1,28 @@
 import * as style from './style.module.scss'
 import { Faculty } from '@/entities/faculty'
 import { useGetFacultiesQuery } from '@/shared/redux'
+import React from 'react'
 
 export const MainPage = () => {
-  const { data: facultiesData, error: facultiesError } = useGetFacultiesQuery()
+  const { data: facultiesData, error: facultiesError, isLoading, isFetching } = useGetFacultiesQuery()
 
-  if (!facultiesData) return <div className=""></div>
-
-  const sortedFacultiesData = Object.entries(facultiesData).sort(
-    ([educationTypeA, facultiesA], [educationTypeB, facultiesB]) => facultiesB.length - facultiesA.length,
-  )
+  const isSkeleton = isLoading || isFetching
 
   return (
     <div className={style.container}>
-      {sortedFacultiesData.map(([educationType, faculties], key) => (
-        <Faculty data={{ educationType, faculties }} key={key} />
-      ))}
+      {!facultiesData || isSkeleton
+        ? Array.from({ length: 3 }).map((_, index) => (
+            <React.Fragment key={`faculty-${index}`}>
+              <Faculty key={index} />
+            </React.Fragment>
+          ))
+        : Object.entries(facultiesData).map(([educationType, faculties], key) => {
+            return (
+              <React.Fragment key={`faculty-${key}`}>
+                <Faculty data={{ educationType, faculties }} key={key} />
+              </React.Fragment>
+            )
+          })}
     </div>
   )
 }

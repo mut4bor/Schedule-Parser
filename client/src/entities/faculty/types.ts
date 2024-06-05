@@ -1,5 +1,5 @@
 export type FacultyProps = {
-  data: {
+  data?: {
     educationType: string
     faculties: [faculty: string][]
   }

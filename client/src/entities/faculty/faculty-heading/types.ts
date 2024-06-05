@@ -1,5 +1,5 @@
 export type FacultyHeadingProps = {
-  data: {
+  data?: {
     educationType: string
   }
 }

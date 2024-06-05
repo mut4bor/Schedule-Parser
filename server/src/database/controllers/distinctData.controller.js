@@ -40,7 +40,12 @@ const getUniqueFaculties = async (req, res) => {
     }, {})
 
     const finalResult = Object.fromEntries(
-      Object.entries(result).map(([key, value]) => [key, Array.from(value)]),
+      Object.entries(result)
+        .map(([key, value]) => [key, Array.from(value)])
+        .sort(
+          ([educationTypeA, facultiesA], [educationTypeB, facultiesB]) =>
+            facultiesB.length - facultiesA.length,
+        ),
     )
 
     res.status(200).json(finalResult)

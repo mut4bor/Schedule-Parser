@@ -1,5 +1,5 @@
 export type FacultyLinkProps = {
-  data: {
+  data?: {
     educationType: string
     faculty: [faculty: string]
   }
