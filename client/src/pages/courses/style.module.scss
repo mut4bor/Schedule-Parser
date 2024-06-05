@@ -13,7 +13,6 @@
     flex-direction: row;
     border-radius: 0.5rem;
     background: $darkGray;
-    gap: 2rem;
-    max-height: calc(100svh - $headerHeight - $contactsHeight - 2rem);
+    max-height: calc(100vh - $headerHeight - $contactsHeight - 2rem);
   }
 }

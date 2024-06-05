@@ -15,10 +15,10 @@ export const FacultyList = ({ data }: FacultyProps) => {
               {index < array.length - 1 && <span className={style.pipe}></span>}
             </React.Fragment>
           ))
-        : faculties.map((faculty, index) => (
+        : faculties.map((faculty, index, array) => (
             <React.Fragment key={`faculty-${index}`}>
               <FacultyLink data={{ educationType, faculty }} />
-              {index < faculties.length - 1 && <span className={style.pipe}></span>}
+              {index < array.length - 1 && <span className={style.pipe}></span>}
             </React.Fragment>
           ))}
     </div>
