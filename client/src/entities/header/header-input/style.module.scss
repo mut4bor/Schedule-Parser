@@ -13,7 +13,7 @@
   transform: translateY(-50%);
   height: 1.7rem;
   aspect-ratio: 1;
-  z-index: 2;
+  z-index: 5;
 }
 .searchUse {
   opacity: 0.4;
@@ -29,7 +29,7 @@
   padding-left: 3.5rem;
   transition: 0.15s ease-in-out;
   transition-delay: 100ms;
-  z-index: 1;
+  z-index: 4;
   &:hover,
   &:focus {
     background: $grayHover;
@@ -37,6 +37,7 @@
 }
 
 .searchResultWrapper {
+  z-index: 3;
   background: $gray;
   position: absolute;
   left: 0;
@@ -45,6 +46,7 @@
   opacity: 0;
   pointer-events: none;
   padding: 1.5rem 0rem 0 0;
+  border: 0.1rem solid $gray;
   border-radius: 0 0 0.5rem 0.5rem;
   transition:
     all 0.15s ease-in-out,
