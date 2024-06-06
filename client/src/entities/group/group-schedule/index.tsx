@@ -9,18 +9,26 @@ export const GroupSchedule = (props: GroupButtonListProps) => {
 
   const picked = useAppSelector((store) => store.navigation.navigationValue)
 
-  const { week: pickedWeek, day: pickedDay } = picked
+  const { week: pickedWeek, dayIndex: pickedDayIndex } = picked
 
-  const isDayPicked = pickedWeek && pickedDay && dates[pickedWeek] && dates[pickedWeek][pickedDay]
+  const isDayPicked = !!pickedWeek && pickedDayIndex !== -1 && !!dates[pickedWeek]
+
+  if (!isDayPicked) {
+    return <div className=""></div>
+  }
+
+  const weekData = dates[pickedWeek]
+  const daysOfWeek = Object.keys(weekData)
+  const dayData = weekData[daysOfWeek[pickedDayIndex]]
+  const entries = Object.entries(dayData)
 
   return (
     <div className={style.list}>
-      {isDayPicked &&
-        Object.entries(dates[picked.week][picked.day]).map(([time, subject], key) => (
-          <p key={key} className={style.text}>
-            {`${time} – ${subject}`}
-          </p>
-        ))}
+      {entries.map(([time, subject], key) => (
+        <p key={key} className={style.text}>
+          {`${time} – ${subject}`}
+        </p>
+      ))}
     </div>
   )
 }

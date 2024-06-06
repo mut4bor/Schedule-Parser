@@ -8,7 +8,6 @@ export {
   useGetCoursesQuery,
 } from './slices/apiSlice'
 export { navigationValueChanged } from './slices/navigationSlice'
-export { routerValueChanged } from './slices/routerSlice'
 export { searchValueChanged } from './slices/searchSlice'
 export type { IName, IGroup } from './slices/types'
 export { useAppSelector, useAppDispatch } from './hooks'

@@ -6,8 +6,9 @@ import { Link } from 'react-router-dom'
 import { useAppSelector, useGetNamesQuery } from '@/shared/redux'
 
 export const Groups = ({ skeletonState, handleStateChange }: GroupsProps) => {
-  const routerValue = useAppSelector((store) => store.router.routerValue)
-  const { educationType, faculty, course } = routerValue
+  const navigationValue = useAppSelector((store) => store.navigation.navigationValue)
+  const { educationType, faculty, course } = navigationValue
+  const { group: pickedGroup } = useAppSelector((store) => store.navigation.navigationValue)
 
   const namesSearchParams = new URLSearchParams({
     educationType: educationType,
@@ -34,7 +35,11 @@ export const Groups = ({ skeletonState, handleStateChange }: GroupsProps) => {
           : [...namesData]
               .sort((a, b) => a.index - b.index)
               .map((item, key) => (
-                <Link to={`/${item._id}`} className={style.link} key={key}>
+                <Link
+                  to={`/${item._id}`}
+                  className={`${style.link} ${pickedGroup === item._id ? style.active : ''}`}
+                  key={key}
+                >
                   <p className={style.text}>{item.group}</p>
                 </Link>
               ))}

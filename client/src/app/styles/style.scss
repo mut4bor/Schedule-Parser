@@ -7,11 +7,13 @@ body {
 
 ::-webkit-scrollbar {
   width: $scrollBarWidth;
+  height: $scrollBarHeight;
 }
 
 ::-webkit-scrollbar-thumb {
   background-color: $scrollBarBgColor;
   border-radius: 0.5rem;
+
   &:hover {
     background-color: $scrollBarHoverBgColor;
   }

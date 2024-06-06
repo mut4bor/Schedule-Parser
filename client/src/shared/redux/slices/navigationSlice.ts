@@ -5,9 +5,12 @@ const navigationSlice = createSlice({
 
   initialState: {
     navigationValue: {
+      educationType: '',
+      faculty: '',
+      course: '',
       group: '',
       week: '',
-      day: '',
+      dayIndex: -1,
     },
   },
 

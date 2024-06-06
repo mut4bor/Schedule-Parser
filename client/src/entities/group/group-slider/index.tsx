@@ -4,7 +4,7 @@ import { NavigationButton } from '@/entities/navigation-button'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getCurrentWeekRange, getDaysInRange } from '@/shared/hooks'
-import { useAppDispatch, useAppSelector, navigationValueChanged, routerValueChanged } from '@/shared/redux'
+import { useAppDispatch, useAppSelector, navigationValueChanged } from '@/shared/redux'
 
 export const GroupSlider = ({ data }: GroupSliderProps) => {
   const navigate = useNavigate()
@@ -13,50 +13,62 @@ export const GroupSlider = ({ data }: GroupSliderProps) => {
   const { monday, saturday } = getCurrentWeekRange()
   const range = `${monday}-${saturday}`
 
-  const picked = useAppSelector((store) => store.navigation.navigationValue)
-
-  const { week: pickedWeek } = picked
+  const navigationValue = useAppSelector((store) => store.navigation.navigationValue)
+  const { week: pickedWeek } = navigationValue
 
   useEffect(() => {
-    if (data) {
-      dispatch(routerValueChanged({ educationType: educationType, faculty: faculty, course: course }))
-      const scheduleKeys = Object.keys(dates)
-      const daysRange = scheduleKeys.map((item) => getDaysInRange(item))
-      const currentWeekIndex = daysRange.findIndex(
-        (subArray) => subArray.includes(monday) && subArray.includes(saturday),
-      )
-      const currentWeek = scheduleKeys[currentWeekIndex]
-      dispatch(navigationValueChanged({ ...picked, group: _id, week: currentWeek ?? scheduleKeys[0] }))
+    if (!!dates) {
+      if (!pickedWeek) {
+        const scheduleKeys = Object.keys(dates)
+        const daysRange = scheduleKeys.map((item) => getDaysInRange(item))
+        const currentWeekIndex = daysRange.findIndex(
+          (subArray) => subArray.includes(monday) && subArray.includes(saturday),
+        )
+        const currentWeek = scheduleKeys[currentWeekIndex]
+
+        dispatch(
+          navigationValueChanged({
+            ...navigationValue,
+            educationType,
+            faculty,
+            course,
+            week: currentWeek,
+          }),
+        )
+      }
     }
-  }, [data, dispatch, range, _id])
+  }, [data, dates, dispatch, range, _id, monday, saturday])
 
-  if (dates) {
-    const weeks = Object.keys(dates)
-
-    return (
+  return (
+    <div className={style.container}>
+      <div>
+        <NavigationButton
+          text={'Назад'}
+          onClick={() => {
+            navigate('/courses')
+            dispatch(navigationValueChanged({ ...navigationValue, week: '', dayIndex: -1 }))
+          }}
+        />
+      </div>
       <ul className={style.list}>
-        <li>
-          <NavigationButton
-            text={'Назад'}
-            onClick={() => {
-              navigate('/courses')
-            }}
-          />
-        </li>
-        {weeks.map((week, key) => (
-          <li key={key}>
-            <NavigationButton
-              text={week}
-              onClick={() => {
-                dispatch(navigationValueChanged({ ...picked, week: week }))
-              }}
-              isActive={pickedWeek === week}
-            />
-          </li>
-        ))}
+        {!!dates &&
+          Object.keys(dates).map((week, key) => (
+            <li key={key}>
+              <NavigationButton
+                text={week}
+                onClick={() => {
+                  dispatch(
+                    navigationValueChanged({
+                      ...navigationValue,
+                      week: week,
+                    }),
+                  )
+                }}
+                isActive={pickedWeek === week}
+              />
+            </li>
+          ))}
       </ul>
-    )
-  }
-
-  return <ul className={style.list}></ul>
+    </div>
+  )
 }

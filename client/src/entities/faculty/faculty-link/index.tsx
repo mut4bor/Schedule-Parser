@@ -2,12 +2,12 @@ import * as style from './style.module.scss'
 import { FacultyLinkProps } from './types'
 import { SkeletonParagraph } from '@/shared/ui'
 import { Link } from 'react-router-dom'
-import { useAppDispatch, useAppSelector, routerValueChanged } from '@/shared/redux'
+import { useAppDispatch, useAppSelector, navigationValueChanged } from '@/shared/redux'
 import { COURSES_PATH } from '@/shared/config'
 
 export const FacultyLink = ({ data }: FacultyLinkProps) => {
   const dispatch = useAppDispatch()
-  const routerValue = useAppSelector((store) => store.router.routerValue)
+  const navigationValue = useAppSelector((store) => store.navigation.navigationValue)
 
   if (!data) {
     return (
@@ -26,7 +26,7 @@ export const FacultyLink = ({ data }: FacultyLinkProps) => {
   const { educationType, faculty } = data
 
   const handleLinkClick = () => {
-    dispatch(routerValueChanged({ ...routerValue, educationType, faculty }))
+    dispatch(navigationValueChanged({ ...navigationValue, educationType, faculty, course: '', week: '', dayIndex: -1 }))
   }
 
   return (
