@@ -47,7 +47,6 @@ export const HeaderInput = () => {
       <div className={style.inputWrapper}>
         <SVG href="#search" svgClassName={style.searchSvg} useClassName={style.searchUse} />
         <input
-          title="Поиск группы"
           placeholder="Поиск группы"
           className={`${style.input} ${inputState.focused && parsedData && style.focused}`}
           type="text"

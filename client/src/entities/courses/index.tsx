@@ -4,7 +4,7 @@ import { SkeletonParagraph } from '@/shared/ui'
 import { CourseButton } from '@/entities/courses/courses-button'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAppDispatch, useAppSelector, useGetCoursesQuery, navigationValueChanged } from '@/shared/redux'
+import { useAppDispatch, useAppSelector, useGetCoursesQuery, courseChanged } from '@/shared/redux'
 import { BASE_URL } from '@/shared/config'
 
 export const Courses = ({ handleStateChange }: CoursesProps) => {
@@ -28,7 +28,7 @@ export const Courses = ({ handleStateChange }: CoursesProps) => {
 
   useEffect(() => {
     if (!!coursesData) {
-      dispatch(navigationValueChanged({ ...navigationValue, course: !!course ? course : coursesData[0] }))
+      dispatch(courseChanged(!!course ? course : coursesData[0]))
     }
   }, [coursesData])
 

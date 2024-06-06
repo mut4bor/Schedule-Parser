@@ -2,7 +2,15 @@ import * as style from './style.module.scss'
 import { FacultyLinkProps } from './types'
 import { SkeletonParagraph } from '@/shared/ui'
 import { Link } from 'react-router-dom'
-import { useAppDispatch, useAppSelector, navigationValueChanged } from '@/shared/redux'
+import {
+  useAppDispatch,
+  useAppSelector,
+  educationTypeChanged,
+  facultyChanged,
+  courseChanged,
+  weekChanged,
+  dayIndexChanged,
+} from '@/shared/redux'
 import { COURSES_PATH } from '@/shared/config'
 
 export const FacultyLink = ({ data }: FacultyLinkProps) => {
@@ -26,7 +34,11 @@ export const FacultyLink = ({ data }: FacultyLinkProps) => {
   const { educationType, faculty } = data
 
   const handleLinkClick = () => {
-    dispatch(navigationValueChanged({ ...navigationValue, educationType, faculty, course: '', week: '', dayIndex: -1 }))
+    dispatch(educationTypeChanged(educationType))
+    dispatch(facultyChanged(faculty))
+    dispatch(courseChanged(''))
+    dispatch(weekChanged(''))
+    dispatch(dayIndexChanged(-1))
   }
 
   return (

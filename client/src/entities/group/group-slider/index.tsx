@@ -4,40 +4,35 @@ import { NavigationButton } from '@/entities/navigation-button'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getCurrentWeekRange, getDaysInRange } from '@/shared/hooks'
-import { useAppDispatch, useAppSelector, navigationValueChanged } from '@/shared/redux'
+import { useAppDispatch, useAppSelector, weekChanged, dayIndexChanged } from '@/shared/redux'
 
 export const GroupSlider = ({ data }: GroupSliderProps) => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
-  const { _id, educationType, faculty, course, dates } = data
   const { monday, saturday } = getCurrentWeekRange()
   const range = `${monday}-${saturday}`
 
   const navigationValue = useAppSelector((store) => store.navigation.navigationValue)
   const { week: pickedWeek } = navigationValue
 
-  useEffect(() => {
-    if (!!dates) {
-      if (!pickedWeek) {
-        const scheduleKeys = Object.keys(dates)
-        const daysRange = scheduleKeys.map((item) => getDaysInRange(item))
-        const currentWeekIndex = daysRange.findIndex(
-          (subArray) => subArray.includes(monday) && subArray.includes(saturday),
-        )
-        const currentWeek = scheduleKeys[currentWeekIndex]
+  if (!data) {
+    return <div className=""></div>
+  }
 
-        dispatch(
-          navigationValueChanged({
-            ...navigationValue,
-            educationType,
-            faculty,
-            course,
-            week: currentWeek,
-          }),
-        )
-      }
+  const { dates } = data
+
+  useEffect(() => {
+    if (!pickedWeek) {
+      const scheduleKeys = Object.keys(dates)
+      const daysRange = scheduleKeys.map((item) => getDaysInRange(item))
+      const currentWeekIndex = daysRange.findIndex(
+        (subArray) => subArray.includes(monday) && subArray.includes(saturday),
+      )
+      const currentWeek = scheduleKeys[currentWeekIndex]
+
+      dispatch(weekChanged(currentWeek))
     }
-  }, [data, dates, dispatch, range, _id, monday, saturday])
+  }, [data, dispatch, range, navigationValue])
 
   return (
     <div className={style.container}>
@@ -46,23 +41,19 @@ export const GroupSlider = ({ data }: GroupSliderProps) => {
           text={'Назад'}
           onClick={() => {
             navigate('/courses')
-            dispatch(navigationValueChanged({ ...navigationValue, week: '', dayIndex: -1 }))
+            dispatch(weekChanged(''))
+            dispatch(dayIndexChanged(-1))
           }}
         />
       </div>
       <ul className={style.list}>
         {!!dates &&
-          Object.keys(dates).map((week, key) => (
-            <li key={key}>
+          Object.keys(dates).map((week, index) => (
+            <li key={index}>
               <NavigationButton
                 text={week}
                 onClick={() => {
-                  dispatch(
-                    navigationValueChanged({
-                      ...navigationValue,
-                      week: week,
-                    }),
-                  )
+                  dispatch(weekChanged(week))
                 }}
                 isActive={pickedWeek === week}
               />

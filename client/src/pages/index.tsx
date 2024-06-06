@@ -5,7 +5,7 @@ import { MainPage } from './main'
 import { CoursesPage } from './courses'
 import { GroupIDPage } from './groupID'
 import { ErrorPage } from './error'
-import { BASE_URL, FACULTIES_PATH, COURSES_PATH, GROUPS_PATH, GROUP_ID_PATH } from '@/shared/config'
+import { BASE_URL, COURSES_PATH, GROUP_ID_PATH } from '@/shared/config'
 import { store } from '@/shared/redux'
 
 export const Routing = () => {

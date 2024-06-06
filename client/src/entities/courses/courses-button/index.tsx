@@ -1,6 +1,6 @@
 import * as style from './style.module.scss'
 import { CourseButtonProps } from './types'
-import { useAppDispatch, useAppSelector, navigationValueChanged } from '@/shared/redux'
+import { useAppDispatch, useAppSelector, courseChanged } from '@/shared/redux'
 
 export const CourseButton = ({ data: { course }, handleStateChange }: CourseButtonProps) => {
   const dispatch = useAppDispatch()
@@ -11,7 +11,7 @@ export const CourseButton = ({ data: { course }, handleStateChange }: CourseButt
   return (
     <button
       onClick={() => {
-        dispatch(navigationValueChanged({ ...navigationValue, course: course }))
+        dispatch(courseChanged(course))
         handleStateChange(true)
       }}
       className={`${style.button} ${pickedCourse === course ? style.active : ''}`}

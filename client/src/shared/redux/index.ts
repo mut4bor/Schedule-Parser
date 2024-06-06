@@ -7,7 +7,14 @@ export {
   useGetFacultiesQuery,
   useGetCoursesQuery,
 } from './slices/apiSlice'
-export { navigationValueChanged } from './slices/navigationSlice'
+export {
+  educationTypeChanged,
+  facultyChanged,
+  courseChanged,
+  groupChanged,
+  weekChanged,
+  dayIndexChanged,
+} from './slices/navigationSlice'
 export { searchValueChanged } from './slices/searchSlice'
 export type { IName, IGroup } from './slices/types'
 export { useAppSelector, useAppDispatch } from './hooks'

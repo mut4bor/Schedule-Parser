@@ -2,17 +2,17 @@ import * as style from './style.module.scss'
 import { GroupDaysProps } from './types'
 import { GroupDaysButton } from './group-days-button'
 import { useEffect } from 'react'
-import { useAppDispatch, useAppSelector, navigationValueChanged } from '@/shared/redux'
+import { useAppDispatch, useAppSelector, dayIndexChanged } from '@/shared/redux'
 
 export const GroupDays = ({ data }: GroupDaysProps) => {
   const dispatch = useAppDispatch()
-  const { _id, educationType, faculty, course, dates } = data
+  const { dates } = data
 
   const navigationValue = useAppSelector((store) => store.navigation.navigationValue)
   const { dayIndex: pickedDay, week: pickedWeek } = navigationValue
 
   useEffect(() => {
-    if (!!dates && !!pickedWeek && !!dates[pickedWeek]) {
+    if (!!dates[pickedWeek]) {
       if (pickedDay === -1) {
         const todayDate = new Date()
         const currentDay = todayDate.getDate()
@@ -28,18 +28,10 @@ export const GroupDays = ({ data }: GroupDaysProps) => {
 
         const todayIndex = days.findIndex((date) => date.includes(`${dayToFind}.${monthToFind}.`))
 
-        dispatch(
-          navigationValueChanged({
-            ...navigationValue,
-            educationType,
-            faculty,
-            course,
-            dayIndex: todayIndex !== -1 ? todayIndex : currentWeekDayIndex,
-          }),
-        )
+        dispatch(dayIndexChanged(todayIndex !== -1 ? todayIndex : currentWeekDayIndex))
       }
     }
-  }, [data, dispatch, _id, pickedWeek])
+  }, [data, dispatch, navigationValue])
 
   return (
     <ul className={style.list}>
@@ -49,7 +41,7 @@ export const GroupDays = ({ data }: GroupDaysProps) => {
           <li className={style.listElement} key={index}>
             <GroupDaysButton
               onClick={() => {
-                dispatch(navigationValueChanged({ ...navigationValue, dayIndex: index }))
+                dispatch(dayIndexChanged(index))
               }}
               data={{ text: day }}
               isActive={pickedDay === index}
