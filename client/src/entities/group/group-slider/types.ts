@@ -1,5 +1,5 @@
 import { IGroup } from '@/shared/redux'
 
-export type GroupNavigationProps = {
+export type GroupSliderProps = {
   data: IGroup
 }

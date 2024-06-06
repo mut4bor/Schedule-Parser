@@ -1,10 +1,11 @@
 @import '@/shared/vars/vars';
 
 @media (min-width: $pageWidth320) {
-  .navigation {
+  .list {
     display: flex;
     flex-direction: row;
     gap: 1rem;
-    justify-content: center;
+    border-radius: 0.5rem;
+    flex-wrap: wrap;
   }
 }

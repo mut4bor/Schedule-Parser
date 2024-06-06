@@ -2,7 +2,7 @@
 
 @media (min-width: $pageWidth320) {
   .button {
-    background: $darkGray;
+    background: #ffffff10;
     color: $white;
     font-size: 1.6rem;
     padding: 0.5rem 1.5rem;
@@ -13,6 +13,10 @@
     justify-content: center;
     flex-wrap: wrap;
     gap: 0.5rem;
+    transition: 0.15s ease-in-out;
+    &:hover {
+      background: $accentColor;
+    }
   }
 }
 @media (min-width: $pageWidth425) {

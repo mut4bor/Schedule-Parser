@@ -9,6 +9,20 @@
     font-size: 2rem;
     gap: 1rem;
   }
+  .wrapper {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    background: $darkGray;
+  }
+
+  .schedule {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding: 2rem;
+    gap: 1rem;
+  }
 
   .loading {
     font-size: 2rem;

@@ -46,7 +46,7 @@ export const Courses = ({ handleStateChange }: CoursesProps) => {
       {!coursesData || isFetching || isLoading || coursesSkeletonIsEnabled
         ? Array.from({ length: 4 }).map((_, index) => (
             <li className={style.listElement} key={index}>
-              <SkeletonParagraph style={{ height: '1.9rem' }} />
+              <SkeletonParagraph style={{ height: '3.6rem' }} />
             </li>
           ))
         : coursesData.map((course, key) => (

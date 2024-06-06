@@ -1,7 +1,8 @@
 import * as style from './style.module.scss'
 import { useParams } from 'react-router-dom'
-import { GroupNavigation } from '@/entities/group/group-navigation'
-import { GroupButtonList } from '@/entities/group/group-button-list'
+import { GroupSlider } from '@/entities/group/group-slider'
+import { GroupDays } from '@/entities/group/group-days'
+import { GroupSchedule } from '@/entities/group/group-schedule'
 import { useGetGroupByIDQuery } from '@/shared/redux'
 
 export const GroupIDPage = () => {
@@ -13,22 +14,19 @@ export const GroupIDPage = () => {
 
   const { data: groupData, error: groupError, isLoading, isFetching } = useGetGroupByIDQuery(groupID)
 
-  if (isLoading || isFetching) {
-    return <div className={style.loading}>Loading...</div>
-  }
-
-  if (groupError) {
-    return <div className={style.error}>Error loading group data</div>
-  }
-
   if (!groupData) {
     return <div className={style.error}>Group not found</div>
   }
 
   return (
     <div className={style.container}>
-      <GroupNavigation data={groupData} />
-      <GroupButtonList data={groupData} />
+      <GroupSlider data={groupData} />
+      <div className={style.wrapper}>
+        <GroupDays data={groupData} />
+        <div className={style.schedule}>
+          <GroupSchedule data={groupData} />
+        </div>
+      </div>
     </div>
   )
 }
