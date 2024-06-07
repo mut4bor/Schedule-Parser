@@ -1,11 +1,12 @@
 import * as style from './style.module.scss'
 import { GroupsProps } from './types'
-import { SkeletonParagraph } from '@/shared/ui'
+import { Skeleton } from '@/shared/ui'
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAppSelector, useGetNamesQuery } from '@/shared/redux'
+import { SkeletonTime } from '@/shared/vars/vars'
 
-export const Groups = ({ skeletonState, handleStateChange }: GroupsProps) => {
+export const Groups = ({ skeletonState, handleSkeletonStateChange }: GroupsProps) => {
   const navigationValue = useAppSelector((store) => store.navigation.navigationValue)
   const { educationType, faculty, course } = navigationValue
   const { group: pickedGroup } = useAppSelector((store) => store.navigation.navigationValue)
@@ -20,8 +21,8 @@ export const Groups = ({ skeletonState, handleStateChange }: GroupsProps) => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      handleStateChange(false)
-    }, 300)
+      handleSkeletonStateChange(false)
+    }, SkeletonTime)
     return () => clearTimeout(timer)
   }, [skeletonState])
 
@@ -30,7 +31,7 @@ export const Groups = ({ skeletonState, handleStateChange }: GroupsProps) => {
       <div className={style.main}>
         {!namesData || isLoading || isFetching || skeletonState
           ? Array.from({ length: 12 }).map((item, key) => (
-              <SkeletonParagraph style={{ height: '3.6rem', borderRadius: '2rem' }} key={key} />
+              <Skeleton style={{ height: '3.6rem', borderRadius: '2rem' }} key={key} />
             ))
           : [...namesData]
               .sort((a, b) => a.index - b.index)

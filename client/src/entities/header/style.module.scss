@@ -2,16 +2,16 @@
 
 @media (min-width: $pageWidth320) {
   .header {
-    height: calc($headerHeightMobile + $contactsHeight);
-    background: $backgroundColor;
     display: flex;
-    width: 100%;
-    flex-direction: column;
-    justify-content: center;
     position: fixed;
     top: 0;
-    transition: 0.3s ease-in-out;
+    flex-direction: column;
+    justify-content: center;
     z-index: 999;
+    transition: 0.3s ease-in-out;
+    background: $backgroundColor;
+    width: 100%;
+    height: calc($headerHeightMobile + $contactsHeight);
     &.hidden {
       top: - calc($headerHeightMobile + $contactsHeight);
     }
@@ -24,21 +24,21 @@
   .wrapper {
     display: flex;
     flex: 1 0 auto;
-    width: 100%;
-    align-items: center;
     justify-content: center;
-    background: $darkGray;
+    align-items: center;
     border-radius: 0 0 0.5rem 0.5rem;
+    background: $darkGray;
+    width: 100%;
   }
   .container {
-    width: 100%;
-    max-width: $containerWidth;
-    padding: 1rem $containerPaddingX;
     display: grid;
     grid-template-columns: 1fr;
+    flex-wrap: wrap;
     align-items: center;
     gap: 1rem 2rem;
-    flex-wrap: wrap;
+    padding: 1rem $containerPaddingX;
+    width: 100%;
+    max-width: $containerWidth;
   }
 }
 

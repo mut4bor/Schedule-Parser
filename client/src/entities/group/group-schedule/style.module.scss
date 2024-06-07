@@ -7,18 +7,30 @@
     gap: 1rem;
   }
 
-  .text {
+  .heading {
     display: flex;
-    background: #ffffff10;
-    min-height: 3.6rem;
     align-items: center;
+    border-radius: 0.5rem;
+    background: $accentColor;
+    padding: 0.5rem 1.5rem;
+    width: fit-content;
+    min-height: 3.6rem;
     color: $white;
     font-size: 1.6rem;
-    padding: 0.5rem 1.5rem;
+  }
+  .text {
+    display: flex;
+    align-items: center;
     border-radius: 0.5rem;
+    background: #ffffff10;
+    padding: 0.5rem 1.5rem;
+    min-height: 3.6rem;
+    color: $white;
+    font-size: 1.6rem;
   }
 }
 @media (min-width: $pageWidth425) {
+  .heading,
   .text {
     font-size: 2rem;
   }

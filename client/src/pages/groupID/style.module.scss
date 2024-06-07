@@ -12,18 +12,18 @@
 
   .wrapper {
     display: flex;
-    flex-direction: row;
-    flex: 1;
-    background: $darkGray;
     position: relative;
+    flex: 1;
+    flex-direction: row;
+    background: $darkGray;
   }
 
   .schedule {
     display: flex;
     flex: 1;
     flex-direction: column;
-    padding: 1rem;
     gap: 1rem;
+    padding: 1rem;
   }
 
   .loading {

@@ -1,3 +1,3 @@
-export interface CoursesProps {
-  handleStateChange: (newState: boolean) => void
+export type CoursesProps = {
+  handleSkeletonStateChange: (newState: boolean) => void
 }

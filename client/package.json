@@ -43,6 +43,7 @@
     "postcss-normalize": "^10.0.1",
     "postcss-preset-env": "^9.5.14",
     "prettier": "3.2.5",
+    "prettier-plugin-css-order": "^2.1.2",
     "react-refresh": "^0.14.2",
     "sass": "^1.77.3",
     "sass-loader": "^14.2.1",

@@ -1,2 +1,2 @@
 export { SVG } from './SVG'
-export { SkeletonParagraph } from './Skeleton'
+export { Skeleton } from './Skeleton'

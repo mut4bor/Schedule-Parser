@@ -8,7 +8,7 @@ export const CoursesPage = () => {
   const navigate = useNavigate()
   const [coursesSkeletonIsEnabled, setCoursesSkeletonIsEnabled] = useState(true)
 
-  const handleStateChange = (newState: boolean) => {
+  const handleSkeletonStateChange = (newState: boolean) => {
     setCoursesSkeletonIsEnabled(newState)
   }
 
@@ -18,8 +18,8 @@ export const CoursesPage = () => {
         <NavigationButton text={'Назад'} onClick={() => navigate('/')} />
       </div>
       <div className={style.wrapper}>
-        <Courses handleStateChange={handleStateChange} />
-        <Groups handleStateChange={handleStateChange} skeletonState={coursesSkeletonIsEnabled} />
+        <Courses handleSkeletonStateChange={handleSkeletonStateChange} />
+        <Groups handleSkeletonStateChange={handleSkeletonStateChange} skeletonState={coursesSkeletonIsEnabled} />
       </div>
     </div>
   )

@@ -1,6 +1,6 @@
 import * as style from './style.module.scss'
 import { FacultyLinkProps } from './types'
-import { SkeletonParagraph } from '@/shared/ui'
+import { Skeleton } from '@/shared/ui'
 import { Link } from 'react-router-dom'
 import {
   useAppDispatch,
@@ -23,7 +23,7 @@ export const FacultyLink = ({ data }: FacultyLinkProps) => {
         <ul className={style.list}>
           {Array.from({ length: 5 }).map((_, index) => (
             <li key={index}>
-              <SkeletonParagraph />
+              <Skeleton />
             </li>
           ))}
         </ul>

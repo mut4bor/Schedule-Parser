@@ -1,28 +1,28 @@
 @import '@/shared/vars/vars';
 
 .container {
-  width: 100%;
-  height: $contactsHeight;
-  max-width: $containerWidth;
-  padding: 0rem $containerPaddingX;
-  margin: 0 auto;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 1rem 0.5rem;
-  flex-wrap: wrap;
+  margin: 0 auto;
+  padding: 0rem $containerPaddingX;
+  width: 100%;
+  max-width: $containerWidth;
+  height: $contactsHeight;
 }
 .contact {
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  gap: 2rem;
+  margin-left: auto;
   background: $backgroundColor;
   height: 2.8rem;
-  margin-left: auto;
-  gap: 2rem;
   a {
-    font-size: 1.4rem;
-    color: $white;
     transition: 0.15s ease-in-out;
+    color: $white;
+    font-size: 1.4rem;
     @media (hover: hover) {
       &:hover {
         color: $accentColor;

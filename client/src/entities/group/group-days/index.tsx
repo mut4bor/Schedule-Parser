@@ -2,9 +2,10 @@ import * as style from './style.module.scss'
 import { GroupDaysProps } from './types'
 import { GroupDaysButton } from './group-days-button'
 import { SVG } from '@/shared/ui'
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useAppDispatch, useAppSelector, dayIndexChanged } from '@/shared/redux'
-import { SkeletonParagraph } from '@/shared/ui'
+import { Skeleton } from '@/shared/ui'
+import { SkeletonTime } from '@/shared/vars/vars'
 
 export const GroupDays = ({ data, handleState, state }: GroupDaysProps) => {
   const dispatch = useAppDispatch()
@@ -37,27 +38,17 @@ export const GroupDays = ({ data, handleState, state }: GroupDaysProps) => {
     }
   }, [data, dispatch, navigationValue])
 
+  const [coursesSkeletonIsEnabled, setCoursesSkeletonIsEnabled] = useState(true)
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setCoursesSkeletonIsEnabled(false)
+    }, SkeletonTime)
+    return () => clearTimeout(timer)
+  }, [])
+
   return (
     <div className={`${style.container} ${state ? style.visible : style.hidden}`}>
-      <ul className={style.list}>
-        {!!data && !!data.dates && !!pickedWeek && !!data.dates[pickedWeek]
-          ? Object.keys(data.dates[pickedWeek]).map((day, index) => (
-              <li className={style.listElement} key={index}>
-                <GroupDaysButton
-                  onClick={() => {
-                    dispatch(dayIndexChanged(index))
-                  }}
-                  data={{ text: day }}
-                  isActive={pickedDay === index}
-                />
-              </li>
-            ))
-          : Array.from({ length: 6 }).map((_, index) => (
-              <li className={style.listElement} key={index}>
-                <SkeletonParagraph style={{ height: '3.6rem' }} />
-              </li>
-            ))}
-      </ul>
       <button
         onClick={(event) => {
           handleState(!state)
@@ -72,6 +63,25 @@ export const GroupDays = ({ data, handleState, state }: GroupDaysProps) => {
           useClassName={style.buttonSvgUse}
         ></SVG>
       </button>
+      <ul className={style.list}>
+        {!!data && !!data.dates && !!pickedWeek && !!data.dates[pickedWeek] && !coursesSkeletonIsEnabled
+          ? Object.keys(data.dates[pickedWeek]).map((day, index) => (
+              <li className={style.listElement} key={index}>
+                <GroupDaysButton
+                  onClick={() => {
+                    dispatch(dayIndexChanged(index))
+                  }}
+                  data={{ text: day }}
+                  isActive={pickedDay === index}
+                />
+              </li>
+            ))
+          : Array.from({ length: 6 }).map((_, index) => (
+              <li className={style.listElement} key={index}>
+                <Skeleton style={{ height: '3.6rem' }} />
+              </li>
+            ))}
+      </ul>
     </div>
   )
 }

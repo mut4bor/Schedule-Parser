@@ -4,10 +4,10 @@
   .container {
     display: flex;
     flex-direction: column;
-    padding: calc($headerHeightMobile + $contactsHeight + 1rem) $containerPaddingX 1rem;
-    margin: 0 auto;
-    max-width: $containerWidth;
     gap: 2rem;
+    margin: 0 auto;
+    padding: calc($headerHeightMobile + $contactsHeight + 1rem) $containerPaddingX 1rem;
+    max-width: $containerWidth;
   }
 }
 @media (min-width: $pageWidth768) {

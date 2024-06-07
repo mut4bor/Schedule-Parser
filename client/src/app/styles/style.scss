@@ -5,19 +5,14 @@ body {
   color: $white;
 }
 
-html,
-body {
-  overscroll-behavior: none;
-}
-
 ::-webkit-scrollbar {
   width: $scrollBarWidth;
   height: $scrollBarHeight;
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: $scrollBarBgColor;
   border-radius: 0.5rem;
+  background-color: $scrollBarBgColor;
 
   &:hover {
     background-color: $scrollBarHoverBgColor;

@@ -2,7 +2,7 @@ import * as style from './style.module.scss'
 import { CourseButtonProps } from './types'
 import { useAppDispatch, useAppSelector, courseChanged } from '@/shared/redux'
 
-export const CourseButton = ({ data: { course }, handleStateChange }: CourseButtonProps) => {
+export const CourseButton = ({ data: { course }, handleSkeletonStateChange }: CourseButtonProps) => {
   const dispatch = useAppDispatch()
   const navigationValue = useAppSelector((store) => store.navigation.navigationValue)
 
@@ -12,7 +12,7 @@ export const CourseButton = ({ data: { course }, handleStateChange }: CourseButt
     <button
       onClick={() => {
         dispatch(courseChanged(course))
-        pickedCourse !== course && handleStateChange(true)
+        pickedCourse !== course && handleSkeletonStateChange(true)
       }}
       className={`${style.button} ${pickedCourse === course ? style.active : ''}`}
       type="button"

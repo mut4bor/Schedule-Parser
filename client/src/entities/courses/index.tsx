@@ -1,13 +1,14 @@
 import * as style from './style.module.scss'
 import { CoursesProps } from './types'
-import { SkeletonParagraph } from '@/shared/ui'
+import { Skeleton } from '@/shared/ui'
 import { CourseButton } from '@/entities/courses/courses-button'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector, useGetCoursesQuery, courseChanged } from '@/shared/redux'
 import { BASE_URL } from '@/shared/config'
+import { SkeletonTime } from '@/shared/vars/vars'
 
-export const Courses = ({ handleStateChange }: CoursesProps) => {
+export const Courses = ({ handleSkeletonStateChange }: CoursesProps) => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const navigationValue = useAppSelector((store) => store.navigation.navigationValue)
@@ -37,7 +38,7 @@ export const Courses = ({ handleStateChange }: CoursesProps) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setCoursesSkeletonIsEnabled(false)
-    }, 300)
+    }, SkeletonTime)
     return () => clearTimeout(timer)
   }, [])
 
@@ -46,12 +47,12 @@ export const Courses = ({ handleStateChange }: CoursesProps) => {
       {!coursesData || isFetching || isLoading || coursesSkeletonIsEnabled
         ? Array.from({ length: 4 }).map((_, index) => (
             <li className={style.listElement} key={index}>
-              <SkeletonParagraph style={{ height: '3.6rem' }} />
+              <Skeleton style={{ height: '3.6rem' }} />
             </li>
           ))
         : coursesData.map((course, key) => (
             <li className={style.listElement} key={key}>
-              <CourseButton handleStateChange={handleStateChange} data={{ course }} />
+              <CourseButton handleSkeletonStateChange={handleSkeletonStateChange} data={{ course }} />
             </li>
           ))}
     </ul>

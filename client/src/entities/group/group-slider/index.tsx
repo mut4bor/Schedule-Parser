@@ -1,8 +1,9 @@
 import * as style from './style.module.scss'
 import { GroupSliderProps } from './types'
 import { NavigationButton } from '@/entities/navigation-button'
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { SkeletonTime } from '@/shared/vars/vars'
 import { getCurrentWeekRange, getDaysInRange } from '@/shared/hooks'
 import { useAppDispatch, useAppSelector, weekChanged, dayIndexChanged } from '@/shared/redux'
 
@@ -31,6 +32,15 @@ export const GroupSlider = ({ data }: GroupSliderProps) => {
     }
   }, [data, dispatch, range, navigationValue])
 
+  const [coursesSkeletonIsEnabled, setCoursesSkeletonIsEnabled] = useState(true)
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setCoursesSkeletonIsEnabled(false)
+    }, SkeletonTime)
+    return () => clearTimeout(timer)
+  }, [])
+
   return (
     <div className={style.container}>
       <div>
@@ -44,7 +54,7 @@ export const GroupSlider = ({ data }: GroupSliderProps) => {
         />
       </div>
       <ul className={style.list}>
-        {!!data && !!data.dates
+        {!!data && !!data.dates && !coursesSkeletonIsEnabled
           ? Object.keys(data.dates).map((week, index) => (
               <li key={index}>
                 <NavigationButton
@@ -56,7 +66,7 @@ export const GroupSlider = ({ data }: GroupSliderProps) => {
                 />
               </li>
             ))
-          : Array.from({ length: 5 }).map((_, index) => (
+          : Array.from({ length: 7 }).map((_, index) => (
               <li key={index}>
                 <NavigationButton isSkeleton />
               </li>

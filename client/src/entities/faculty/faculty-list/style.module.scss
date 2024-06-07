@@ -8,12 +8,12 @@
     padding: 2rem;
   }
   .pipe {
+    opacity: 10%;
+    z-index: 0;
+    border-radius: 0.2rem;
+    background: $white;
     width: 100%;
     min-height: 0.3rem;
-    background: $white;
-    opacity: 10%;
-    border-radius: 0.2rem;
-    z-index: 0;
   }
 }
 @media (min-width: $pageWidth1024) {
@@ -22,8 +22,8 @@
     flex-direction: row;
   }
   .pipe {
-    min-height: 100%;
-    min-width: 0.3rem;
     width: 0.3rem;
+    min-width: 0.3rem;
+    min-height: 100%;
   }
 }

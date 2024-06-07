@@ -2,18 +2,18 @@
 
 @media (min-width: $pageWidth320) {
   .button {
-    background: #ffffff10;
-    color: $white;
-    font-size: 1.6rem;
-    padding: 0.5rem 1.5rem;
-    border-radius: 0.5rem;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
     flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
     gap: 0.5rem;
     transition: 0.15s ease-in-out;
+    border-radius: 0.5rem;
+    background: #ffffff10;
+    padding: 0.5rem 1.5rem;
+    color: $white;
+    font-size: 1.6rem;
     &:hover {
       background: $accentColor;
     }
@@ -21,7 +21,7 @@
 }
 @media (min-width: $pageWidth425) {
   .button {
-    font-size: 2rem;
     flex-direction: row;
+    font-size: 2rem;
   }
 }

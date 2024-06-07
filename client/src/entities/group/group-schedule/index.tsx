@@ -1,6 +1,8 @@
-import { SkeletonParagraph } from '@/shared/ui'
 import * as style from './style.module.scss'
 import { GroupButtonListProps } from './types'
+import { Skeleton } from '@/shared/ui'
+import { useState, useEffect } from 'react'
+import { SkeletonTime } from '@/shared/vars/vars'
 import { useAppSelector } from '@/shared/redux'
 
 export const GroupSchedule = ({ data }: GroupButtonListProps) => {
@@ -10,11 +12,21 @@ export const GroupSchedule = ({ data }: GroupButtonListProps) => {
 
   const isDayPicked = !!pickedWeek && pickedDayIndex !== -1 && !!data?.dates[pickedWeek]
 
-  if (!isDayPicked) {
+  const [coursesSkeletonIsEnabled, setCoursesSkeletonIsEnabled] = useState(true)
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setCoursesSkeletonIsEnabled(false)
+    }, SkeletonTime)
+    return () => clearTimeout(timer)
+  }, [])
+
+  if (!isDayPicked || coursesSkeletonIsEnabled) {
     return (
       <div className={style.list}>
+        <Skeleton style={{ minHeight: '3.6rem' }} />
         {Array.from({ length: 5 }).map((_, index) => (
-          <SkeletonParagraph style={{ minHeight: '3.6rem' }} key={index} />
+          <Skeleton style={{ minHeight: '3.6rem' }} key={index} />
         ))}
       </div>
     )
@@ -27,6 +39,7 @@ export const GroupSchedule = ({ data }: GroupButtonListProps) => {
 
   return (
     <div className={style.list}>
+      <p className={style.heading}>{data.group}</p>
       {entries.map(([time, subject], index) => (
         <p key={index} className={style.text}>
           {`${time} – ${subject}`}

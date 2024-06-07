@@ -2,6 +2,7 @@ import * as style from './style.module.scss'
 import { Faculty } from '@/entities/faculty'
 import React, { useState, useEffect } from 'react'
 import { useGetFacultiesQuery } from '@/shared/redux'
+import { SkeletonTime } from '@/shared/vars/vars'
 
 export const MainPage = () => {
   const { data: facultiesData, error: facultiesError, isLoading, isFetching } = useGetFacultiesQuery()
@@ -11,7 +12,7 @@ export const MainPage = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setSkeletonIsEnabled(false)
-    }, 300)
+    }, SkeletonTime)
     return () => clearTimeout(timer)
   }, [])
 

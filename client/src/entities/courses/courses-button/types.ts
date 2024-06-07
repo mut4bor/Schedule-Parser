@@ -1,7 +1,6 @@
-import { CoursesProps } from '../types'
-
-export interface CourseButtonProps extends CoursesProps {
+export type CourseButtonProps = {
   data: {
     course: string
   }
+  handleSkeletonStateChange: (newState: boolean) => void
 }

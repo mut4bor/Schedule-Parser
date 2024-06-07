@@ -4,18 +4,18 @@
   .button {
     display: flex;
     flex-direction: column;
+    justify-content: center;
     align-items: center;
+    gap: 1rem;
+    transition: 0.15s ease-in-out;
+    border-radius: 0.5rem;
+    background: transparent;
+    background: #ffffff10;
+    padding: 0.5rem 1rem;
     min-width: 10rem;
     min-height: 3rem;
-    justify-content: center;
-    background: transparent;
-    border-radius: 0.5rem;
-    gap: 1rem;
     color: $white;
     font-size: 1.6rem;
-    transition: 0.15s ease-in-out;
-    padding: 0.5rem 1rem;
-    background: #ffffff10;
     &.active {
       background: $accentColor;
     }
