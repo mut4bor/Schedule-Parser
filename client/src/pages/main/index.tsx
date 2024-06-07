@@ -27,7 +27,7 @@ export const MainPage = () => {
         : Object.entries(facultiesData).map(([educationType, faculties], key) => {
             return (
               <React.Fragment key={`faculty-${key}`}>
-                <Faculty data={{ educationType, faculties }} key={key} />
+                <Faculty data={{ educationType: educationType, faculties: faculties }} key={key} />
               </React.Fragment>
             )
           })}

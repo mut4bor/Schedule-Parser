@@ -5,34 +5,33 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { SkeletonTime } from '@/shared/vars/vars'
 import { getCurrentWeekRange, getDaysInRange } from '@/shared/hooks'
-import { useAppDispatch, useAppSelector, weekChanged, dayIndexChanged } from '@/shared/redux'
+import { useAppDispatch, useAppSelector, weekChanged, dayIndexChanged, useGetWeeksByIDQuery } from '@/shared/redux'
 
-export const GroupSlider = ({ data }: GroupSliderProps) => {
+export const GroupWeeksSlider = ({ groupID }: GroupSliderProps) => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
+  const [coursesSkeletonIsEnabled, setCoursesSkeletonIsEnabled] = useState(true)
+
   const { monday, saturday } = getCurrentWeekRange()
-  const range = `${monday}-${saturday}`
 
   const navigationValue = useAppSelector((store) => store.navigation.navigationValue)
   const { week: pickedWeek } = navigationValue
 
+  const { data: weeksData, error: weeksError } = useGetWeeksByIDQuery(groupID)
+
   useEffect(() => {
-    if (data) {
-      const { dates } = data
+    if (weeksData) {
       if (!pickedWeek) {
-        const scheduleKeys = Object.keys(dates)
-        const daysRange = scheduleKeys.map((item) => getDaysInRange(item))
+        const daysRange = weeksData.map((item) => getDaysInRange(item))
         const currentWeekIndex = daysRange.findIndex(
           (subArray) => subArray.includes(monday) && subArray.includes(saturday),
         )
-        const currentWeek = scheduleKeys[currentWeekIndex]
 
+        const currentWeek = weeksData[currentWeekIndex]
         dispatch(weekChanged(currentWeek))
       }
     }
-  }, [data, dispatch, range, navigationValue])
-
-  const [coursesSkeletonIsEnabled, setCoursesSkeletonIsEnabled] = useState(true)
+  }, [weeksData, dispatch, monday, saturday, navigationValue])
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -54,8 +53,8 @@ export const GroupSlider = ({ data }: GroupSliderProps) => {
         />
       </div>
       <ul className={style.list}>
-        {!!data && !!data.dates && !coursesSkeletonIsEnabled
-          ? Object.keys(data.dates).map((week, index) => (
+        {!!weeksData && !coursesSkeletonIsEnabled
+          ? weeksData.map((week, index) => (
               <li key={index}>
                 <NavigationButton
                   text={week}

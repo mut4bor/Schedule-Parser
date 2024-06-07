@@ -3,14 +3,18 @@ import { GroupButtonListProps } from './types'
 import { Skeleton } from '@/shared/ui'
 import { useState, useEffect } from 'react'
 import { SkeletonTime } from '@/shared/vars/vars'
-import { useAppSelector } from '@/shared/redux'
+import { useAppSelector, useGetScheduleByIDQuery } from '@/shared/redux'
 
-export const GroupSchedule = ({ data }: GroupButtonListProps) => {
+export const GroupSchedule = ({ groupID, groupName }: GroupButtonListProps) => {
   const picked = useAppSelector((store) => store.navigation.navigationValue)
 
   const { week: pickedWeek, dayIndex: pickedDayIndex } = picked
 
-  const isDayPicked = !!pickedWeek && pickedDayIndex !== -1 && !!data?.dates[pickedWeek]
+  const { data: scheduleData, error: scheduleError } = useGetScheduleByIDQuery({
+    groupID: groupID,
+    week: pickedWeek,
+    dayIndex: pickedDayIndex,
+  })
 
   const [coursesSkeletonIsEnabled, setCoursesSkeletonIsEnabled] = useState(true)
 
@@ -21,7 +25,7 @@ export const GroupSchedule = ({ data }: GroupButtonListProps) => {
     return () => clearTimeout(timer)
   }, [])
 
-  if (!isDayPicked || coursesSkeletonIsEnabled) {
+  if (!scheduleData || !groupName || coursesSkeletonIsEnabled) {
     return (
       <div className={style.list}>
         <Skeleton style={{ minHeight: '3.6rem' }} />
@@ -32,15 +36,10 @@ export const GroupSchedule = ({ data }: GroupButtonListProps) => {
     )
   }
 
-  const weekData = data.dates[pickedWeek]
-  const daysOfWeek = Object.keys(weekData)
-  const dayData = weekData[daysOfWeek[pickedDayIndex]]
-  const entries = Object.entries(dayData)
-
   return (
     <div className={style.list}>
-      <p className={style.heading}>{data.group}</p>
-      {entries.map(([time, subject], index) => (
+      <p className={style.heading}>{groupName}</p>
+      {Object.entries(scheduleData).map(([time, subject], index) => (
         <p key={index} className={style.text}>
           {`${time} – ${subject}`}
         </p>

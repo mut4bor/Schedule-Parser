@@ -1,22 +1,22 @@
 import express from 'express'
+import { getEducationTypes } from '../controllers/educationType.controller.js'
+import { getFaculties } from '../controllers/faculties.controller.js'
+import { getCourses } from '../controllers/courses.controller.js'
 import {
   getAllGroups,
   getGroupById,
+  getWeeksByID,
+  getWeekDaysByID,
+  getScheduleByID,
   createGroup,
   updateGroupById,
   deleteGroupById,
   deleteAllGroups,
 } from '../controllers/group.controller.js'
-import {
-  getGroupByName,
-  getGroupNames,
-} from '../controllers/name.controller.js'
-import {
-  getUniqueEducationTypes,
-  getUniqueFaculties,
-  getUniqueCourses,
-} from '../controllers/distinctData.controller.js'
+import { getGroupNames } from '../controllers/name.controller.js'
+
 import { useEnv } from '../../hooks/useEnv.js'
+
 useEnv()
 
 const router = express.Router()
@@ -45,16 +45,18 @@ router.use(coursePath, checkPassword)
 
 router.get(groupsPath, getAllGroups)
 router.get(`${groupsPath}/:id`, getGroupById)
+router.get(`${groupsPath}/:id/weeks`, getWeeksByID)
+router.get(`${groupsPath}/:id/weeks/:week`, getWeekDaysByID)
+router.get(`${groupsPath}/:id/weeks/:week/:dayIndex`, getScheduleByID)
 router.post(groupsPath, createGroup)
 router.put(`${groupsPath}/:id`, updateGroupById)
 router.delete(groupsPath, deleteAllGroups)
 router.delete(`${groupsPath}/:id`, deleteGroupById)
 
 router.get(namesPath, getGroupNames)
-router.get(`${namesPath}/:name`, getGroupByName)
 
-router.get(educationTypePath, getUniqueEducationTypes)
-router.get(facultyPath, getUniqueFaculties)
-router.get(coursePath, getUniqueCourses)
+router.get(educationTypePath, getEducationTypes)
+router.get(facultyPath, getFaculties)
+router.get(coursePath, getCourses)
 
 export { router }

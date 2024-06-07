@@ -3,18 +3,20 @@
 @media (min-width: $pageWidth320) {
   .container {
     display: flex;
+    position: relative;
     flex-direction: row;
     gap: 1rem;
   }
   .list {
     display: flex;
+    position: relative;
     flex-direction: row;
     gap: 1rem;
     border-radius: 0.5rem;
-    padding: 0 0 1rem;
+    padding: 0 0 0.5rem;
     overflow-x: auto;
     li {
-      text-wrap: nowrap;
+      white-space: nowrap;
     }
   }
 }

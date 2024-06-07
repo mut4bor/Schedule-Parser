@@ -4,7 +4,6 @@ import { Skeleton } from '@/shared/ui'
 import { Link } from 'react-router-dom'
 import {
   useAppDispatch,
-  useAppSelector,
   educationTypeChanged,
   facultyChanged,
   courseChanged,
@@ -15,7 +14,6 @@ import { COURSES_PATH } from '@/shared/config'
 
 export const FacultyLink = ({ data }: FacultyLinkProps) => {
   const dispatch = useAppDispatch()
-  const navigationValue = useAppSelector((store) => store.navigation.navigationValue)
 
   if (!data) {
     return (
@@ -44,14 +42,11 @@ export const FacultyLink = ({ data }: FacultyLinkProps) => {
   return (
     <Link className={style.link} to={COURSES_PATH} onClick={handleLinkClick}>
       <ul className={style.list}>
-        {faculty
-          .toString()
-          .split(',')
-          .map((item) => (
-            <li className={style.listElement} key={item}>
-              {item}
-            </li>
-          ))}
+        {faculty.split(',').map((item) => (
+          <li className={style.listElement} key={item}>
+            {item}
+          </li>
+        ))}
       </ul>
     </Link>
   )

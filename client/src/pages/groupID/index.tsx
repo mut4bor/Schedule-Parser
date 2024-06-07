@@ -1,6 +1,6 @@
 import * as style from './style.module.scss'
 import { useParams } from 'react-router-dom'
-import { GroupSlider } from '@/entities/group/group-slider'
+import { GroupWeeksSlider } from '@/entities/group/group-weeks-slider'
 import { GroupDays } from '@/entities/group/group-days'
 import { GroupSchedule } from '@/entities/group/group-schedule'
 import {
@@ -11,11 +11,13 @@ import {
   useAppDispatch,
   useGetGroupByIDQuery,
 } from '@/shared/redux'
-import { SetStateAction, useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useSwipeable } from 'react-swipeable'
 
 export const GroupIDPage = () => {
   const dispatch = useAppDispatch()
   const { groupID } = useParams()
+  const [isGroupDaysVisible, setIsGroupDaysVisible] = useState(true)
 
   useEffect(() => {
     if (!!groupID) {
@@ -38,43 +40,24 @@ export const GroupIDPage = () => {
     }
   }, [groupData, dispatch, groupID])
 
-  const [touchStartX, setTouchStartX] = useState(0)
-  const [touchEndX, setTouchEndX] = useState(0)
-  const [isGroupDaysVisible, setIsGroupDaysVisible] = useState(true)
-
-  const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
-    setTouchStartX(event.targetTouches[0].clientX)
-  }
-
-  const handleTouchMove = (event: React.TouchEvent<HTMLDivElement>) => {
-    setTouchEndX(event.targetTouches[0].clientX)
-  }
-
-  const handleTouchEnd = () => {
-    if (touchStartX - touchEndX > 50) {
-      return setIsGroupDaysVisible(false)
-    }
-
-    if (touchStartX - touchEndX < -50) {
-      return setIsGroupDaysVisible(true)
-    }
-  }
-  const handleState = (state: boolean) => {
-    setIsGroupDaysVisible(state)
-  }
+  const handlers = useSwipeable({
+    onSwipedLeft: () => setIsGroupDaysVisible(false),
+    onSwipedRight: () => setIsGroupDaysVisible(true),
+    onTap: () => setIsGroupDaysVisible(false),
+    preventScrollOnSwipe: true,
+  })
 
   return (
     <div className={style.container}>
-      <GroupSlider data={groupData} />
-      <div
-        className={style.wrapper}
-        // onTouchStart={handleTouchStart}
-        // onTouchMove={handleTouchMove}
-        // onTouchEnd={handleTouchEnd}
-      >
-        <GroupDays data={groupData} handleState={handleState} state={isGroupDaysVisible} />
-        <div className={style.schedule}>
-          <GroupSchedule data={groupData} />
+      <GroupWeeksSlider groupID={groupID} />
+      <div className={style.wrapper}>
+        <GroupDays
+          groupID={groupID}
+          handleSetIsGroupDaysVisible={(state: boolean) => setIsGroupDaysVisible(state)}
+          isGroupDaysVisible={isGroupDaysVisible}
+        />
+        <div className={style.schedule} {...handlers}>
+          <GroupSchedule groupID={groupID} groupName={groupData?.group} />
         </div>
       </div>
     </div>

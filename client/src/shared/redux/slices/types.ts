@@ -10,12 +10,18 @@ export interface IName {
   __v: number
 }
 
-interface ISchedule {
-  [week: string]: {
-    [day: string]: {
-      [time: string]: string
-    }
+export interface IFaculties {
+  [educationType: string]: string[]
+}
+
+export interface IDays {
+  [day: string]: {
+    [time: string]: string
   }
+}
+
+export interface ISchedule {
+  [week: string]: IDays
 }
 
 export interface IGroup extends IName {

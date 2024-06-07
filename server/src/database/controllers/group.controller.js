@@ -13,8 +13,108 @@ const getAllGroups = async (req, res) => {
 const getGroupById = async (req, res) => {
   try {
     const { id } = req.params
-    const group = await Group.findById(id)
+    if (!id) {
+      return res.status(400).json({ message: 'ID is required' })
+    }
+    const group = await Group.findById(id, {
+      dates: 0,
+    })
+
+    if (!group) {
+      return res.status(404).json({ message: 'Group not found' })
+    }
+
     res.status(200).json(group)
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+}
+
+const getWeeksByID = async (req, res) => {
+  try {
+    const { id } = req.params
+
+    if (!id) {
+      return res.status(400).json({ message: 'ID is required' })
+    }
+
+    const group = await Group.findById(id)
+
+    if (!group) {
+      return res.status(404).json({ message: 'Group not found' })
+    }
+
+    if (!group.dates || typeof group.dates !== 'object') {
+      return res.status(400).json({ message: 'Invalid group dates' })
+    }
+
+    const weeks = Object.keys(group.dates)
+
+    res.status(200).json(weeks)
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+}
+
+const getWeekDaysByID = async (req, res) => {
+  try {
+    const { id, week } = req.params
+
+    if (!id) {
+      return res.status(400).json({ message: 'ID is required' })
+    }
+
+    if (!week) {
+      return res.status(400).json({ message: 'Week is required' })
+    }
+
+    const group = await Group.findById(id)
+
+    if (!group) {
+      return res.status(404).json({ message: 'Group not found' })
+    }
+
+    const days = Object.keys(group.dates[week])
+
+    if (!days) {
+      return res.status(404).json({ message: 'Days not found' })
+    }
+
+    res.status(200).json(days)
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+}
+
+const getScheduleByID = async (req, res) => {
+  try {
+    const { id, week, dayIndex } = req.params
+
+    if (!id) {
+      return res.status(400).json({ message: 'ID is required' })
+    }
+
+    if (!week) {
+      return res.status(400).json({ message: 'Week is required' })
+    }
+
+    if (!dayIndex) {
+      return res.status(400).json({ message: 'Day index is required' })
+    }
+
+    const group = await Group.findById(id)
+
+    if (!group) {
+      return res.status(404).json({ message: 'Group not found' })
+    }
+
+    const schedule = group.dates[week][Object.keys(group.dates[week])[dayIndex]]
+
+    if (!schedule) {
+      return res.status(404).json({ message: 'Schedule not found' })
+    }
+
+    res.status(200).json(schedule)
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
@@ -75,6 +175,9 @@ const deleteAllGroups = async (req, res) => {
 export {
   getAllGroups,
   getGroupById,
+  getWeeksByID,
+  getWeekDaysByID,
+  getScheduleByID,
   createGroup,
   updateGroupById,
   deleteGroupById,

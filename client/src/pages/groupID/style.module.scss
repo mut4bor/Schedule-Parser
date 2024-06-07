@@ -4,6 +4,7 @@
   .container {
     display: flex;
     flex-direction: column;
+    gap: 0.5rem;
     margin: 0 auto;
     padding: calc($headerHeightMobile + $contactsHeight + 1rem) $containerPaddingX 1rem;
     max-width: $containerWidth;
