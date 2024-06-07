@@ -29,17 +29,17 @@ export const Groups = ({ skeletonState, handleSkeletonStateChange }: GroupsProps
   return (
     <div className={style.container}>
       <div className={style.main}>
-        {!namesData || isLoading || isFetching || skeletonState
-          ? Array.from({ length: 12 }).map((item, key) => (
-              <Skeleton style={{ height: '3.6rem', borderRadius: '2rem' }} key={key} />
+        {!namesData || isLoading || isFetching || !skeletonState
+          ? Array.from({ length: 16 }).map((_, index) => (
+              <Skeleton style={{ height: '3.6rem', borderRadius: '2rem' }} key={index} />
             ))
           : [...namesData]
               .sort((a, b) => a.index - b.index)
-              .map((item, key) => (
+              .map((item, index) => (
                 <Link
                   to={`/${item._id}`}
                   className={`${style.link} ${pickedGroup === item._id ? style.active : ''}`}
-                  key={key}
+                  key={index}
                 >
                   <p className={style.text}>{item.group}</p>
                 </Link>
