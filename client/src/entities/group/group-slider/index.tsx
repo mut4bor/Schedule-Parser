@@ -15,22 +15,19 @@ export const GroupSlider = ({ data }: GroupSliderProps) => {
   const navigationValue = useAppSelector((store) => store.navigation.navigationValue)
   const { week: pickedWeek } = navigationValue
 
-  if (!data) {
-    return <div className=""></div>
-  }
-
-  const { dates } = data
-
   useEffect(() => {
-    if (!pickedWeek) {
-      const scheduleKeys = Object.keys(dates)
-      const daysRange = scheduleKeys.map((item) => getDaysInRange(item))
-      const currentWeekIndex = daysRange.findIndex(
-        (subArray) => subArray.includes(monday) && subArray.includes(saturday),
-      )
-      const currentWeek = scheduleKeys[currentWeekIndex]
+    if (data) {
+      const { dates } = data
+      if (!pickedWeek) {
+        const scheduleKeys = Object.keys(dates)
+        const daysRange = scheduleKeys.map((item) => getDaysInRange(item))
+        const currentWeekIndex = daysRange.findIndex(
+          (subArray) => subArray.includes(monday) && subArray.includes(saturday),
+        )
+        const currentWeek = scheduleKeys[currentWeekIndex]
 
-      dispatch(weekChanged(currentWeek))
+        dispatch(weekChanged(currentWeek))
+      }
     }
   }, [data, dispatch, range, navigationValue])
 
@@ -47,18 +44,23 @@ export const GroupSlider = ({ data }: GroupSliderProps) => {
         />
       </div>
       <ul className={style.list}>
-        {!!dates &&
-          Object.keys(dates).map((week, index) => (
-            <li key={index}>
-              <NavigationButton
-                text={week}
-                onClick={() => {
-                  dispatch(weekChanged(week))
-                }}
-                isActive={pickedWeek === week}
-              />
-            </li>
-          ))}
+        {!!data && !!data.dates
+          ? Object.keys(data.dates).map((week, index) => (
+              <li key={index}>
+                <NavigationButton
+                  text={week}
+                  onClick={() => {
+                    dispatch(weekChanged(week))
+                  }}
+                  isActive={pickedWeek === week}
+                />
+              </li>
+            ))
+          : Array.from({ length: 5 }).map((_, index) => (
+              <li key={index}>
+                <NavigationButton isSkeleton />
+              </li>
+            ))}
       </ul>
     </div>
   )

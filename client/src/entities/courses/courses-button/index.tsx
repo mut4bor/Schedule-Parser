@@ -12,7 +12,7 @@ export const CourseButton = ({ data: { course }, handleStateChange }: CourseButt
     <button
       onClick={() => {
         dispatch(courseChanged(course))
-        handleStateChange(true)
+        pickedCourse !== course && handleStateChange(true)
       }}
       className={`${style.button} ${pickedCourse === course ? style.active : ''}`}
       type="button"

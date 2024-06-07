@@ -5,6 +5,11 @@ body {
   color: $white;
 }
 
+html,
+body {
+  overscroll-behavior: none;
+}
+
 ::-webkit-scrollbar {
   width: $scrollBarWidth;
   height: $scrollBarHeight;

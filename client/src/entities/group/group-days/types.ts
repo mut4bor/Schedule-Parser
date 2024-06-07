@@ -1,5 +1,7 @@
 import { IGroup } from '@/shared/redux'
 
 export type GroupDaysProps = {
-  data: IGroup
+  data?: IGroup
+  handleState: (state: boolean) => void
+  state: boolean
 }

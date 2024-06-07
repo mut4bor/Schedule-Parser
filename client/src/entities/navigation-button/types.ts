@@ -1,6 +1,6 @@
 export interface NavigationButtonProps {
-  text: string
-
-  onClick: () => void
+  text?: string
+  onClick?: () => void
   isActive?: boolean
+  isSkeleton?: boolean
 }

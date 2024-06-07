@@ -40,7 +40,7 @@ export const HeaderInput = () => {
 
   const debouncedOnBlur = useDebouncedCallback(() => {
     setInputState((prevState) => ({ ...prevState, focused: false }))
-  }, 100)
+  }, 300)
 
   return (
     <>

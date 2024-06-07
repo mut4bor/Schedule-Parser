@@ -10,12 +10,13 @@
     border-radius: 0.5rem;
     flex: 1;
     gap: 1rem;
-    height: 3.6rem;
+    min-height: 3.6rem;
     color: $white;
     font-size: 1.6rem;
     transition: 0.15s ease-in-out;
     padding: 0 2rem;
     background: #ffffff10;
+    text-wrap: wrap;
     &.active {
       background: $accentColor;
     }
@@ -24,5 +25,11 @@
         background: $accentColor;
       }
     }
+  }
+}
+
+@media (min-width: $pageWidth768) {
+  .button {
+    text-wrap: nowrap;
   }
 }

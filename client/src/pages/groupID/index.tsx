@@ -11,7 +11,7 @@ import {
   useAppDispatch,
   useGetGroupByIDQuery,
 } from '@/shared/redux'
-import { useEffect } from 'react'
+import { SetStateAction, useEffect, useState } from 'react'
 
 export const GroupIDPage = () => {
   const dispatch = useAppDispatch()
@@ -38,15 +38,41 @@ export const GroupIDPage = () => {
     }
   }, [groupData, dispatch, groupID])
 
-  if (!groupData) {
-    return <div className={style.error}>Group not found</div>
+  const [touchStartX, setTouchStartX] = useState(0)
+  const [touchEndX, setTouchEndX] = useState(0)
+  const [isGroupDaysVisible, setIsGroupDaysVisible] = useState(true)
+
+  const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+    setTouchStartX(event.targetTouches[0].clientX)
+  }
+
+  const handleTouchMove = (event: React.TouchEvent<HTMLDivElement>) => {
+    setTouchEndX(event.targetTouches[0].clientX)
+  }
+
+  const handleTouchEnd = () => {
+    if (touchStartX - touchEndX > 50) {
+      return setIsGroupDaysVisible(false)
+    }
+
+    if (touchStartX - touchEndX < -50) {
+      return setIsGroupDaysVisible(true)
+    }
+  }
+  const handleState = (state: boolean) => {
+    setIsGroupDaysVisible(state)
   }
 
   return (
     <div className={style.container}>
       <GroupSlider data={groupData} />
-      <div className={style.wrapper}>
-        <GroupDays data={groupData} />
+      <div
+        className={style.wrapper}
+        // onTouchStart={handleTouchStart}
+        // onTouchMove={handleTouchMove}
+        // onTouchEnd={handleTouchEnd}
+      >
+        <GroupDays data={groupData} handleState={handleState} state={isGroupDaysVisible} />
         <div className={style.schedule}>
           <GroupSchedule data={groupData} />
         </div>
