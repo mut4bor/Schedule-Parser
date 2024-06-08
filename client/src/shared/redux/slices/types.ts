@@ -1,10 +1,13 @@
 export interface IName {
-  index: number
+  group: string
   _id: string
+  index: number
+}
+
+export interface IGroup extends IName {
   educationType: string
   faculty: string
   course: string
-  group: string
   createdAt: string
   updatedAt: string
   __v: number
@@ -22,8 +25,4 @@ export interface IDays {
 
 export interface ISchedule {
   [week: string]: IDays
-}
-
-export interface IGroup extends IName {
-  dates: ISchedule
 }

@@ -1,12 +1,12 @@
 import { API_URL, X_ADMIN_PASSWORD } from '@/shared/config'
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { IName, IGroup, IFaculties, IDays, ISchedule } from './types'
+import { IGroup, IName, IFaculties, IDays, ISchedule } from './types'
 
 const groupsPath = `/groups`
 const namesPath = `/names`
 const educationTypePath = `/educationType`
 const getParams = (params: string | void) => {
-  return `${params ? `?${params}` : ''}`
+  return params ? `?${params}` : ''
 }
 
 const api = createApi({
@@ -53,16 +53,16 @@ const api = createApi({
       }),
     }),
 
-    getGroups: builder.query<IGroup[], void>({
-      query: () => ({
-        url: `${groupsPath}`,
+    getGroupNamesThatMatchWithReqParams: builder.query<IName[], string>({
+      query: (searchParams) => ({
+        url: `${namesPath}/search${getParams(searchParams)}`,
         headers: {
           'x-admin-password': X_ADMIN_PASSWORD,
         },
       }),
     }),
 
-    getGroupByID: builder.query<IName, string>({
+    getGroupByID: builder.query<IGroup, string>({
       query: (groupID) => ({
         url: `${groupsPath}/${groupID}`,
         headers: {
@@ -104,7 +104,7 @@ export const {
   useGetFacultiesQuery,
   useGetCoursesQuery,
   useGetNamesQuery,
-  useGetGroupsQuery,
+  useGetGroupNamesThatMatchWithReqParamsQuery,
   useGetGroupByIDQuery,
   useGetWeeksByIDQuery,
   useGetWeekDaysByIDQuery,

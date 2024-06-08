@@ -10,11 +10,16 @@ export const GroupSchedule = ({ groupID, groupName }: GroupButtonListProps) => {
 
   const { week: pickedWeek, dayIndex: pickedDayIndex } = picked
 
-  const { data: scheduleData, error: scheduleError } = useGetScheduleByIDQuery({
-    groupID: groupID,
-    week: pickedWeek,
-    dayIndex: pickedDayIndex,
-  })
+  const { data: scheduleData, error: scheduleError } = useGetScheduleByIDQuery(
+    {
+      groupID: groupID,
+      week: pickedWeek,
+      dayIndex: pickedDayIndex,
+    },
+    {
+      skip: !groupID || !pickedWeek || pickedDayIndex === -1,
+    },
+  )
 
   const [coursesSkeletonIsEnabled, setCoursesSkeletonIsEnabled] = useState(true)
 

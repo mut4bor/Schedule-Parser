@@ -7,7 +7,7 @@ import {
   educationTypeChanged,
   facultyChanged,
   courseChanged,
-  groupChanged,
+  groupIDChanged,
   useAppDispatch,
   useGetGroupByIDQuery,
 } from '@/shared/redux'
@@ -21,7 +21,7 @@ export const GroupIDPage = () => {
 
   useEffect(() => {
     if (!!groupID) {
-      dispatch(groupChanged(groupID))
+      dispatch(groupIDChanged(groupID))
     }
   }, [groupID, dispatch])
 
@@ -29,7 +29,14 @@ export const GroupIDPage = () => {
     return <div className={style.error}>Invalid Group ID</div>
   }
 
-  const { data: groupData, error: groupError, isLoading, isFetching } = useGetGroupByIDQuery(groupID)
+  const {
+    data: groupData,
+    error: groupError,
+    isLoading,
+    isFetching,
+  } = useGetGroupByIDQuery(groupID, {
+    skip: !groupID,
+  })
 
   useEffect(() => {
     if (!!groupData) {

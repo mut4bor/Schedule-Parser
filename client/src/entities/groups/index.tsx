@@ -9,7 +9,7 @@ import { SkeletonTime } from '@/shared/vars/vars'
 export const Groups = ({ skeletonState, handleSkeletonStateChange }: GroupsProps) => {
   const navigationValue = useAppSelector((store) => store.navigation.navigationValue)
   const { educationType, faculty, course } = navigationValue
-  const { group: pickedGroup } = useAppSelector((store) => store.navigation.navigationValue)
+  const { groupID: pickedGroup } = useAppSelector((store) => store.navigation.navigationValue)
 
   const namesSearchParams = new URLSearchParams({
     educationType: educationType,
@@ -33,17 +33,15 @@ export const Groups = ({ skeletonState, handleSkeletonStateChange }: GroupsProps
           ? Array.from({ length: 16 }).map((_, index) => (
               <Skeleton style={{ height: '3.6rem', borderRadius: '2rem' }} key={index} />
             ))
-          : [...namesData]
-              .sort((a, b) => a.index - b.index)
-              .map((item, index) => (
-                <Link
-                  to={`/${item._id}`}
-                  className={`${style.link} ${pickedGroup === item._id ? style.active : ''}`}
-                  key={index}
-                >
-                  <p className={style.text}>{item.group}</p>
-                </Link>
-              ))}
+          : namesData.map((item, index) => (
+              <Link
+                to={`/${item._id}`}
+                className={`${style.link} ${pickedGroup === item._id ? style.active : ''}`}
+                key={index}
+              >
+                <p className={style.text}>{item.group}</p>
+              </Link>
+            ))}
       </div>
     </div>
   )

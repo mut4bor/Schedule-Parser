@@ -11,47 +11,34 @@
     transition: 0.3s ease-in-out;
     background: $backgroundColor;
     width: 100%;
-    height: calc($headerHeightMobile + $contactsHeight);
-    &.hidden {
-      top: - calc($headerHeightMobile + $contactsHeight);
-    }
+    height: $headerHeight;
 
+    &.hidden {
+      top: -100%;
+    }
     &.visible {
       top: 0;
     }
   }
 
   .wrapper {
-    display: flex;
-    flex: 1 0 auto;
-    justify-content: center;
-    align-items: center;
-    border-radius: 0 0 0.5rem 0.5rem;
     background: $darkGray;
     width: 100%;
   }
   .container {
-    display: grid;
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: row;
     flex-wrap: wrap;
-    align-items: center;
     gap: 1rem 2rem;
+    margin: 0 auto;
     padding: 1rem $containerPaddingX;
     width: 100%;
     max-width: $containerWidth;
   }
-}
-
-@media (min-width: $pageWidth768) {
-  .header {
-    height: calc($headerHeight + $contactsHeight);
-  }
-  .container {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-@media (min-width: $pageWidth1024) {
-  .container {
-    grid-template-columns: 1fr 2fr;
+  .inputWrapper {
+    display: flex;
+    position: relative;
+    flex: 1 0 auto;
+    height: 3.6rem;
   }
 }

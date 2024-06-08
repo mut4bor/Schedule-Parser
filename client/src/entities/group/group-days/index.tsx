@@ -1,44 +1,25 @@
 import * as style from './style.module.scss'
 import { GroupDaysProps } from './types'
-import { GroupDaysButton } from './group-days-button'
 import { SVG } from '@/shared/ui'
 import { useState, useEffect } from 'react'
-import { useAppDispatch, useAppSelector, dayIndexChanged, useGetWeekDaysByIDQuery } from '@/shared/redux'
+import { useAppSelector, useGetWeekDaysByIDQuery } from '@/shared/redux'
 import { Skeleton } from '@/shared/ui'
 import { SkeletonTime } from '@/shared/vars/vars'
+import { GroupDaysList } from './group-days-list'
 
 export const GroupDays = ({ groupID, handleSetIsGroupDaysVisible, isGroupDaysVisible }: GroupDaysProps) => {
-  const dispatch = useAppDispatch()
-
   const navigationValue = useAppSelector((store) => store.navigation.navigationValue)
-  const { dayIndex: pickedDayIndex, week: pickedWeek } = navigationValue
+  const { week: pickedWeek } = navigationValue
 
-  const { data: daysData, error: daysError } = useGetWeekDaysByIDQuery({
-    groupID: groupID,
-    week: pickedWeek,
-  })
-
-  useEffect(() => {
-    if (daysData) {
-      if (pickedDayIndex === -1) {
-        const todayDate = new Date()
-        const currentDay = todayDate.getDate()
-        const currentWeekDayIndex = todayDate.getDay() - 1
-        const tomorrowDate = new Date(todayDate)
-        tomorrowDate.setDate(currentDay + 1)
-        const tomorrowDay = tomorrowDate.getDate()
-
-        const dateToFind = currentDay !== 0 ? todayDate : tomorrowDate
-        const monthToFind = String(dateToFind.getMonth() + 1).padStart(2, '0')
-        const dayToFind = currentDay !== 0 ? currentDay : tomorrowDay
-
-        const todayIndex = daysData.findIndex((date) => date.includes(`${dayToFind}.${monthToFind}.`))
-
-        const indexToDispatch = todayIndex !== -1 ? todayIndex : currentWeekDayIndex
-        dispatch(dayIndexChanged(indexToDispatch))
-      }
-    }
-  }, [daysData, dispatch, navigationValue])
+  const { data: daysData, error: daysError } = useGetWeekDaysByIDQuery(
+    {
+      groupID: groupID,
+      week: pickedWeek,
+    },
+    {
+      skip: !groupID || !pickedWeek,
+    },
+  )
 
   const [coursesSkeletonIsEnabled, setCoursesSkeletonIsEnabled] = useState(true)
 
@@ -52,7 +33,7 @@ export const GroupDays = ({ groupID, handleSetIsGroupDaysVisible, isGroupDaysVis
   return (
     <div className={`${style.container} ${isGroupDaysVisible ? style.visible : style.hidden}`}>
       <button
-        onClick={(event) => {
+        onClick={() => {
           handleSetIsGroupDaysVisible(!isGroupDaysVisible)
         }}
         className={style.button}
@@ -66,23 +47,15 @@ export const GroupDays = ({ groupID, handleSetIsGroupDaysVisible, isGroupDaysVis
         ></SVG>
       </button>
       <ul className={style.list}>
-        {!!daysData && !coursesSkeletonIsEnabled
-          ? daysData.map((day, index) => (
-              <li className={style.listElement} key={index}>
-                <GroupDaysButton
-                  onClick={() => {
-                    dispatch(dayIndexChanged(index))
-                  }}
-                  data={{ text: day }}
-                  isActive={pickedDayIndex === index}
-                />
-              </li>
-            ))
-          : Array.from({ length: 6 }).map((_, index) => (
-              <li className={style.listElement} key={index}>
-                <Skeleton style={{ height: '3.6rem' }} />
-              </li>
-            ))}
+        {!!daysData && !coursesSkeletonIsEnabled ? (
+          <GroupDaysList daysData={daysData} listElementClassName={style.listElement} />
+        ) : (
+          Array.from({ length: 6 }).map((_, index) => (
+            <li className={style.listElement} key={index}>
+              <Skeleton style={{ height: '3.6rem' }} />
+            </li>
+          ))
+        )}
       </ul>
     </div>
   )

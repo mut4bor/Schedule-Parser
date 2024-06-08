@@ -1,8 +1,9 @@
 import * as style from './style.module.scss'
-import { HeaderContact } from './header-contact'
 import { HeaderHeading } from './header-heading'
 import { HeaderInput } from './header-input'
 import { useState, useEffect } from 'react'
+import { HeaderSearchResult } from './header-search-result'
+import { HeaderLinks } from './header-links'
 
 export const Header = () => {
   const [isVisible, setIsVisible] = useState(true)
@@ -35,11 +36,14 @@ export const Header = () => {
 
   return (
     <header className={`${style.header} ${isVisible ? style.visible : style.hidden}`}>
-      <HeaderContact />
       <div className={style.wrapper}>
         <div className={style.container}>
           <HeaderHeading />
-          <HeaderInput />
+          <div className={style.inputWrapper}>
+            <HeaderInput />
+            <HeaderSearchResult />
+          </div>
+          <HeaderLinks />
         </div>
       </div>
     </header>

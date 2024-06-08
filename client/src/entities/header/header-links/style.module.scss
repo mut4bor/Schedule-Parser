@@ -1,0 +1,18 @@
+@import '@/shared/vars/vars';
+
+.container {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+.githubSvg,
+.telegramSvg {
+  transition: 0.15s ease-in-out;
+  width: 3.6rem;
+  height: 3.6rem;
+  fill: $white;
+  cursor: pointer;
+  &:hover {
+    fill: $accentColor;
+  }
+}

@@ -8,7 +8,7 @@ const navigationSlice = createSlice({
       educationType: '',
       faculty: '',
       course: '',
-      group: '',
+      groupID: '',
       week: '',
       dayIndex: -1,
     },
@@ -24,8 +24,8 @@ const navigationSlice = createSlice({
     courseChanged(state, action) {
       state.navigationValue.course = action.payload
     },
-    groupChanged(state, action) {
-      state.navigationValue.group = action.payload
+    groupIDChanged(state, action) {
+      state.navigationValue.groupID = action.payload
     },
     weekChanged(state, action) {
       state.navigationValue.week = action.payload
@@ -35,6 +35,6 @@ const navigationSlice = createSlice({
     },
   },
 })
-export const { educationTypeChanged, facultyChanged, courseChanged, groupChanged, weekChanged, dayIndexChanged } =
+export const { educationTypeChanged, facultyChanged, courseChanged, groupIDChanged, weekChanged, dayIndexChanged } =
   navigationSlice.actions
 export default navigationSlice.reducer

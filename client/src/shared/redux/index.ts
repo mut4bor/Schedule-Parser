@@ -3,7 +3,7 @@ export {
   useGetFacultiesQuery,
   useGetCoursesQuery,
   useGetNamesQuery,
-  useGetGroupsQuery,
+  useGetGroupNamesThatMatchWithReqParamsQuery,
   useGetGroupByIDQuery,
   useGetWeeksByIDQuery,
   useGetWeekDaysByIDQuery,
@@ -14,14 +14,14 @@ export {
   educationTypeChanged,
   facultyChanged,
   courseChanged,
-  groupChanged,
+  groupIDChanged,
   weekChanged,
   dayIndexChanged,
 } from './slices/navigationSlice'
 
-export { searchValueChanged } from './slices/searchSlice'
+export { inputStateChanged, searchValueChanged } from './slices/searchSlice'
 
-export type { IName, IGroup } from './slices/types'
+export type { IName } from './slices/types'
 
 export { useAppSelector, useAppDispatch } from './hooks'
 

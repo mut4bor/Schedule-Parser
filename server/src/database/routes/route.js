@@ -13,7 +13,7 @@ import {
   deleteGroupById,
   deleteAllGroups,
 } from '../controllers/group.controller.js'
-import { getGroupNames } from '../controllers/name.controller.js'
+import { getGroupNames, getGroupNamesThatMatchWithReqParams } from '../controllers/name.controller.js'
 
 import { useEnv } from '../../hooks/useEnv.js'
 
@@ -54,6 +54,7 @@ router.delete(groupsPath, deleteAllGroups)
 router.delete(`${groupsPath}/:id`, deleteGroupById)
 
 router.get(namesPath, getGroupNames)
+router.get(`${namesPath}/search`, getGroupNamesThatMatchWithReqParams)
 
 router.get(educationTypePath, getEducationTypes)
 router.get(facultyPath, getFaculties)
