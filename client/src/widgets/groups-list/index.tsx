@@ -30,9 +30,7 @@ export const GroupsList = ({ skeletonState, handleSkeletonStateChange }: GroupsP
     <div className={style.container}>
       <div className={style.main}>
         {!namesData || isLoading || isFetching || skeletonState
-          ? Array.from({ length: 16 }).map((_, index) => (
-              <Skeleton style={{ height: '3.6rem', borderRadius: '2rem' }} key={index} />
-            ))
+          ? Array.from({ length: 16 }).map((_, index) => <Skeleton className={style.skeleton} key={index} />)
           : namesData.map((item, index) => (
               <Link
                 to={`/${item._id}`}

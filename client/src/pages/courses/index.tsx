@@ -1,5 +1,5 @@
 import * as style from './style.module.scss'
-import { NavigationButton } from '@/entities/navigation'
+import { BackToPreviousButton } from '@/entities/navigation'
 import { Courses } from '@/widgets/courses'
 import { GroupsList } from '@/widgets/groups-list'
 import { useState } from 'react'
@@ -15,7 +15,7 @@ export const CoursesPage = () => {
   return (
     <div className={style.container}>
       <div className="">
-        <NavigationButton text={'Назад'} onClick={() => navigate('/')} />
+        <BackToPreviousButton onClick={() => navigate('/')} />
       </div>
       <div className={style.wrapper}>
         <Courses handleSkeletonStateChange={handleSkeletonStateChange} />

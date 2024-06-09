@@ -1,11 +1,12 @@
 import * as style from './style.module.scss'
 import { WeeksListProps } from './types'
-import { NavigationButton } from '@/entities/navigation'
+import { BackToPreviousButton, WeeksButton } from '@/entities/navigation'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { SkeletonTime } from '@/shared/vars/vars'
 import { useAppDispatch, useAppSelector, weekChanged, dayIndexChanged, useGetWeeksByIDQuery } from '@/shared/redux'
 import { getCurrentWeekRange, getDaysInRange, getTodayIndex } from '@/shared/hooks'
+import { Skeleton } from '@/shared/ui'
 
 export const WeeksList = ({ groupID }: WeeksListProps) => {
   const navigate = useNavigate()
@@ -45,8 +46,7 @@ export const WeeksList = ({ groupID }: WeeksListProps) => {
   return (
     <div className={style.container}>
       <div>
-        <NavigationButton
-          text={'Назад'}
+        <BackToPreviousButton
           onClick={() => {
             navigate('/courses')
             dispatch(weekChanged(''))
@@ -57,8 +57,8 @@ export const WeeksList = ({ groupID }: WeeksListProps) => {
       <ul className={style.list}>
         {!!weeksData && !coursesSkeletonIsEnabled
           ? weeksData.map((week, index) => (
-              <li key={index}>
-                <NavigationButton
+              <li className={style.listElement} key={index}>
+                <WeeksButton
                   text={week}
                   onClick={() => {
                     dispatch(weekChanged(week))
@@ -69,7 +69,7 @@ export const WeeksList = ({ groupID }: WeeksListProps) => {
             ))
           : Array.from({ length: 7 }).map((_, index) => (
               <li key={index}>
-                <NavigationButton isSkeleton />
+                <Skeleton className={style.skeleton} />
               </li>
             ))}
       </ul>

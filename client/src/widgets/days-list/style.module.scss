@@ -61,6 +61,9 @@
     width: 100%;
     min-width: 10rem;
   }
+  .skeleton {
+    height: 3.6rem;
+  }
 }
 
 @media (min-width: $pageWidth768) {

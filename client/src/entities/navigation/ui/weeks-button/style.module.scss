@@ -1,0 +1,33 @@
+@import '@/shared/vars/vars';
+
+@media (min-width: $pageWidth320) {
+  .skeleton {
+    width: 10rem;
+    height: 3rem;
+  }
+
+  .button {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    transition: 0.15s ease-in-out;
+    border-radius: 0.5rem;
+    background: transparent;
+    background: $white10Alpha;
+    padding: 0.5rem 1rem;
+    min-width: 10rem;
+    min-height: 3rem;
+    color: $white;
+    font-size: 1.6rem;
+    &.active {
+      background: $accentColor;
+    }
+    @media (hover: hover) {
+      &:hover {
+        background: $accentColor;
+      }
+    }
+  }
+}

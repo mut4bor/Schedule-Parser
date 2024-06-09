@@ -28,8 +28,7 @@ export const Schedule = ({ scheduleData, groupName }: ScheduleProps) => {
     <div className={style.list}>
       {!isScheduleData ? (
         <>
-          <Skeleton style={{ minHeight: '3.6rem' }} />
-          {Array.from({ length: 5 }).map((_, index) => (
+          {Array.from({ length: 6 }).map((_, index) => (
             <Skeleton style={{ minHeight: '3.6rem' }} key={index} />
           ))}
         </>

@@ -60,7 +60,7 @@ export const DaysList = ({ scheduleData, handleSetIsGroupDaysVisible, isGroupDay
             ))
           : Array.from({ length: 6 }).map((_, index) => (
               <li className={style.listElement} key={index}>
-                <Skeleton style={{ height: '3.6rem' }} />
+                <Skeleton className={style.skeleton} />
               </li>
             ))}
       </ul>

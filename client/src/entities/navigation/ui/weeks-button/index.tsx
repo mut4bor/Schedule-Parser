@@ -1,10 +1,10 @@
 import * as style from './style.module.scss'
-import { NavigationButtonProps } from './types'
+import { WeeksButtonProps } from './types'
 import { Skeleton } from '@/shared/ui'
 
-export const NavigationButton = ({ text, onClick, isActive, isSkeleton }: NavigationButtonProps) => {
+export const WeeksButton = ({ text, onClick, isActive, isSkeleton }: WeeksButtonProps) => {
   if (isSkeleton) {
-    return <Skeleton style={{ height: '3rem', width: '10rem' }} />
+    return <Skeleton className={style.skeleton} />
   }
   return (
     <button onClick={onClick} className={`${style.button} ${isActive ? style.active : ''}`} type="button">

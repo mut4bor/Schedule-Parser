@@ -1,6 +1,11 @@
 @import '@/shared/vars/vars';
 
 @media (min-width: $pageWidth320) {
+  .skeleton {
+    width: 10rem;
+    height: 3rem;
+  }
+
   .button {
     display: flex;
     flex-direction: column;
