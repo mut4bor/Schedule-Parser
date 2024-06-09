@@ -1,7 +1,7 @@
 FROM alpine:latest
 RUN apk update && apk upgrade
 RUN apk add nodejs npm cronie bash
-WORKDIR /script
+WORKDIR /scripts
 COPY ./scripts/cron.sh /etc/cron.d/cron_task
 COPY ./scripts .
 RUN chmod 0755 /scripts/refresh.sh && chmod 0755 /scripts/entrypoint.sh && chmod 0644 /etc/cron.d/cron_task
