@@ -17,7 +17,7 @@ export const DaysList = ({ scheduleData, handleSetIsGroupDaysVisible, isGroupDay
       setCoursesSkeletonIsEnabled(false)
     }, SkeletonTime)
     return () => clearTimeout(timer)
-  }, [])
+  }, [scheduleData])
 
   const pickedDayIndex = useAppSelector((store) => store.navigation.navigationValue.dayIndex)
 
@@ -46,8 +46,13 @@ export const DaysList = ({ scheduleData, handleSetIsGroupDaysVisible, isGroupDay
         ></SVG>
       </button>
       <ul className={style.list}>
-        {!!scheduleData && !coursesSkeletonIsEnabled
-          ? Object.keys(scheduleData).map((day, index) => (
+        {!scheduleData || coursesSkeletonIsEnabled
+          ? Array.from({ length: 6 }).map((_, index) => (
+              <li className={style.listElement} key={index}>
+                <Skeleton className={style.skeleton} />
+              </li>
+            ))
+          : Object.keys(scheduleData).map((day, index) => (
               <li className={style.listElement} key={index}>
                 <GroupDaysButton
                   onClick={() => {
@@ -56,11 +61,6 @@ export const DaysList = ({ scheduleData, handleSetIsGroupDaysVisible, isGroupDay
                   data={{ text: day }}
                   isActive={pickedDayIndex === index}
                 />
-              </li>
-            ))
-          : Array.from({ length: 6 }).map((_, index) => (
-              <li className={style.listElement} key={index}>
-                <Skeleton className={style.skeleton} />
               </li>
             ))}
       </ul>

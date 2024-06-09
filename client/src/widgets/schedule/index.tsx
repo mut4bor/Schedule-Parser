@@ -15,7 +15,7 @@ export const Schedule = ({ scheduleData, groupName }: ScheduleProps) => {
       setCoursesSkeletonIsEnabled(false)
     }, SkeletonTime)
     return () => clearTimeout(timer)
-  }, [])
+  }, [scheduleData])
 
   const isScheduleData =
     !!scheduleData &&

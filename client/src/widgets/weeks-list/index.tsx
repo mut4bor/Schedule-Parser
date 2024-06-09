@@ -42,7 +42,7 @@ export const WeeksList = ({ groupID }: WeeksListProps) => {
       setCoursesSkeletonIsEnabled(false)
     }, SkeletonTime)
     return () => clearTimeout(timer)
-  }, [])
+  }, [weeksData])
 
   return (
     <div className={style.container}>

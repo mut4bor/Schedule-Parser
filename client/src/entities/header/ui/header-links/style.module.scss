@@ -6,11 +6,23 @@
   gap: 1rem;
 }
 
+.link {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  aspect-ratio: 1;
+  height: 3.4rem;
+  &:hover {
+    background: $white;
+  }
+}
+
 .githubSvg,
 .telegramSvg {
   transition: 0.15s ease-in-out;
-  width: 3.6rem;
-  height: 3.6rem;
+  aspect-ratio: 1;
+  min-width: 3.6rem;
   fill: $white;
   cursor: pointer;
   &:hover {
