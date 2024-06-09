@@ -1,6 +1,7 @@
 import * as style from './style.module.scss'
 import { WeeksListProps } from './types'
-import { BackToPreviousButton, WeeksButton } from '@/entities/navigation'
+import { BackToPreviousButton } from '@/entities/navigation'
+import { WeeksButton } from '@/entities/weeks'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { SkeletonTime } from '@/shared/vars/vars'
@@ -55,8 +56,13 @@ export const WeeksList = ({ groupID }: WeeksListProps) => {
         />
       </div>
       <ul className={style.list}>
-        {!!weeksData && !coursesSkeletonIsEnabled
-          ? weeksData.map((week, index) => (
+        {!weeksData || coursesSkeletonIsEnabled
+          ? Array.from({ length: 7 }).map((_, index) => (
+              <li key={index}>
+                <Skeleton className={style.skeleton} />
+              </li>
+            ))
+          : weeksData.map((week, index) => (
               <li className={style.listElement} key={index}>
                 <WeeksButton
                   text={week}
@@ -65,11 +71,6 @@ export const WeeksList = ({ groupID }: WeeksListProps) => {
                   }}
                   isActive={pickedWeek === week}
                 />
-              </li>
-            ))
-          : Array.from({ length: 7 }).map((_, index) => (
-              <li key={index}>
-                <Skeleton className={style.skeleton} />
               </li>
             ))}
       </ul>
