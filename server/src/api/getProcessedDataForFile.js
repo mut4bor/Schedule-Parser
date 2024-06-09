@@ -1,4 +1,6 @@
 import { getJsonFromXLSX } from './getJsonFromXLSX.js'
+import { getCurrentWeekRange } from '../hooks/getCurrentWeekRange.js'
+import { getDaysInRange } from '../hooks/getDaysInRange.js'
 
 export const getProcessedDataForFile = async (filePath) => {
   try {
@@ -10,56 +12,6 @@ export const getProcessedDataForFile = async (filePath) => {
       const keyWithDots = `${formattedKey.slice(0, 2)}.${formattedKey.slice(2, -2)}.${formattedKey.slice(-2)}`
       jsonWithTrimmedKeys[keyWithDots] = value
     })
-
-    const getCurrentWeekRange = () => {
-      const today = new Date()
-      const dayOfWeek = today.getDay()
-
-      const diffToMonday = (dayOfWeek + 6) % 7
-
-      const mondayOfCurrentWeek = new Date(today)
-      mondayOfCurrentWeek.setDate(today.getDate() - diffToMonday)
-
-      const saturdayOfCurrentWeek = new Date(mondayOfCurrentWeek)
-      saturdayOfCurrentWeek.setDate(mondayOfCurrentWeek.getDate() + 5)
-
-      const format = (date) => {
-        const day = String(date.getDate()).padStart(2, '0')
-        const month = String(date.getMonth() + 1).padStart(2, '0')
-        return `${day}.${month}`
-      }
-
-      return {
-        monday: format(mondayOfCurrentWeek),
-        saturday: format(saturdayOfCurrentWeek),
-      }
-    }
-
-    const getDaysInRange = (range) => {
-      const [start, end] = range.split('-')
-      const [startDay, startMonth] = start.split('.').map(Number)
-      const [endDay, endMonth] = end.split('.').map(Number)
-      const currentYear = new Date().getFullYear()
-
-      const startDate = new Date(currentYear, startMonth - 1, startDay)
-      const endDate = new Date(currentYear, endMonth - 1, endDay)
-
-      if (startDate > endDate) {
-        throw new Error('The start date must be before the end date.')
-      }
-
-      const dates = []
-      const currentDate = new Date(startDate)
-
-      while (currentDate <= endDate) {
-        const day = String(currentDate.getDate()).padStart(2, '0')
-        const month = String(currentDate.getMonth() + 1).padStart(2, '0')
-        dates.push(`${day}.${month}`)
-        currentDate.setDate(currentDate.getDate() + 1)
-      }
-
-      return dates
-    }
 
     const removePreviousScheduleEntries = (schedule, { monday, saturday }) => {
       const scheduleKeys = Object.keys(schedule)
@@ -81,10 +33,7 @@ export const getProcessedDataForFile = async (filePath) => {
       return schedule
     }
 
-    const unParsedJson = removePreviousScheduleEntries(
-      jsonWithTrimmedKeys,
-      getCurrentWeekRange(),
-    )
+    const unParsedJson = removePreviousScheduleEntries(jsonWithTrimmedKeys, getCurrentWeekRange())
 
     const getGroupLetters = (unParsedJson) => {
       const findObjectWithGroupKeyword = (objects) => {
@@ -99,8 +48,7 @@ export const getProcessedDataForFile = async (filePath) => {
       }
       const [unParsedJsonValues] = Object.values(unParsedJson)
       const groupToFind = Object.values(unParsedJsonValues)
-      const firstObjectWithGroupKeyword =
-        findObjectWithGroupKeyword(groupToFind) ?? unParsedJsonValues[3]
+      const firstObjectWithGroupKeyword = findObjectWithGroupKeyword(groupToFind) ?? unParsedJsonValues[3]
 
       const excludedKeys = ['A', 'B', 'C']
 

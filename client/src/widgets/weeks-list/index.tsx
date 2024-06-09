@@ -1,0 +1,78 @@
+import * as style from './style.module.scss'
+import { WeeksListProps } from './types'
+import { NavigationButton } from '@/entities/navigation'
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { SkeletonTime } from '@/shared/vars/vars'
+import { useAppDispatch, useAppSelector, weekChanged, dayIndexChanged, useGetWeeksByIDQuery } from '@/shared/redux'
+import { getCurrentWeekRange, getDaysInRange, getTodayIndex } from '@/shared/hooks'
+
+export const WeeksList = ({ groupID }: WeeksListProps) => {
+  const navigate = useNavigate()
+  const dispatch = useAppDispatch()
+  const [coursesSkeletonIsEnabled, setCoursesSkeletonIsEnabled] = useState(true)
+  const navigationValue = useAppSelector((store) => store.navigation.navigationValue)
+  const { week: pickedWeek } = navigationValue
+
+  const { data: weeksData, error: weeksError } = useGetWeeksByIDQuery(groupID, {
+    skip: !groupID,
+  })
+
+  useEffect(() => {
+    if (!!weeksData) {
+      const { monday, saturday } = getCurrentWeekRange()
+
+      const daysRange = weeksData.map((item) => getDaysInRange(item))
+      const currentWeekIndex = daysRange.findIndex(
+        (subArray) => subArray.includes(monday) && subArray.includes(saturday),
+      )
+
+      const todayIndex = getTodayIndex()
+      const weekIndex = todayIndex !== 6 ? currentWeekIndex : currentWeekIndex + 1
+
+      const currentWeek = weeksData[weekIndex]
+      dispatch(weekChanged(currentWeek))
+    }
+  }, [weeksData])
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setCoursesSkeletonIsEnabled(false)
+    }, SkeletonTime)
+    return () => clearTimeout(timer)
+  }, [])
+
+  return (
+    <div className={style.container}>
+      <div>
+        <NavigationButton
+          text={'Назад'}
+          onClick={() => {
+            navigate('/courses')
+            dispatch(weekChanged(''))
+            dispatch(dayIndexChanged(-1))
+          }}
+        />
+      </div>
+      <ul className={style.list}>
+        {!!weeksData && !coursesSkeletonIsEnabled
+          ? weeksData.map((week, index) => (
+              <li key={index}>
+                <NavigationButton
+                  text={week}
+                  onClick={() => {
+                    dispatch(weekChanged(week))
+                  }}
+                  isActive={pickedWeek === week}
+                />
+              </li>
+            ))
+          : Array.from({ length: 7 }).map((_, index) => (
+              <li key={index}>
+                <NavigationButton isSkeleton />
+              </li>
+            ))}
+      </ul>
+    </div>
+  )
+}

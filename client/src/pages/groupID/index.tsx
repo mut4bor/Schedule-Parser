@@ -1,8 +1,8 @@
 import * as style from './style.module.scss'
 import { useParams } from 'react-router-dom'
-import { GroupWeeksSlider } from '@/entities/group/group-weeks-slider'
-import { GroupDays } from '@/entities/group/group-days'
-import { GroupSchedule } from '@/entities/group/group-schedule'
+import { WeeksList } from '@/widgets/weeks-list'
+import { DaysList } from '@/widgets/days-list'
+import { Schedule } from '@/widgets/schedule'
 import {
   educationTypeChanged,
   facultyChanged,
@@ -10,6 +10,8 @@ import {
   groupIDChanged,
   useAppDispatch,
   useGetGroupByIDQuery,
+  useAppSelector,
+  useGetWeekScheduleByIDQuery,
 } from '@/shared/redux'
 import { useState, useEffect } from 'react'
 import { useSwipeable } from 'react-swipeable'
@@ -38,6 +40,19 @@ export const GroupIDPage = () => {
     skip: !groupID,
   })
 
+  const navigationValue = useAppSelector((store) => store.navigation.navigationValue)
+  const { week: pickedWeek } = navigationValue
+
+  const { data: scheduleData, error: scheduleError } = useGetWeekScheduleByIDQuery(
+    {
+      groupID: groupID,
+      week: pickedWeek,
+    },
+    {
+      skip: !groupID || !pickedWeek,
+    },
+  )
+
   useEffect(() => {
     if (!!groupData) {
       const { educationType, faculty, course } = groupData
@@ -56,15 +71,15 @@ export const GroupIDPage = () => {
 
   return (
     <div className={style.container}>
-      <GroupWeeksSlider groupID={groupID} />
+      <WeeksList groupID={groupID} />
       <div className={style.wrapper}>
-        <GroupDays
-          groupID={groupID}
+        <DaysList
+          scheduleData={scheduleData}
           handleSetIsGroupDaysVisible={(state: boolean) => setIsGroupDaysVisible(state)}
           isGroupDaysVisible={isGroupDaysVisible}
         />
         <div className={style.schedule} {...handlers}>
-          <GroupSchedule groupID={groupID} groupName={groupData?.group} />
+          <Schedule scheduleData={scheduleData} groupName={groupData?.group} />
         </div>
       </div>
     </div>

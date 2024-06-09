@@ -1,7 +1,7 @@
-import fetch from 'node-fetch'
-import { useEnv } from '../../hooks/useEnv.js'
 import { data } from '../../api/getData.js'
-
+import fetch from 'node-fetch'
+import { waitUntilServerIsAvailable } from '../../hooks/checkServerAvailability.js'
+import { useEnv } from '../../hooks/useEnv.js'
 useEnv()
 
 const url = process.env.FETCH_URL
@@ -39,4 +39,7 @@ async function sendData() {
   }
 }
 
-sendData()
+;(async function main() {
+  await waitUntilServerIsAvailable()
+  await sendData()
+})()

@@ -4,7 +4,7 @@ if [ -f "scripts/.lock" ]; then
     mkdir docs/XLSXFiles -p    
     npm run update
     rm -rf scripts/.lock
-    npm start
+    npm run dev
 else 
-    npm start
+    npm run dev
 fi

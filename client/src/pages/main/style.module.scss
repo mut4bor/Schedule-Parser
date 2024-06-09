@@ -6,7 +6,13 @@
     flex-direction: column;
     gap: 2rem;
     margin: 0 auto;
-    padding: calc($headerHeight + 1rem) $containerPaddingX 1rem;
+    padding: calc($headerHeightMobile + 1rem) $containerPaddingX 1rem;
     max-width: $containerWidth;
+  }
+}
+
+@media (min-width: $pageWidth768) {
+  .container {
+    padding: calc($headerHeight + 1rem) $containerPaddingX 1rem;
   }
 }

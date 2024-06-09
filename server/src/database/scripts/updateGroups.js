@@ -1,5 +1,6 @@
 import { data } from '../../api/getData.js'
 import fetch from 'node-fetch'
+import { waitUntilServerIsAvailable } from '../../hooks/checkServerAvailability.js'
 import { useEnv } from '../../hooks/useEnv.js'
 useEnv()
 
@@ -18,7 +19,7 @@ const fetchGroupNames = await fetch(`${url}/names`, {
       const errorData = await response.json()
       throw new Error(`Error ${response.status}: ${errorData.message}`)
     }
-    return response.json()
+    return await response.json()
   })
   .then((data) => {
     return data
@@ -59,4 +60,7 @@ async function sendData() {
   }
 }
 
-sendData()
+;(async function main() {
+  await waitUntilServerIsAvailable()
+  await sendData()
+})()

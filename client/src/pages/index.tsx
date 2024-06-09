@@ -1,4 +1,4 @@
-import { Header } from '@/entities/header'
+import { Header } from '@/widgets/header'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import { MainPage } from './main'

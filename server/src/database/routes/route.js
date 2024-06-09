@@ -1,13 +1,11 @@
 import express from 'express'
-import { getEducationTypes } from '../controllers/educationType.controller.js'
 import { getFaculties } from '../controllers/faculties.controller.js'
 import { getCourses } from '../controllers/courses.controller.js'
 import {
   getAllGroups,
   getGroupById,
   getWeeksByID,
-  getWeekDaysByID,
-  getScheduleByID,
+  getWeekScheduleByID,
   createGroup,
   updateGroupById,
   deleteGroupById,
@@ -33,21 +31,18 @@ const checkPassword = (req, res, next) => {
 
 const groupsPath = `/groups`
 const namesPath = `/names`
-const educationTypePath = `/educationType`
 const facultyPath = `/faculty`
 const coursePath = `/course`
 
 router.use(groupsPath, checkPassword)
 router.use(namesPath, checkPassword)
-router.use(educationTypePath, checkPassword)
 router.use(facultyPath, checkPassword)
 router.use(coursePath, checkPassword)
 
 router.get(groupsPath, getAllGroups)
 router.get(`${groupsPath}/:id`, getGroupById)
 router.get(`${groupsPath}/:id/weeks`, getWeeksByID)
-router.get(`${groupsPath}/:id/weeks/:week`, getWeekDaysByID)
-router.get(`${groupsPath}/:id/weeks/:week/:dayIndex`, getScheduleByID)
+router.get(`${groupsPath}/:id/weeks/:week`, getWeekScheduleByID)
 router.post(groupsPath, createGroup)
 router.put(`${groupsPath}/:id`, updateGroupById)
 router.delete(groupsPath, deleteAllGroups)
@@ -56,7 +51,6 @@ router.delete(`${groupsPath}/:id`, deleteGroupById)
 router.get(namesPath, getGroupNames)
 router.get(`${namesPath}/search`, getGroupNamesThatMatchWithReqParams)
 
-router.get(educationTypePath, getEducationTypes)
 router.get(facultyPath, getFaculties)
 router.get(coursePath, getCourses)
 

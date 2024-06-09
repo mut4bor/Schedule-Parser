@@ -17,15 +17,6 @@ const api = createApi({
   }),
 
   endpoints: (builder) => ({
-    getEducationTypes: builder.query<string[], void>({
-      query: () => ({
-        url: `${educationTypePath}`,
-        headers: {
-          'x-admin-password': X_ADMIN_PASSWORD,
-        },
-      }),
-    }),
-
     getFaculties: builder.query<IFaculties, void>({
       query: () => ({
         url: `/faculty`,
@@ -79,18 +70,9 @@ const api = createApi({
         },
       }),
     }),
-
-    getWeekDaysByID: builder.query<string[], { groupID: string; week: string }>({
+    getWeekScheduleByID: builder.query<ISchedule, { groupID: string; week: string }>({
       query: ({ groupID, week }) => ({
         url: `${groupsPath}/${groupID}/weeks/${week}`,
-        headers: {
-          'x-admin-password': X_ADMIN_PASSWORD,
-        },
-      }),
-    }),
-    getScheduleByID: builder.query<ISchedule, { groupID: string; week: string; dayIndex: number }>({
-      query: ({ groupID, week, dayIndex }) => ({
-        url: `${groupsPath}/${groupID}/weeks/${week}/${dayIndex}`,
         headers: {
           'x-admin-password': X_ADMIN_PASSWORD,
         },
@@ -100,15 +82,13 @@ const api = createApi({
 })
 
 export const {
-  useGetEducationTypesQuery,
   useGetFacultiesQuery,
   useGetCoursesQuery,
   useGetNamesQuery,
   useGetGroupNamesThatMatchWithReqParamsQuery,
   useGetGroupByIDQuery,
   useGetWeeksByIDQuery,
-  useGetWeekDaysByIDQuery,
-  useGetScheduleByIDQuery,
+  useGetWeekScheduleByIDQuery,
 } = api
 
 export default api

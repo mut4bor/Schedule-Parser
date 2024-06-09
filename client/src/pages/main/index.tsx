@@ -1,6 +1,6 @@
 import * as style from './style.module.scss'
-import { Faculty } from '@/entities/faculty'
-import React, { useState, useEffect } from 'react'
+import { Faculty } from '@/widgets/faculty'
+import { useState, useEffect } from 'react'
 import { useGetFacultiesQuery } from '@/shared/redux'
 import { SkeletonTime } from '@/shared/vars/vars'
 
@@ -19,18 +19,10 @@ export const MainPage = () => {
   return (
     <div className={style.container}>
       {!facultiesData || isLoading || isFetching || skeletonIsEnabled
-        ? Array.from({ length: 3 }).map((_, index) => (
-            <React.Fragment key={`faculty-${index}`}>
-              <Faculty key={index} />
-            </React.Fragment>
-          ))
-        : Object.entries(facultiesData).map(([educationType, faculties], key) => {
-            return (
-              <React.Fragment key={`faculty-${key}`}>
-                <Faculty data={{ educationType: educationType, faculties: faculties }} key={key} />
-              </React.Fragment>
-            )
-          })}
+        ? Array.from({ length: 3 }).map((_, index) => <Faculty key={index} columnsAmount={4 - index} />)
+        : Object.entries(facultiesData).map(([educationType, faculties], key) => (
+            <Faculty data={{ educationType, faculties }} key={key} />
+          ))}
     </div>
   )
 }

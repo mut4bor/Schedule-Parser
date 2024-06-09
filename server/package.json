@@ -7,12 +7,18 @@
   "scripts": {
     "dev": "nodemon index.js",
     "start": "node index.js",
+    "stop": "kill -n sig",
     "lint": "npx eslint ./src",
     "format": "npx eslint ./src --fix",
     "delete": "node src/database/scripts/deleteAllGroups.js",
     "download": "node src/database/scripts/downloadSchedules.js",
     "update": "npm run download && node src/database/scripts/updateGroups.js",
     "create": "npm run delete && npm run download && node src/database/scripts/createGroups.js"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "docs/*"
+    ]
   },
   "keywords": [],
   "author": "",
@@ -23,6 +29,7 @@
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
+    "date-fns": "^3.6.0",
     "dotenv": "^16.4.5",
     "eslint": "^9.1.1",
     "express": "^4.19.2",

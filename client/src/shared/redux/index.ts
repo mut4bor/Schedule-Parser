@@ -1,13 +1,11 @@
 export {
-  useGetEducationTypesQuery,
   useGetFacultiesQuery,
   useGetCoursesQuery,
   useGetNamesQuery,
   useGetGroupNamesThatMatchWithReqParamsQuery,
   useGetGroupByIDQuery,
   useGetWeeksByIDQuery,
-  useGetWeekDaysByIDQuery,
-  useGetScheduleByIDQuery,
+  useGetWeekScheduleByIDQuery,
 } from './slices/apiSlice'
 
 export {
