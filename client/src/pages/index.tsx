@@ -1,12 +1,14 @@
 import { Header } from '@/widgets/header'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import { Provider } from 'react-redux'
+import { FavoriteButton } from '@/entities/favorite'
 import { MainPage } from './main'
 import { CoursesPage } from './courses'
 import { GroupIDPage } from './groupID'
 import { ErrorPage } from './error'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { Provider } from 'react-redux'
 import { BASE_URL, COURSES_PATH, GROUP_ID_PATH } from '@/shared/config'
 import { store } from '@/shared/redux'
+import { Icons } from '@/shared/icons'
 
 export const Routing = () => {
   const router = createBrowserRouter([
@@ -62,6 +64,7 @@ export const Routing = () => {
     <>
       <Provider store={store}>
         <RouterProvider router={router} />
+        <Icons />
       </Provider>
     </>
   )

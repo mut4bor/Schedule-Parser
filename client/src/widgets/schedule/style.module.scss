@@ -22,6 +22,7 @@
     color: $white;
     font-size: 2rem;
   }
+
   .text {
     display: flex;
     align-items: center;
@@ -31,5 +32,11 @@
     min-height: 3.6rem;
     color: $white;
     font-size: 2rem;
+  }
+
+  .refreshDate {
+    color: gray;
+    font-size: 1.6rem;
+    text-align: end;
   }
 }

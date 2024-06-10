@@ -1,6 +1,6 @@
-import { ISchedule } from '@/shared/redux/slices/types'
+import { IGroup, ISchedule } from '@/shared/redux/slices/types'
 
 export type ScheduleProps = {
   scheduleData?: ISchedule
-  groupName?: string
+  groupInfo?: IGroup
 }

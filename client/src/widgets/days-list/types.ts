@@ -1,7 +1,7 @@
 import { ISchedule } from '@/shared/redux/slices/types'
 
 export type DaysListProps = {
-  handleSetIsGroupDaysVisible: (state: boolean) => void
+  toggleIsGroupDaysVisible: () => void
   isGroupDaysVisible: boolean
   scheduleData?: ISchedule
 }

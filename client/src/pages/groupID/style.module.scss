@@ -8,13 +8,16 @@
     margin: 0 auto;
     padding: calc($headerHeightMobile + 1rem) $containerPaddingX 1rem;
     max-width: $containerWidth;
-    font-size: 2rem;
+    height: 100svh;
+  }
+
+  .content {
+    flex: 1;
   }
 
   .wrapper {
     display: flex;
     position: relative;
-    flex: 1;
     flex-direction: row;
     border-radius: 0.5rem;
     background: $darkGray;
@@ -41,6 +44,6 @@
     padding: calc($headerHeight + 1rem) $containerPaddingX 1rem;
   }
   .schedule {
-    padding: 2rem;
+    padding: 2rem 2rem 1rem;
   }
 }

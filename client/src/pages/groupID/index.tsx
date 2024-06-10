@@ -62,24 +62,29 @@ export const GroupIDPage = () => {
     }
   }, [groupData, dispatch, groupID])
 
-  const handlers = useSwipeable({
+  const contentSwipeHandler = useSwipeable({
     onSwipedLeft: () => setIsGroupDaysVisible(false),
     onSwipedRight: () => setIsGroupDaysVisible(true),
-    onTap: () => setIsGroupDaysVisible(false),
     preventScrollOnSwipe: true,
+  })
+
+  const scheduleTapHandler = useSwipeable({
+    onTap: () => setIsGroupDaysVisible(false),
   })
 
   return (
     <div className={style.container}>
       <WeeksList groupID={groupID} />
-      <div className={style.wrapper}>
-        <DaysList
-          scheduleData={scheduleData}
-          handleSetIsGroupDaysVisible={(state: boolean) => setIsGroupDaysVisible(state)}
-          isGroupDaysVisible={isGroupDaysVisible}
-        />
-        <div className={style.schedule} {...handlers}>
-          <Schedule scheduleData={scheduleData} groupName={groupData?.group} />
+      <div className={style.content} {...contentSwipeHandler}>
+        <div className={style.wrapper}>
+          <DaysList
+            scheduleData={scheduleData}
+            toggleIsGroupDaysVisible={() => setIsGroupDaysVisible((prevState) => !prevState)}
+            isGroupDaysVisible={isGroupDaysVisible}
+          />
+          <div className={style.schedule} {...scheduleTapHandler}>
+            <Schedule scheduleData={scheduleData} groupInfo={groupData} />
+          </div>
         </div>
       </div>
     </div>

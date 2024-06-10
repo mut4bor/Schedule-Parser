@@ -1,5 +1,5 @@
 import { getJsonFromXLSX } from './getJsonFromXLSX.js'
-import { getCurrentWeekRange } from '../hooks/getCurrentWeekRange.js'
+import { getDayToPick } from '../hooks/getDayToPick.js'
 import { getDaysInRange } from '../hooks/getDaysInRange.js'
 
 export const getProcessedDataForFile = async (filePath) => {
@@ -13,14 +13,12 @@ export const getProcessedDataForFile = async (filePath) => {
       jsonWithTrimmedKeys[keyWithDots] = value
     })
 
-    const removePreviousScheduleEntries = (schedule, { monday, saturday }) => {
+    const removePreviousScheduleEntries = (schedule, day) => {
       const scheduleKeys = Object.keys(schedule)
 
       const daysRange = scheduleKeys.map((item) => getDaysInRange(item))
 
-      const currentWeekIndex = daysRange.findIndex(
-        (subArray) => subArray.includes(monday) && subArray.includes(saturday),
-      )
+      const currentWeekIndex = daysRange.findIndex((subArray) => subArray.includes(day))
 
       if (currentWeekIndex !== -1) {
         const previousWeekIndex = Math.max(0, currentWeekIndex - 1)
@@ -33,7 +31,9 @@ export const getProcessedDataForFile = async (filePath) => {
       return schedule
     }
 
-    const unParsedJson = removePreviousScheduleEntries(jsonWithTrimmedKeys, getCurrentWeekRange())
+    const { day: dayToPick } = getDayToPick()
+
+    const unParsedJson = removePreviousScheduleEntries(jsonWithTrimmedKeys, dayToPick)
 
     const getGroupLetters = (unParsedJson) => {
       const findObjectWithGroupKeyword = (objects) => {

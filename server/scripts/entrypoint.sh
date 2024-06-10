@@ -2,6 +2,7 @@
 if [ -f "scripts/.lock" ]; then
     npm i --prefix /server
     npm i --prefix /client
+		npm run build --prefix /client
     rm -f /server/scripts/.lock
     exit 0
 else

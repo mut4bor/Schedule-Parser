@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { SkeletonTime } from '@/shared/vars/vars'
 import { useAppDispatch, useAppSelector, weekChanged, dayIndexChanged, useGetWeeksByIDQuery } from '@/shared/redux'
-import { getCurrentWeekRange, getDaysInRange, getTodayIndex } from '@/shared/hooks'
+import { getDaysInRange, getDayToPick } from '@/shared/hooks'
 import { Skeleton } from '@/shared/ui'
 
 export const WeeksList = ({ groupID }: WeeksListProps) => {
@@ -22,17 +22,12 @@ export const WeeksList = ({ groupID }: WeeksListProps) => {
 
   useEffect(() => {
     if (!!weeksData) {
-      const { monday, saturday } = getCurrentWeekRange()
+      const { day } = getDayToPick()
 
       const daysRange = weeksData.map((item) => getDaysInRange(item))
-      const currentWeekIndex = daysRange.findIndex(
-        (subArray) => subArray.includes(monday) && subArray.includes(saturday),
-      )
+      const currentWeekIndex = daysRange.findIndex((subArray) => subArray.includes(day))
 
-      const todayIndex = getTodayIndex()
-      const weekIndex = todayIndex !== 6 ? currentWeekIndex : currentWeekIndex + 1
-
-      const currentWeek = weeksData[weekIndex]
+      const currentWeek = weeksData[currentWeekIndex]
       dispatch(weekChanged(currentWeek))
     }
   }, [weeksData])

@@ -5,9 +5,9 @@ import { SVG, Skeleton } from '@/shared/ui'
 import { SkeletonTime } from '@/shared/vars/vars'
 import { useAppDispatch, useAppSelector, dayIndexChanged } from '@/shared/redux'
 import { GroupDaysButton } from '@/entities/group'
-import { getTodayIndex } from '@/shared/hooks'
+import { getDayToPick } from '@/shared/hooks'
 
-export const DaysList = ({ scheduleData, handleSetIsGroupDaysVisible, isGroupDaysVisible }: DaysListProps) => {
+export const DaysList = ({ scheduleData, toggleIsGroupDaysVisible, isGroupDaysVisible }: DaysListProps) => {
   const dispatch = useAppDispatch()
 
   const [coursesSkeletonIsEnabled, setCoursesSkeletonIsEnabled] = useState(true)
@@ -20,21 +20,18 @@ export const DaysList = ({ scheduleData, handleSetIsGroupDaysVisible, isGroupDay
   }, [scheduleData])
 
   const pickedDayIndex = useAppSelector((store) => store.navigation.navigationValue.dayIndex)
+  const { dayWeekIndex } = getDayToPick()
 
   useEffect(() => {
     if (scheduleData) {
-      const todayIndex = getTodayIndex()
-      const indexToDispatch = todayIndex !== 6 ? todayIndex : 0
-      dispatch(dayIndexChanged(indexToDispatch))
+      dispatch(dayIndexChanged(dayWeekIndex))
     }
   }, [scheduleData])
 
   return (
     <div className={`${style.container} ${isGroupDaysVisible ? style.visible : style.hidden}`}>
       <button
-        onClick={() => {
-          handleSetIsGroupDaysVisible(!isGroupDaysVisible)
-        }}
+        onClick={toggleIsGroupDaysVisible}
         className={style.arrowButton}
         type="button"
         title="Скрыть/Показать дни недели"
