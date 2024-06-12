@@ -1,11 +1,20 @@
 import * as style from './style.module.scss'
 import { OptionsButtonProps } from './types'
+import { forwardRef } from 'react'
 
-export const OptionsButton = ({ handleToggleIsRadioboxVisible, isRadioboxVisible }: OptionsButtonProps) => {
-  return (
-    <button title="Опции" className={style.toggleOptionsButton} type="button" onClick={handleToggleIsRadioboxVisible}>
-      <span className={`${style.optionsIcon} ${isRadioboxVisible ? style.cross : ''}`}></span>
-      <span className={`${style.crossIcon} ${isRadioboxVisible ? style.active : ''}`}></span>
-    </button>
-  )
-}
+export const OptionsButton = forwardRef<HTMLButtonElement, OptionsButtonProps>(
+  ({ toggleIsOptionsListVisible, isOptionsListVisible }, ref) => {
+    return (
+      <button
+        ref={ref}
+        title="Опции"
+        className={style.toggleOptionsButton}
+        type="button"
+        onClick={toggleIsOptionsListVisible}
+      >
+        <span className={`${style.optionsIcon} ${isOptionsListVisible ? style.cross : ''}`}></span>
+        <span className={`${style.crossIcon} ${isOptionsListVisible ? style.active : ''}`}></span>
+      </button>
+    )
+  },
+)

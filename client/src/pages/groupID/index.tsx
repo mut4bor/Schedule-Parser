@@ -17,7 +17,8 @@ import { useState, useEffect } from 'react'
 import { useSwipeable } from 'react-swipeable'
 import { RefreshDate } from '@/widgets/refresh-date'
 import { GroupHeading } from '@/entities/group'
-import { Options } from '@/widgets/options'
+import { OptionsList } from '@/widgets/options-list'
+import { OptionsButton } from '@/entities/options'
 
 export const GroupIDPage = () => {
   const dispatch = useAppDispatch()
@@ -27,9 +28,10 @@ export const GroupIDPage = () => {
   const { week: pickedWeek } = navigationValue
 
   const [isGroupDaysVisible, setIsGroupDaysVisible] = useState(true)
+  const [isOptionsListVisible, setIsOptionsListVisible] = useState(false)
 
   if (!groupID) {
-    return <div className={style.error}>Invalid Group ID</div>
+    return <div>Invalid Group ID</div>
   }
 
   const { data: groupData, error: groupError } = useGetGroupByIDQuery(groupID, {
@@ -61,14 +63,25 @@ export const GroupIDPage = () => {
     }
   }, [groupData, dispatch, groupID])
 
+  const createTapStopPropagationHandler = () =>
+    useSwipeable({
+      onTap: (event) => {
+        event.event.stopPropagation()
+      },
+    })
+
+  const daysListTapHandler = createTapStopPropagationHandler()
+  const optionsListTapHandler = createTapStopPropagationHandler()
+  const optionsButtonTapHandler = createTapStopPropagationHandler()
+
   const contentSwipeHandler = useSwipeable({
     onSwipedLeft: () => setIsGroupDaysVisible(false),
     onSwipedRight: () => setIsGroupDaysVisible(true),
+    onTap: () => {
+      setIsGroupDaysVisible(false)
+      setIsOptionsListVisible(false)
+    },
     preventScrollOnSwipe: true,
-  })
-
-  const scheduleTapHandler = useSwipeable({
-    onTap: () => setIsGroupDaysVisible(false),
   })
 
   return (
@@ -80,11 +93,24 @@ export const GroupIDPage = () => {
             scheduleData={scheduleData}
             toggleIsGroupDaysVisible={() => setIsGroupDaysVisible((prevState) => !prevState)}
             isGroupDaysVisible={isGroupDaysVisible}
+            {...daysListTapHandler}
           />
-          <div className={style.schedule} {...scheduleTapHandler}>
+          <div className={style.schedule}>
             <div className={style.headingContainer}>
               <GroupHeading groupData={groupData} />
-              <Options groupID={groupID} />
+              <div className={style.options}>
+                <OptionsList
+                  groupID={groupID}
+                  toggleIsOptionsListVisible={() => setIsOptionsListVisible((prevState) => !prevState)}
+                  isOptionsListVisible={isOptionsListVisible}
+                  {...optionsListTapHandler}
+                />
+                <OptionsButton
+                  toggleIsOptionsListVisible={() => setIsOptionsListVisible((prevState) => !prevState)}
+                  isOptionsListVisible={isOptionsListVisible}
+                  {...optionsButtonTapHandler}
+                />
+              </div>
             </div>
             <Schedule scheduleData={scheduleData} />
             <RefreshDate groupData={groupData} />

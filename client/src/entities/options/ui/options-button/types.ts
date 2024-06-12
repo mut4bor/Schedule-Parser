@@ -1,4 +1,4 @@
 export type OptionsButtonProps = {
-  handleToggleIsRadioboxVisible: () => void
-  isRadioboxVisible: boolean
+  toggleIsOptionsListVisible: () => void
+  isOptionsListVisible: boolean
 }

@@ -38,12 +38,9 @@
     gap: 1rem;
   }
 
-  .loading {
-    font-size: 2rem;
-  }
-
-  .error {
-    font-size: 2rem;
+  .options {
+    display: flex;
+    position: relative;
   }
 }
 @media (min-width: $pageWidth768) {
