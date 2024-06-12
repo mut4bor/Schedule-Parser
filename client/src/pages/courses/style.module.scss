@@ -6,7 +6,7 @@
     flex-direction: column;
     gap: 1rem;
     margin: 0 auto;
-    padding: calc($headerHeightMobile + 1rem) $containerPaddingX 1rem;
+    padding: $containerPaddingTopMobile $containerPaddingX $containerPaddingBottomMobile;
     max-width: $containerWidth;
   }
   .wrapper {
@@ -19,6 +19,6 @@
 
 @media (min-width: $pageWidth768) {
   .container {
-    padding: calc($headerHeight + 1rem) $containerPaddingX 1rem;
+    padding: $containerPaddingTop $containerPaddingX $containerPaddingBottom;
   }
 }

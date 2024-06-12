@@ -12,7 +12,7 @@ import { Skeleton } from '@/shared/ui'
 export const WeeksList = ({ groupID }: WeeksListProps) => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
-  const [coursesSkeletonIsEnabled, setCoursesSkeletonIsEnabled] = useState(true)
+  const [weeksListSkeletonIsEnabled, setWeeksListSkeletonIsEnabled] = useState(true)
   const navigationValue = useAppSelector((store) => store.navigation.navigationValue)
   const { week: pickedWeek } = navigationValue
 
@@ -34,7 +34,7 @@ export const WeeksList = ({ groupID }: WeeksListProps) => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setCoursesSkeletonIsEnabled(false)
+      setWeeksListSkeletonIsEnabled(false)
     }, SkeletonTime)
     return () => clearTimeout(timer)
   }, [weeksData])
@@ -51,14 +51,14 @@ export const WeeksList = ({ groupID }: WeeksListProps) => {
         />
       </div>
       <ul className={style.list}>
-        {!weeksData || coursesSkeletonIsEnabled
+        {!weeksData || weeksListSkeletonIsEnabled
           ? Array.from({ length: 7 }).map((_, index) => (
               <li key={index}>
                 <Skeleton className={style.skeleton} />
               </li>
             ))
           : weeksData.map((week, index) => (
-              <li className={style.listElement} key={index}>
+              <li key={index}>
                 <WeeksButton
                   text={week}
                   onClick={() => {

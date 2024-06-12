@@ -1,4 +1,4 @@
-export interface GroupDaysButtonProps {
+export type DaysButtonProps = {
   data: {
     text: string
   }

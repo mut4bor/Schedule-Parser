@@ -1,9 +1,12 @@
 import * as style from './style.module.scss'
+import { Link } from 'react-router-dom'
+import { SVG } from '@/shared/ui'
+import { FAVORITE_PATH } from '@/shared/config'
 
 export const HeaderLinks = () => {
   return (
     <div className={style.container}>
-      <a className={style.link} target="_blank" href="https://github.com">
+      <a className={style.link} target="_blank" href="https://github.com/mut4bor/Schedule-Parser">
         <svg className={style.svg} viewBox="0 0 255 250" fill="none">
           <g clipPath="url(#clip0_1_5)">
             <ellipse cx="127.5" cy="132.5" rx="117.5" ry="102.5" className={style.background} />
@@ -35,6 +38,9 @@ export const HeaderLinks = () => {
           />
         </svg>
       </a>
+      <Link to={FAVORITE_PATH} className={style.favorite}>
+        <SVG href="#heart" svgClassName={style.favoriteSvg} />
+      </Link>
     </div>
   )
 }

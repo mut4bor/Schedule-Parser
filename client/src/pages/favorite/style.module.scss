@@ -1,0 +1,23 @@
+@import '@/shared/vars/vars';
+
+@media (min-width: $pageWidth320) {
+  .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: $containerPaddingTopMobile $containerPaddingX $containerPaddingBottomMobile;
+    width: 100%;
+    max-width: $containerWidth;
+    min-height: 100svh;
+  }
+
+  .emptyText {
+    font-size: 1.6rem;
+    text-align: center;
+  }
+}
+@media (min-width: $pageWidth768) {
+  .container {
+    padding: $containerPaddingTop $containerPaddingX $containerPaddingBottom;
+  }
+}

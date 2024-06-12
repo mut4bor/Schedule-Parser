@@ -6,9 +6,9 @@
     flex-direction: column;
     gap: 0.5rem;
     margin: 0 auto;
-    padding: calc($headerHeightMobile + 1rem) $containerPaddingX 1rem;
+    padding: $containerPaddingTopMobile $containerPaddingX $containerPaddingBottomMobile;
     max-width: $containerWidth;
-    height: 100svh;
+    min-height: 100svh;
   }
 
   .content {
@@ -31,6 +31,13 @@
     padding: 1rem;
   }
 
+  .headingContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
   .loading {
     font-size: 2rem;
   }
@@ -41,7 +48,7 @@
 }
 @media (min-width: $pageWidth768) {
   .container {
-    padding: calc($headerHeight + 1rem) $containerPaddingX 1rem;
+    padding: $containerPaddingTop $containerPaddingX $containerPaddingBottom;
   }
   .schedule {
     padding: 2rem 2rem 1rem;

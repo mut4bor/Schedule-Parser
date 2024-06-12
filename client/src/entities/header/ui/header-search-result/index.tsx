@@ -1,13 +1,7 @@
 import * as style from './style.module.scss'
 import { HeaderSearchResultProps } from './types'
 import { Link } from 'react-router-dom'
-import {
-  useGetGroupNamesThatMatchWithReqParamsQuery,
-  useAppDispatch,
-  useAppSelector,
-  weekChanged,
-  dayIndexChanged,
-} from '@/shared/redux'
+import { useAppDispatch, useAppSelector, weekChanged, dayIndexChanged } from '@/shared/redux'
 
 export const HeaderSearchResult = ({ namesData }: HeaderSearchResultProps) => {
   const dispatch = useAppDispatch()

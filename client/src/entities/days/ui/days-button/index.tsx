@@ -1,7 +1,7 @@
 import * as style from './style.module.scss'
-import { GroupDaysButtonProps } from './types'
+import { DaysButtonProps } from './types'
 
-export const GroupDaysButton = ({ data: { text }, onClick, isActive }: GroupDaysButtonProps) => {
+export const DaysButton = ({ data: { text }, onClick, isActive }: DaysButtonProps) => {
   return (
     <button onClick={onClick} className={`${style.button} ${isActive ? style.active : ''}`} type="button">
       {text}

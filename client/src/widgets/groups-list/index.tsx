@@ -6,10 +6,10 @@ import { Link } from 'react-router-dom'
 import { useAppSelector, useGetNamesQuery } from '@/shared/redux'
 import { SkeletonTime } from '@/shared/vars/vars'
 
-export const GroupsList = ({ skeletonState, handleSkeletonStateChange }: GroupsProps) => {
+export const GroupsList = ({ skeletonState, handleGroupsListSkeletonStateChange }: GroupsProps) => {
   const navigationValue = useAppSelector((store) => store.navigation.navigationValue)
   const { educationType, faculty, course } = navigationValue
-  const { groupID: pickedGroup } = useAppSelector((store) => store.navigation.navigationValue)
+  const favoriteGroup = localStorage.getItem('favorite-group')
 
   const namesSearchParams = new URLSearchParams({
     educationType: educationType,
@@ -21,7 +21,7 @@ export const GroupsList = ({ skeletonState, handleSkeletonStateChange }: GroupsP
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      handleSkeletonStateChange(false)
+      handleGroupsListSkeletonStateChange(false)
     }, SkeletonTime)
     return () => clearTimeout(timer)
   }, [skeletonState])
@@ -34,7 +34,7 @@ export const GroupsList = ({ skeletonState, handleSkeletonStateChange }: GroupsP
           : namesData.map((item, index) => (
               <Link
                 to={`/${item._id}`}
-                className={`${style.link} ${pickedGroup === item._id ? style.active : ''}`}
+                className={`${style.link} ${favoriteGroup === item._id ? style.active : ''}`}
                 key={index}
               >
                 <p className={style.text}>{item.group}</p>

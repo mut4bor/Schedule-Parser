@@ -1,11 +1,6 @@
 @import '@/shared/vars/vars';
 
 @media (min-width: $pageWidth320) {
-  .skeleton {
-    width: 12rem;
-    height: 3rem;
-  }
-
   .button {
     display: flex;
     flex-direction: column;
@@ -17,10 +12,11 @@
     background: transparent;
     background: $white10Alpha;
     padding: 0.5rem 1rem;
-    min-width: 12rem;
     min-height: 3rem;
     color: $white;
     font-size: 1.6rem;
+    white-space: nowrap;
+
     &.active {
       background: $accentColor;
     }

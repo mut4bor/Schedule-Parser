@@ -15,33 +15,26 @@ import {
 } from '@/shared/redux'
 import { useState, useEffect } from 'react'
 import { useSwipeable } from 'react-swipeable'
+import { RefreshDate } from '@/widgets/refresh-date'
+import { GroupHeading } from '@/entities/group'
+import { Options } from '@/widgets/options'
 
 export const GroupIDPage = () => {
   const dispatch = useAppDispatch()
   const { groupID } = useParams()
-  const [isGroupDaysVisible, setIsGroupDaysVisible] = useState(true)
 
-  useEffect(() => {
-    if (!!groupID) {
-      dispatch(groupIDChanged(groupID))
-    }
-  }, [groupID, dispatch])
+  const navigationValue = useAppSelector((store) => store.navigation.navigationValue)
+  const { week: pickedWeek } = navigationValue
+
+  const [isGroupDaysVisible, setIsGroupDaysVisible] = useState(true)
 
   if (!groupID) {
     return <div className={style.error}>Invalid Group ID</div>
   }
 
-  const {
-    data: groupData,
-    error: groupError,
-    isLoading,
-    isFetching,
-  } = useGetGroupByIDQuery(groupID, {
+  const { data: groupData, error: groupError } = useGetGroupByIDQuery(groupID, {
     skip: !groupID,
   })
-
-  const navigationValue = useAppSelector((store) => store.navigation.navigationValue)
-  const { week: pickedWeek } = navigationValue
 
   const { data: scheduleData, error: scheduleError } = useGetWeekScheduleByIDQuery(
     {
@@ -52,6 +45,12 @@ export const GroupIDPage = () => {
       skip: !groupID || !pickedWeek,
     },
   )
+
+  useEffect(() => {
+    if (!!groupID) {
+      dispatch(groupIDChanged(groupID))
+    }
+  }, [groupID, dispatch])
 
   useEffect(() => {
     if (!!groupData) {
@@ -83,7 +82,12 @@ export const GroupIDPage = () => {
             isGroupDaysVisible={isGroupDaysVisible}
           />
           <div className={style.schedule} {...scheduleTapHandler}>
-            <Schedule scheduleData={scheduleData} groupInfo={groupData} />
+            <div className={style.headingContainer}>
+              <GroupHeading groupData={groupData} />
+              <Options groupID={groupID} />
+            </div>
+            <Schedule scheduleData={scheduleData} />
+            <RefreshDate groupData={groupData} />
           </div>
         </div>
       </div>

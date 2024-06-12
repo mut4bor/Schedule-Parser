@@ -1,6 +1,4 @@
 export type CourseButtonProps = {
-  data: {
-    course: string
-  }
+  course: string
   handleSkeletonStateChange: (newState: boolean) => void
 }

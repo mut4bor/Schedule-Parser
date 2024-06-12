@@ -1,7 +1,6 @@
 import * as style from './style.module.scss'
 import { FacultyProps } from './types'
 import { Skeleton } from '@/shared/ui'
-import { Link } from 'react-router-dom'
 import { COURSES_PATH } from '@/shared/config'
 import {
   useAppDispatch,
@@ -48,13 +47,13 @@ export const Faculty = ({ data, columnsAmount }: FacultyProps) => {
                     ))}
                   </ul>
                 </div>
-                {index < array.length - 1 && <span className={style.pipe} key={`pipe-${index}`}></span>}
+                {index < array.length - 1 && <span className={style.pipe}></span>}
               </React.Fragment>
             ))
           : faculties.map((faculty, index, array) => (
               <React.Fragment key={`faculty-link-${index}`}>
                 <FacultyLink faculty={faculty} handleLinkClick={() => handleLinkClick(faculty)} href={COURSES_PATH} />
-                {index < array.length - 1 && <span className={style.pipe} key={`pipe-${index}`}></span>}
+                {index < array.length - 1 && <span className={style.pipe}></span>}
               </React.Fragment>
             ))}
       </div>

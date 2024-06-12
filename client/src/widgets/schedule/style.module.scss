@@ -11,18 +11,6 @@
     min-height: 3.6rem;
   }
 
-  .heading {
-    display: flex;
-    align-items: center;
-    border-radius: 0.5rem;
-    background: $accentColor;
-    padding: 0.5rem 1.5rem;
-    width: fit-content;
-    min-height: 3.6rem;
-    color: $white;
-    font-size: 2rem;
-  }
-
   .text {
     display: flex;
     align-items: center;
@@ -32,11 +20,5 @@
     min-height: 3.6rem;
     color: $white;
     font-size: 2rem;
-  }
-
-  .refreshDate {
-    color: gray;
-    font-size: 1.6rem;
-    text-align: end;
   }
 }

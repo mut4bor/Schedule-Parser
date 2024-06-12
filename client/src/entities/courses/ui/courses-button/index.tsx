@@ -2,7 +2,7 @@ import * as style from './style.module.scss'
 import { CourseButtonProps } from './types'
 import { useAppDispatch, useAppSelector, courseChanged } from '@/shared/redux'
 
-export const CourseButton = ({ data: { course }, handleSkeletonStateChange }: CourseButtonProps) => {
+export const CourseButton = ({ course, handleSkeletonStateChange }: CourseButtonProps) => {
   const dispatch = useAppDispatch()
   const navigationValue = useAppSelector((store) => store.navigation.navigationValue)
 

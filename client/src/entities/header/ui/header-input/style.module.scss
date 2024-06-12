@@ -11,7 +11,7 @@
   top: 50%;
   left: 1.1rem;
   transform: translateY(-50%);
-  z-index: 5;
+  z-index: 3;
   aspect-ratio: 1;
   height: 1.7rem;
 }
@@ -20,7 +20,7 @@
 }
 
 .input {
-  z-index: 4;
+  z-index: 2;
   transition: 0.15s ease-in-out;
   transition-delay: 100ms;
   border-radius: 0.5rem 0.5rem 0.5rem 0.5rem;

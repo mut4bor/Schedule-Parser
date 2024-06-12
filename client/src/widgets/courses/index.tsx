@@ -8,7 +8,7 @@ import { useAppDispatch, useAppSelector, useGetCoursesQuery, courseChanged } fro
 import { BASE_URL } from '@/shared/config'
 import { SkeletonTime } from '@/shared/vars/vars'
 
-export const Courses = ({ handleSkeletonStateChange }: CoursesProps) => {
+export const Courses = ({ handleGroupsListSkeletonStateChange }: CoursesProps) => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const navigationValue = useAppSelector((store) => store.navigation.navigationValue)
@@ -25,7 +25,14 @@ export const Courses = ({ handleSkeletonStateChange }: CoursesProps) => {
     faculty: faculty,
   }).toString()
 
-  const { data: coursesData, error: coursesError, isFetching, isLoading } = useGetCoursesQuery(searchParams)
+  const {
+    data: coursesData,
+    error: coursesError,
+    isFetching,
+    isLoading,
+  } = useGetCoursesQuery(searchParams, {
+    skip: !educationType || !faculty,
+  })
 
   useEffect(() => {
     if (!!coursesData) {
@@ -50,9 +57,9 @@ export const Courses = ({ handleSkeletonStateChange }: CoursesProps) => {
               <Skeleton className={style.skeleton} />
             </li>
           ))
-        : coursesData.map((course, key) => (
-            <li className={style.listElement} key={key}>
-              <CourseButton handleSkeletonStateChange={handleSkeletonStateChange} data={{ course }} />
+        : coursesData.map((course, index) => (
+            <li className={style.listElement} key={index}>
+              <CourseButton handleSkeletonStateChange={handleGroupsListSkeletonStateChange} course={course} />
             </li>
           ))}
     </ul>

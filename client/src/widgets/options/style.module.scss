@@ -1,0 +1,27 @@
+@import '@/shared/vars/vars';
+
+.options {
+  display: flex;
+  position: relative;
+}
+
+.optionsList {
+  display: flex;
+  position: absolute;
+  top: 3.6rem;
+  right: 3.6rem;
+  flex-direction: column;
+  opacity: 0;
+  transition: 0.15s ease-in-out;
+  box-shadow: 0 0 5rem 0.5rem rgba(0, 0, 0, 0.5);
+  border: 0.1rem solid $white10Alpha;
+  border-radius: 0.5rem;
+  background: $accentColor;
+  padding: 1rem;
+  pointer-events: none;
+
+  &.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+}

@@ -1,0 +1,48 @@
+@import '@/shared/vars/vars';
+$height: 1.8rem;
+
+.checkbox {
+  position: absolute;
+  opacity: 0;
+  z-index: -1;
+  cursor: pointer;
+  + label {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: $height;
+    user-select: none;
+    white-space: nowrap;
+    .labelbox {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: 0.15s ease-in-out;
+      margin-right: 0.8rem;
+      border: 0.1rem solid #ffffff75;
+      border-radius: 0.5rem;
+      aspect-ratio: 1;
+      height: $height;
+
+      .labelboxSvg {
+        fill: transparent;
+        transition: 0.15s ease-in-out;
+        aspect-ratio: 1;
+        height: 80%;
+      }
+    }
+  }
+  &:checked + label .labelbox {
+    border-color: $white;
+    background-color: $white;
+    .labelboxSvg {
+      fill: $accentColor;
+    }
+  }
+
+  @media (hover: hover) {
+    &:not(:disabled):not(:checked) + label:hover .labelbox {
+      border-color: $white;
+    }
+  }
+}

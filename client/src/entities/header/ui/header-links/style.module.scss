@@ -1,41 +1,82 @@
 @import '@/shared/vars/vars';
 
-.container {
-  display: flex;
-  flex-direction: row;
-  gap: 1rem;
-}
-
-.link {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 50%;
-  aspect-ratio: 1;
-}
-
-.svg {
-  transition: 0.15s ease-in-out;
-  cursor: pointer;
-  border-radius: 0.5rem;
-  aspect-ratio: 1;
-  width: 3.6rem;
-  overflow: hidden;
-
-  .background {
-    fill: $white;
-    transition: 0.15s ease-in-out;
+@media (min-width: $pageWidth320) {
+  .container {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
   }
-  .logo {
-    fill: $accentColor;
-    transition: 0.15s ease-in-out;
+
+  .link {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    aspect-ratio: 1;
   }
-  &:hover {
+
+  .svg {
+    transition: 0.15s ease-in-out;
+    cursor: pointer;
+    border-radius: 0.5rem;
+    aspect-ratio: 1;
+    width: 3.6rem;
+    overflow: hidden;
+
     .background {
-      fill: $accentColor;
+      fill: $white;
+      transition: 0.15s ease-in-out;
     }
     .logo {
-      fill: $white;
+      fill: $accentColor;
+      transition: 0.15s ease-in-out;
     }
+    &:hover {
+      .background {
+        fill: $accentColor;
+      }
+      .logo {
+        fill: $white;
+      }
+    }
+  }
+
+  .favorite {
+    display: none;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+    transition: 0.15s ease-in-out;
+    border-radius: 50%;
+    background: $accentColor;
+    aspect-ratio: 1;
+    width: 3.6rem;
+    &:hover {
+      background: $white;
+    }
+  }
+
+  .favoriteSvg {
+    position: absolute;
+    top: 52%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: 0.15s ease-in-out;
+    cursor: pointer;
+    border-radius: 0.5rem;
+    aspect-ratio: 1;
+    width: 3rem;
+    overflow: hidden;
+    fill: $white;
+
+    &:hover {
+      fill: $accentColor;
+    }
+  }
+}
+
+@media (min-width: $pageWidth768) {
+  .favorite {
+    display: flex;
   }
 }

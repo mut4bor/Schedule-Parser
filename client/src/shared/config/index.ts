@@ -12,10 +12,11 @@ const getEnvVar = (key: string) => {
 const NODE_ENV = getEnvVar('NODE_ENV')
 
 const BASE_URL = getEnvVar('BASE_URL')
-const FACULTIES_PATH = getEnvVar('FACULTIES_PATH')
 const COURSES_PATH = getEnvVar('COURSES_PATH')
-const GROUPS_PATH = getEnvVar('GROUPS_PATH')
 const GROUP_ID_PATH = getEnvVar('GROUP_ID_PATH')
+
+const SETTINGS_PATH = getEnvVar('SETTINGS_PATH')
+const FAVORITE_PATH = getEnvVar('FAVORITE_PATH')
 
 const API_URL = getEnvVar('API_URL')
 const X_ADMIN_PASSWORD = getEnvVar('X_ADMIN_PASSWORD')
@@ -27,9 +28,9 @@ const isProdEnv = NODE_ENV === 'production'
 export {
   NODE_ENV,
   BASE_URL,
-  FACULTIES_PATH,
+  SETTINGS_PATH,
   COURSES_PATH,
-  GROUPS_PATH,
+  FAVORITE_PATH,
   GROUP_ID_PATH,
   API_URL,
   X_ADMIN_PASSWORD,

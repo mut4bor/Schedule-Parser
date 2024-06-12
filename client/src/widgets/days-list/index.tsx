@@ -4,17 +4,17 @@ import { useState, useEffect } from 'react'
 import { SVG, Skeleton } from '@/shared/ui'
 import { SkeletonTime } from '@/shared/vars/vars'
 import { useAppDispatch, useAppSelector, dayIndexChanged } from '@/shared/redux'
-import { GroupDaysButton } from '@/entities/group'
+import { DaysButton } from '@/entities/days'
 import { getDayToPick } from '@/shared/hooks'
 
 export const DaysList = ({ scheduleData, toggleIsGroupDaysVisible, isGroupDaysVisible }: DaysListProps) => {
   const dispatch = useAppDispatch()
 
-  const [coursesSkeletonIsEnabled, setCoursesSkeletonIsEnabled] = useState(true)
+  const [daysListSkeletonIsEnabled, setDaysListSkeletonIsEnabled] = useState(true)
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setCoursesSkeletonIsEnabled(false)
+      setDaysListSkeletonIsEnabled(false)
     }, SkeletonTime)
     return () => clearTimeout(timer)
   }, [scheduleData])
@@ -43,7 +43,7 @@ export const DaysList = ({ scheduleData, toggleIsGroupDaysVisible, isGroupDaysVi
         ></SVG>
       </button>
       <ul className={style.list}>
-        {!scheduleData || coursesSkeletonIsEnabled
+        {!scheduleData || daysListSkeletonIsEnabled
           ? Array.from({ length: 6 }).map((_, index) => (
               <li className={style.listElement} key={index}>
                 <Skeleton className={style.skeleton} />
@@ -51,7 +51,7 @@ export const DaysList = ({ scheduleData, toggleIsGroupDaysVisible, isGroupDaysVi
             ))
           : Object.keys(scheduleData).map((day, index) => (
               <li className={style.listElement} key={index}>
-                <GroupDaysButton
+                <DaysButton
                   onClick={() => {
                     dispatch(dayIndexChanged(index))
                   }}

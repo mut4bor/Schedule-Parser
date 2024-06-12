@@ -6,10 +6,10 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 export const CoursesPage = () => {
   const navigate = useNavigate()
-  const [coursesSkeletonIsEnabled, setCoursesSkeletonIsEnabled] = useState(true)
+  const [groupsListSkeletonIsEnabled, setGroupsListSkeletonIsEnabled] = useState(true)
 
-  const handleSkeletonStateChange = (newState: boolean) => {
-    setCoursesSkeletonIsEnabled(newState)
+  const handleGroupsListSkeletonStateChange = (newState: boolean) => {
+    setGroupsListSkeletonIsEnabled(newState)
   }
 
   return (
@@ -18,8 +18,11 @@ export const CoursesPage = () => {
         <BackToPreviousButton onClick={() => navigate('/')} />
       </div>
       <div className={style.wrapper}>
-        <Courses handleSkeletonStateChange={handleSkeletonStateChange} />
-        <GroupsList handleSkeletonStateChange={handleSkeletonStateChange} skeletonState={coursesSkeletonIsEnabled} />
+        <Courses handleGroupsListSkeletonStateChange={handleGroupsListSkeletonStateChange} />
+        <GroupsList
+          handleGroupsListSkeletonStateChange={handleGroupsListSkeletonStateChange}
+          skeletonState={groupsListSkeletonIsEnabled}
+        />
       </div>
     </div>
   )

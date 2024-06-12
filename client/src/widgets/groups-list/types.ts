@@ -1,4 +1,4 @@
 export type GroupsProps = {
-  handleSkeletonStateChange: (newState: boolean) => void
+  handleGroupsListSkeletonStateChange: (newState: boolean) => void
   skeletonState: boolean
 }
