@@ -1,21 +1,21 @@
 {
   "name": "schedule-parser-server",
   "version": "1.0.0",
-  "description": "",
+  "description": "Server for university schedule",
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon index.js",
-    "start": "node index.js",
     "lint": "npx eslint ./src",
     "format": "npx eslint ./src --fix",
+    "dev": "nodemon index.js",
+    "start": "node index.js",
     "delete": "node src/database/scripts/deleteAllGroups.js",
     "download": "node src/database/scripts/downloadSchedules.js",
     "update": "npm run download && node src/database/scripts/updateGroups.js",
     "create": "npm run delete && npm run download && node src/database/scripts/createGroups.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Matvey Molchanov",
   "license": "ISC",
   "dependencies": {
     "@eslint/eslintrc": "^3.0.2",
