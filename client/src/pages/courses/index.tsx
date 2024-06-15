@@ -14,9 +14,8 @@ export const CoursesPage = () => {
 
   return (
     <div className={style.container}>
-      <div className="">
-        <BackToPreviousButton onClick={() => navigate('/')} />
-      </div>
+      <BackToPreviousButton onClick={() => navigate('/')} />
+
       <div className={style.wrapper}>
         <Courses handleGroupsListSkeletonStateChange={handleGroupsListSkeletonStateChange} />
         <GroupsList

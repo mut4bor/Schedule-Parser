@@ -19,6 +19,7 @@ import { RefreshDate } from '@/widgets/refresh-date'
 import { GroupHeading } from '@/entities/group'
 import { OptionsList } from '@/widgets/options-list'
 import { OptionsButton } from '@/entities/options'
+import { createTapStopPropagationHandler } from '@/shared/hooks'
 
 export const GroupIDPage = () => {
   const dispatch = useAppDispatch()
@@ -27,8 +28,25 @@ export const GroupIDPage = () => {
   const navigationValue = useAppSelector((store) => store.navigation.navigationValue)
   const { week: pickedWeek } = navigationValue
 
-  const [isGroupDaysVisible, setIsGroupDaysVisible] = useState(true)
+  const [isGroupDaysVisible, setIsGroupDaysVisible] = useState(false)
   const [isOptionsListVisible, setIsOptionsListVisible] = useState(false)
+
+  const hideGroupDays = () => setIsGroupDaysVisible(false)
+  const showGroupDays = () => setIsGroupDaysVisible(true)
+  const toggleGroupDays = () => setIsGroupDaysVisible((prevState) => !prevState)
+
+  const hideOptionsList = () => setIsOptionsListVisible(false)
+  const toggleOptionsList = () => setIsOptionsListVisible((prevState) => !prevState)
+
+  const contentSwipeHandler = useSwipeable({
+    onSwipedLeft: hideGroupDays,
+    onSwipedRight: showGroupDays,
+    onTap: () => {
+      hideGroupDays()
+      hideOptionsList()
+    },
+    preventScrollOnSwipe: true,
+  })
 
   if (!groupID) {
     return <div>Invalid Group ID</div>
@@ -63,27 +81,6 @@ export const GroupIDPage = () => {
     }
   }, [groupData, dispatch, groupID])
 
-  const createTapStopPropagationHandler = () =>
-    useSwipeable({
-      onTap: (event) => {
-        event.event.stopPropagation()
-      },
-    })
-
-  const daysListTapHandler = createTapStopPropagationHandler()
-  const optionsListTapHandler = createTapStopPropagationHandler()
-  const optionsButtonTapHandler = createTapStopPropagationHandler()
-
-  const contentSwipeHandler = useSwipeable({
-    onSwipedLeft: () => setIsGroupDaysVisible(false),
-    onSwipedRight: () => setIsGroupDaysVisible(true),
-    onTap: () => {
-      setIsGroupDaysVisible(false)
-      setIsOptionsListVisible(false)
-    },
-    preventScrollOnSwipe: true,
-  })
-
   return (
     <div className={style.container}>
       <WeeksList groupID={groupID} />
@@ -91,24 +88,19 @@ export const GroupIDPage = () => {
         <div className={style.wrapper}>
           <DaysList
             scheduleData={scheduleData}
-            toggleIsGroupDaysVisible={() => setIsGroupDaysVisible((prevState) => !prevState)}
+            toggleIsGroupDaysVisible={toggleGroupDays}
             isGroupDaysVisible={isGroupDaysVisible}
-            {...daysListTapHandler}
+            {...createTapStopPropagationHandler()}
           />
           <div className={style.schedule}>
             <div className={style.headingContainer}>
               <GroupHeading groupData={groupData} />
               <div className={style.options}>
-                <OptionsList
-                  groupID={groupID}
-                  toggleIsOptionsListVisible={() => setIsOptionsListVisible((prevState) => !prevState)}
-                  isOptionsListVisible={isOptionsListVisible}
-                  {...optionsListTapHandler}
-                />
+                <OptionsList groupID={groupID} isOptionsListVisible={isOptionsListVisible} />
                 <OptionsButton
-                  toggleIsOptionsListVisible={() => setIsOptionsListVisible((prevState) => !prevState)}
+                  toggleIsOptionsListVisible={toggleOptionsList}
                   isOptionsListVisible={isOptionsListVisible}
-                  {...optionsButtonTapHandler}
+                  {...createTapStopPropagationHandler()}
                 />
               </div>
             </div>

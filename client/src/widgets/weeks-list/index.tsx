@@ -26,7 +26,6 @@ export const WeeksList = ({ groupID }: WeeksListProps) => {
 
       const daysRange = weeksData.map((item) => getDaysInRange(item))
       const currentWeekIndex = daysRange.findIndex((subArray) => subArray.includes(day))
-
       const currentWeek = weeksData[currentWeekIndex]
       dispatch(weekChanged(currentWeek))
     }
@@ -41,15 +40,14 @@ export const WeeksList = ({ groupID }: WeeksListProps) => {
 
   return (
     <div className={style.container}>
-      <div>
-        <BackToPreviousButton
-          onClick={() => {
-            navigate('/courses')
-            dispatch(weekChanged(''))
-            dispatch(dayIndexChanged(-1))
-          }}
-        />
-      </div>
+      <BackToPreviousButton
+        onClick={() => {
+          navigate('/courses')
+          dispatch(weekChanged(''))
+          dispatch(dayIndexChanged(-1))
+        }}
+      />
+
       <ul className={style.list}>
         {!weeksData || weeksListSkeletonIsEnabled
           ? Array.from({ length: 7 }).map((_, index) => (

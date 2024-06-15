@@ -1,10 +1,10 @@
 import * as style from './style.module.scss'
 import { BackToPreviousButtonProps } from './types'
 
-export const BackToPreviousButton = ({ onClick }: BackToPreviousButtonProps) => {
+export const BackToPreviousButton = ({ onClick, text }: BackToPreviousButtonProps) => {
   return (
     <button onClick={onClick} className={style.button} type="button">
-      Назад
+      {text ?? 'Назад'}
     </button>
   )
 }

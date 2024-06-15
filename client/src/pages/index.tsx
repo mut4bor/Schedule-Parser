@@ -7,10 +7,9 @@ import { FavoritePage } from './favorite'
 import { ErrorPage } from './error'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Provider } from 'react-redux'
-import { BASE_URL, COURSES_PATH, FAVORITE_PATH, SETTINGS_PATH, GROUP_ID_PATH } from '@/shared/config'
+import { BASE_URL, COURSES_PATH, FAVORITE_PATH, GROUP_ID_PATH } from '@/shared/config'
 import { store } from '@/shared/redux'
 import { Icons } from '@/shared/icons'
-import { SettingsPage } from './settings'
 import React from 'react'
 
 type RouteWithHeaderAndTabBarProps = {
@@ -29,7 +28,6 @@ const routes = [
   { path: `${BASE_URL}`, Component: MainPage },
   { path: `${BASE_URL}${COURSES_PATH}`, Component: CoursesPage },
   { path: `${BASE_URL}${FAVORITE_PATH}`, Component: FavoritePage },
-  { path: `${BASE_URL}${SETTINGS_PATH}`, Component: SettingsPage },
   { path: `${BASE_URL}${GROUP_ID_PATH}`, Component: GroupIDPage },
 ]
 

@@ -2,6 +2,7 @@ import * as style from './style.module.scss'
 import { OptionsProps } from './types'
 import { useEffect, useState, forwardRef } from 'react'
 import { Radiobox } from '@/shared/ui'
+import { createTapStopPropagationHandler } from '@/shared/hooks'
 
 export const OptionsList = forwardRef<HTMLUListElement, OptionsProps>(({ groupID, isOptionsListVisible }, ref) => {
   const [isRadioboxChecked, setIsRadioboxChecked] = useState(false)
@@ -18,7 +19,10 @@ export const OptionsList = forwardRef<HTMLUListElement, OptionsProps>(({ groupID
   }
 
   return (
-    <ul ref={ref} className={`${style.optionsList} ${isOptionsListVisible ? style.active : ''}`}>
+    <ul
+      className={`${style.optionsList} ${isOptionsListVisible ? style.active : ''}`}
+      {...createTapStopPropagationHandler()}
+    >
       <li>
         <Radiobox
           id={'optionsRadiobox'}

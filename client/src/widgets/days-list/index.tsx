@@ -24,10 +24,8 @@ export const DaysList = forwardRef<HTMLDivElement, DaysListProps>(
     const { dayWeekIndex } = getDayToPick()
 
     useEffect(() => {
-      if (scheduleData) {
-        dispatch(dayIndexChanged(dayWeekIndex))
-      }
-    }, [scheduleData])
+      dispatch(dayIndexChanged(dayWeekIndex))
+    }, [])
 
     return (
       <div ref={ref} className={`${style.container} ${isGroupDaysVisible ? style.visible : style.hidden}`}>

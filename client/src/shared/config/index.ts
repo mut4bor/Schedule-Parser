@@ -15,7 +15,6 @@ const BASE_URL = getEnvVar('BASE_URL')
 const COURSES_PATH = getEnvVar('COURSES_PATH')
 const GROUP_ID_PATH = getEnvVar('GROUP_ID_PATH')
 
-const SETTINGS_PATH = getEnvVar('SETTINGS_PATH')
 const FAVORITE_PATH = getEnvVar('FAVORITE_PATH')
 
 const API_URL = getEnvVar('API_URL')
@@ -28,7 +27,6 @@ const isProdEnv = NODE_ENV === 'production'
 export {
   NODE_ENV,
   BASE_URL,
-  SETTINGS_PATH,
   COURSES_PATH,
   FAVORITE_PATH,
   GROUP_ID_PATH,

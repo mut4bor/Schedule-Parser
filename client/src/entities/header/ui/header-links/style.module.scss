@@ -53,6 +53,9 @@
     width: 3.6rem;
     &:hover {
       background: $white;
+      .favoriteSvg {
+        fill: $accentColor;
+      }
     }
   }
 
@@ -68,10 +71,6 @@
     width: 3rem;
     overflow: hidden;
     fill: $white;
-
-    &:hover {
-      fill: $accentColor;
-    }
   }
 }
 

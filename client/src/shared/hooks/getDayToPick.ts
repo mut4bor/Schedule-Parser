@@ -7,8 +7,8 @@ export const getDayToPick = (): { day: string; dayWeekIndex: number } => {
   const tomorrow = addDays(today, 1)
   const tomorrowWeekIndex = getISODay(tomorrow)
 
-  const day = format(todayWeekIndex !== 6 ? today : tomorrow, 'dd.MM')
-  const dayWeekIndex = todayWeekIndex !== 6 ? todayWeekIndex : tomorrowWeekIndex
+  const day = format(todayWeekIndex !== 7 ? today : tomorrow, 'dd.MM')
+  const dayWeekIndex = todayWeekIndex !== 7 ? todayWeekIndex : tomorrowWeekIndex
 
   return {
     day: day,

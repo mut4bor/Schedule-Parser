@@ -9,8 +9,8 @@ export const HeaderLinks = () => {
       <a className={style.link} target="_blank" href="https://github.com/mut4bor/Schedule-Parser">
         <svg className={style.svg} viewBox="0 0 255 250" fill="none">
           <g clipPath="url(#clip0_1_5)">
-            <ellipse cx="127.5" cy="132.5" rx="117.5" ry="102.5" className={style.background} />
-            <rect x="90" y="227" width="75" height="23" className={style.background} />
+            <ellipse className={style.background} cx="127.5" cy="132.5" rx="117.5" ry="102.5" />
+            <rect className={style.background} x="90" y="227" width="75" height="23" />
             <path
               fillRule="evenodd"
               clipRule="evenodd"
@@ -38,6 +38,7 @@ export const HeaderLinks = () => {
           />
         </svg>
       </a>
+
       <Link to={FAVORITE_PATH} className={style.favorite}>
         <SVG href="#heart" svgClassName={style.favoriteSvg} />
       </Link>
