@@ -6,7 +6,8 @@
     flex-direction: column;
     gap: 0.5rem;
     margin: 0 auto;
-    padding: $containerPaddingTopMobile $containerPaddingX $containerPaddingBottomMobile;
+    padding: $containerPaddingTopMobile $containerPaddingX
+      $containerPaddingBottomMobile;
     max-width: $containerWidth;
     min-height: 100svh;
   }

@@ -35,6 +35,12 @@ const navigationSlice = createSlice({
     },
   },
 })
-export const { educationTypeChanged, facultyChanged, courseChanged, groupIDChanged, weekChanged, dayIndexChanged } =
-  navigationSlice.actions
+export const {
+  educationTypeChanged,
+  facultyChanged,
+  courseChanged,
+  groupIDChanged,
+  weekChanged,
+  dayIndexChanged,
+} = navigationSlice.actions
 export default navigationSlice.reducer

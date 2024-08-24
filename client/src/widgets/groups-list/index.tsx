@@ -6,8 +6,13 @@ import { Link } from 'react-router-dom'
 import { useAppSelector, useGetNamesQuery } from '@/shared/redux'
 import { SkeletonTime } from '@/shared/vars/vars'
 
-export const GroupsList = ({ skeletonState, handleGroupsListSkeletonStateChange }: GroupsProps) => {
-  const navigationValue = useAppSelector((store) => store.navigation.navigationValue)
+export const GroupsList = ({
+  skeletonState,
+  handleGroupsListSkeletonStateChange,
+}: GroupsProps) => {
+  const navigationValue = useAppSelector(
+    (store) => store.navigation.navigationValue,
+  )
   const { educationType, faculty, course } = navigationValue
   const favoriteGroup = localStorage.getItem('favorite-group')
 
@@ -17,7 +22,12 @@ export const GroupsList = ({ skeletonState, handleGroupsListSkeletonStateChange 
     course: course,
   }).toString()
 
-  const { data: namesData, error: namesError, isLoading, isFetching } = useGetNamesQuery(namesSearchParams)
+  const {
+    data: namesData,
+    error: namesError,
+    isLoading,
+    isFetching,
+  } = useGetNamesQuery(namesSearchParams)
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -30,10 +40,12 @@ export const GroupsList = ({ skeletonState, handleGroupsListSkeletonStateChange 
     <div className={style.container}>
       <div className={style.main}>
         {!namesData || isLoading || isFetching || skeletonState
-          ? Array.from({ length: 16 }).map((_, index) => <Skeleton className={style.skeleton} key={index} />)
+          ? Array.from({ length: 16 }).map((_, index) => (
+              <Skeleton className={style.skeleton} key={index} />
+            ))
           : namesData.map((item, index) => (
               <Link
-                to={`/${item._id}`}
+                to={`/groupID/${item._id}`}
                 className={`${style.link} ${favoriteGroup === item._id ? style.active : ''}`}
                 key={index}
               >

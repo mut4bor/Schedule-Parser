@@ -1,3 +1,3 @@
 export type WeeksListProps = {
-  groupID: string
+  weeksData: string[] | undefined
 }

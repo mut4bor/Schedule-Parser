@@ -12,7 +12,6 @@ const PORT = process.env.PORT || 3000
 const __dirname = path.resolve()
 const __client = path.join(__dirname, '../', 'client')
 const __clientBuild = path.join(__client, 'build')
-const __clientPublic = path.join(__client, 'public')
 
 app.use(express.static(__clientBuild))
 app.use(cors())

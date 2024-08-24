@@ -7,22 +7,14 @@ import { FavoritePage } from './favorite'
 import { ErrorPage } from './error'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Provider } from 'react-redux'
-import { BASE_URL, COURSES_PATH, FAVORITE_PATH, GROUP_ID_PATH } from '@/shared/config'
+import {
+  BASE_URL,
+  COURSES_PATH,
+  FAVORITE_PATH,
+  GROUP_ID_PATH,
+} from '@/shared/routes'
 import { store } from '@/shared/redux'
 import { Icons } from '@/shared/icons'
-import React from 'react'
-
-type RouteWithHeaderAndTabBarProps = {
-  Component: React.ComponentType
-}
-
-const RouteWithHeaderAndTabBar = ({ Component }: RouteWithHeaderAndTabBarProps) => (
-  <>
-    <Header />
-    <Component />
-    <TabBar />
-  </>
-)
 
 const routes = [
   { path: `${BASE_URL}`, Component: MainPage },
@@ -35,11 +27,18 @@ export const Routing = () => {
   const router = createBrowserRouter(
     routes.map(({ path, Component }) => ({
       path,
-      element: <RouteWithHeaderAndTabBar Component={Component} />,
+      element: (
+        <>
+          <Header />
+          <Component />
+          <TabBar />
+        </>
+      ),
       errorElement: (
         <>
           <Header />
           <ErrorPage />
+          <TabBar />
         </>
       ),
     })),

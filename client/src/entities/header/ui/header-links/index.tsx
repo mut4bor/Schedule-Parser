@@ -1,16 +1,32 @@
 import * as style from './style.module.scss'
 import { Link } from 'react-router-dom'
 import { SVG } from '@/shared/ui'
-import { FAVORITE_PATH } from '@/shared/config'
+import { FAVORITE_PATH } from '@/shared/routes'
 
 export const HeaderLinks = () => {
   return (
     <div className={style.container}>
-      <a className={style.link} target="_blank" href="https://github.com/mut4bor/Schedule-Parser">
+      <a
+        className={style.link}
+        target="_blank"
+        href="https://github.com/mut4bor/Schedule-Parser"
+      >
         <svg className={style.svg} viewBox="0 0 255 250" fill="none">
           <g clipPath="url(#clip0_1_5)">
-            <ellipse className={style.background} cx="127.5" cy="132.5" rx="117.5" ry="102.5" />
-            <rect className={style.background} x="90" y="227" width="75" height="23" />
+            <ellipse
+              className={style.background}
+              cx="127.5"
+              cy="132.5"
+              rx="117.5"
+              ry="102.5"
+            />
+            <rect
+              className={style.background}
+              x="90"
+              y="227"
+              width="75"
+              height="23"
+            />
             <path
               fillRule="evenodd"
               clipRule="evenodd"

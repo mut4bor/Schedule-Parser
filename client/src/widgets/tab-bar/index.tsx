@@ -1,6 +1,6 @@
 import * as style from './style.module.scss'
 import { TabBarLink } from '@/entities/tab-bar/ui/tab-bar-link'
-import { BASE_URL, FAVORITE_PATH } from '@/shared/config'
+import { BASE_URL, FAVORITE_PATH } from '@/shared/routes'
 import React from 'react'
 
 export const TabBar = () => {
@@ -23,7 +23,11 @@ export const TabBar = () => {
         {links.map((item, index, array) => (
           <React.Fragment key={index}>
             <li className={style.listElement}>
-              <TabBarLink text={item.text} svgHref={item.svgHref} href={item.href} />
+              <TabBarLink
+                text={item.text}
+                svgHref={item.svgHref}
+                href={item.href}
+              />
             </li>
             {index < array.length - 1 && <li className={style.pipe}></li>}
           </React.Fragment>

@@ -4,21 +4,30 @@ import { Skeleton } from '@/shared/ui'
 import { CourseButton } from '@/entities/courses'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAppDispatch, useAppSelector, useGetCoursesQuery, courseChanged } from '@/shared/redux'
-import { BASE_URL } from '@/shared/config'
+import {
+  useAppDispatch,
+  useAppSelector,
+  useGetCoursesQuery,
+  courseChanged,
+} from '@/shared/redux'
+import { BASE_URL } from '@/shared/routes'
 import { SkeletonTime } from '@/shared/vars/vars'
+import { ErrorComponent } from '../error'
 
-export const Courses = ({ handleGroupsListSkeletonStateChange }: CoursesProps) => {
+export const Courses = ({
+  handleGroupsListSkeletonStateChange,
+}: CoursesProps) => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
-  const navigationValue = useAppSelector((store) => store.navigation.navigationValue)
-  const { educationType, faculty, course } = navigationValue
+  const { educationType, faculty, course } = useAppSelector(
+    (store) => store.navigation.navigationValue,
+  )
 
   useEffect(() => {
-    if (!faculty) {
+    if (!educationType || !faculty) {
       navigate(BASE_URL)
     }
-  }, [faculty])
+  }, [educationType, faculty])
 
   const searchParams = new URLSearchParams({
     educationType: educationType,
@@ -49,6 +58,10 @@ export const Courses = ({ handleGroupsListSkeletonStateChange }: CoursesProps) =
     return () => clearTimeout(timer)
   }, [])
 
+  if (coursesError) {
+    return <ErrorComponent error={coursesError} />
+  }
+
   return (
     <ul className={style.list}>
       {!coursesData || isFetching || isLoading || coursesSkeletonIsEnabled
@@ -59,7 +72,10 @@ export const Courses = ({ handleGroupsListSkeletonStateChange }: CoursesProps) =
           ))
         : coursesData.map((course, index) => (
             <li className={style.listElement} key={index}>
-              <CourseButton handleSkeletonStateChange={handleGroupsListSkeletonStateChange} course={course} />
+              <CourseButton
+                handleSkeletonStateChange={handleGroupsListSkeletonStateChange}
+                course={course}
+              />
             </li>
           ))}
     </ul>

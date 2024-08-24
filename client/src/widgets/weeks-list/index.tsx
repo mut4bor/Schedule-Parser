@@ -5,29 +5,38 @@ import { WeeksButton } from '@/entities/weeks'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { SkeletonTime } from '@/shared/vars/vars'
-import { useAppDispatch, useAppSelector, weekChanged, dayIndexChanged, useGetWeeksByIDQuery } from '@/shared/redux'
+import {
+  useAppDispatch,
+  useAppSelector,
+  weekChanged,
+  dayIndexChanged,
+} from '@/shared/redux'
 import { getDaysInRange, getDayToPick } from '@/shared/hooks'
 import { Skeleton } from '@/shared/ui'
 
-export const WeeksList = ({ groupID }: WeeksListProps) => {
+export const WeeksList = ({ weeksData }: WeeksListProps) => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
-  const [weeksListSkeletonIsEnabled, setWeeksListSkeletonIsEnabled] = useState(true)
-  const navigationValue = useAppSelector((store) => store.navigation.navigationValue)
-  const { week: pickedWeek } = navigationValue
-
-  const { data: weeksData, error: weeksError } = useGetWeeksByIDQuery(groupID, {
-    skip: !groupID,
-  })
+  const [weeksListSkeletonIsEnabled, setWeeksListSkeletonIsEnabled] =
+    useState(true)
+  const { week: pickedWeek } = useAppSelector(
+    (store) => store.navigation.navigationValue,
+  )
 
   useEffect(() => {
     if (!!weeksData) {
       const { day } = getDayToPick()
 
       const daysRange = weeksData.map((item) => getDaysInRange(item))
-      const currentWeekIndex = daysRange.findIndex((subArray) => subArray.includes(day))
+      const currentWeekIndex = daysRange.findIndex((subArray) =>
+        subArray.includes(day),
+      )
       const currentWeek = weeksData[currentWeekIndex]
-      dispatch(weekChanged(currentWeek))
+      if (currentWeek) {
+        dispatch(weekChanged(currentWeek))
+        return
+      }
+      dispatch(weekChanged(weeksData[0]))
     }
   }, [weeksData])
 

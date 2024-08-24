@@ -1,7 +1,7 @@
 import * as style from './style.module.scss'
 import { FacultyProps } from './types'
 import { Skeleton } from '@/shared/ui'
-import { COURSES_PATH } from '@/shared/config'
+import { COURSES_PATH } from '@/shared/routes'
 import {
   useAppDispatch,
   educationTypeChanged,
@@ -26,12 +26,20 @@ export const Faculty = ({ data, columnsAmount }: FacultyProps) => {
     dispatch(dayIndexChanged(-1))
   }
 
-  const skeletonLenght = columnsAmount ? (columnsAmount > 0 ? columnsAmount : 1) : 4
+  const skeletonLenght = columnsAmount
+    ? columnsAmount > 0
+      ? columnsAmount
+      : 1
+    : 4
 
   return (
     <div className={style.container}>
       <div className={style.heading}>
-        {!data || !educationType ? <Skeleton /> : <h2 className={style.educationType}>{educationType}</h2>}
+        {!data || !educationType ? (
+          <Skeleton />
+        ) : (
+          <h2 className={style.educationType}>{educationType}</h2>
+        )}
       </div>
 
       <div className={style.content}>
@@ -47,13 +55,21 @@ export const Faculty = ({ data, columnsAmount }: FacultyProps) => {
                     ))}
                   </ul>
                 </div>
-                {index < array.length - 1 && <span className={style.pipe}></span>}
+                {index < array.length - 1 && (
+                  <span className={style.pipe}></span>
+                )}
               </React.Fragment>
             ))
           : faculties.map((faculty, index, array) => (
               <React.Fragment key={`faculty-link-${index}`}>
-                <FacultyLink faculty={faculty} handleLinkClick={() => handleLinkClick(faculty)} href={COURSES_PATH} />
-                {index < array.length - 1 && <span className={style.pipe}></span>}
+                <FacultyLink
+                  faculty={faculty}
+                  handleLinkClick={() => handleLinkClick(faculty)}
+                  href={COURSES_PATH}
+                />
+                {index < array.length - 1 && (
+                  <span className={style.pipe}></span>
+                )}
               </React.Fragment>
             ))}
       </div>

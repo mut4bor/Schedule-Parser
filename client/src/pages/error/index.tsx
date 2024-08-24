@@ -1,5 +1,14 @@
-import * as style from './style.module.scss'
+import { ErrorComponent } from '@/widgets/error'
 
 export const ErrorPage = () => {
-  return <div className={style.container}>Error 404</div>
+  return (
+    <ErrorComponent
+      error={{
+        status: 404,
+        data: {
+          message: 'Страница не найдена',
+        },
+      }}
+    />
+  )
 }

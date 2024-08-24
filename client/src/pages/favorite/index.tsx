@@ -1,5 +1,5 @@
-import { useEffect } from 'react'
 import * as style from './style.module.scss'
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 export const FavoritePage = () => {
@@ -8,14 +8,14 @@ export const FavoritePage = () => {
 
   useEffect(() => {
     if (!!favoriteGroup) {
-      navigate(`/${favoriteGroup}`)
+      navigate(`/groupID/${favoriteGroup}`)
     }
   }, [favoriteGroup])
 
   return (
     !favoriteGroup && (
       <div className={style.container}>
-        <p className={style.emptyText}>Избранная группа не выбрана</p>
+        <p className={style.text}>Избранная группа не выбрана</p>
       </div>
     )
   )

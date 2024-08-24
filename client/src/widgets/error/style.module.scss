@@ -6,22 +6,41 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 4rem;
+    gap: 3rem;
     margin: 0 auto;
     padding: $containerPaddingTopMobile $containerPaddingX
       $containerPaddingBottomMobile;
     width: fit-content;
-    max-width: $containerWidth;
+    max-width: 60rem;
     min-height: 100svh;
   }
 
   .text {
+    font-size: 2.5rem;
+    text-align: center;
+    word-wrap: break-word;
+  }
+
+  .link {
+    transition: 0.15s ease-in-out;
+    border-radius: 1rem;
+    background: $accentColor;
+    padding: 2rem 1rem;
+    width: 100%;
+    color: $white;
     font-size: 2rem;
     text-align: center;
+    &:hover {
+      background: $white;
+      color: $accentColor;
+    }
   }
 }
 @media (min-width: $pageWidth768) {
   .container {
     padding: $containerPaddingTop $containerPaddingX $containerPaddingBottom;
+  }
+  .text {
+    font-size: 4rem;
   }
 }

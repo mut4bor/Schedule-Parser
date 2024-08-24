@@ -12,21 +12,22 @@ import {
   useGetGroupByIDQuery,
   useAppSelector,
   useGetWeekScheduleByIDQuery,
+  useGetWeeksByIDQuery,
 } from '@/shared/redux'
 import { useState, useEffect } from 'react'
 import { useSwipeable } from 'react-swipeable'
 import { RefreshDate } from '@/widgets/refresh-date'
 import { GroupHeading } from '@/entities/group'
-import { OptionsList } from '@/widgets/options-list'
-import { OptionsButton } from '@/entities/options'
-import { createTapStopPropagationHandler } from '@/shared/hooks'
+import { ErrorComponent } from '@/widgets/error'
+import { Options } from '@/widgets/options'
 
 export const GroupIDPage = () => {
   const dispatch = useAppDispatch()
   const { groupID } = useParams()
 
-  const navigationValue = useAppSelector((store) => store.navigation.navigationValue)
-  const { week: pickedWeek } = navigationValue
+  const { week: pickedWeek } = useAppSelector(
+    (store) => store.navigation.navigationValue,
+  )
 
   const [isGroupDaysVisible, setIsGroupDaysVisible] = useState(false)
   const [isOptionsListVisible, setIsOptionsListVisible] = useState(false)
@@ -36,7 +37,15 @@ export const GroupIDPage = () => {
   const toggleGroupDays = () => setIsGroupDaysVisible((prevState) => !prevState)
 
   const hideOptionsList = () => setIsOptionsListVisible(false)
-  const toggleOptionsList = () => setIsOptionsListVisible((prevState) => !prevState)
+  const toggleOptionsList = () =>
+    setIsOptionsListVisible((prevState) => !prevState)
+
+  const tapStopPropagationHandler = () =>
+    useSwipeable({
+      onTap: (event) => {
+        event.event.stopPropagation()
+      },
+    })
 
   const contentSwipeHandler = useSwipeable({
     onSwipedLeft: hideGroupDays,
@@ -48,23 +57,30 @@ export const GroupIDPage = () => {
     preventScrollOnSwipe: true,
   })
 
-  if (!groupID) {
-    return <div>Invalid Group ID</div>
-  }
-
-  const { data: groupData, error: groupError } = useGetGroupByIDQuery(groupID, {
-    skip: !groupID,
-  })
-
-  const { data: scheduleData, error: scheduleError } = useGetWeekScheduleByIDQuery(
+  const { data: groupData, error: groupError } = useGetGroupByIDQuery(
+    groupID ?? '',
     {
-      groupID: groupID,
-      week: pickedWeek,
-    },
-    {
-      skip: !groupID || !pickedWeek,
+      skip: !groupID,
     },
   )
+
+  const { data: weeksData, error: weeksError } = useGetWeeksByIDQuery(
+    groupID ?? '',
+    {
+      skip: !groupID,
+    },
+  )
+
+  const { data: scheduleData, error: scheduleError } =
+    useGetWeekScheduleByIDQuery(
+      {
+        groupID: groupID ?? '',
+        week: pickedWeek,
+      },
+      {
+        skip: !groupID || !pickedWeek,
+      },
+    )
 
   useEffect(() => {
     if (!!groupID) {
@@ -81,28 +97,52 @@ export const GroupIDPage = () => {
     }
   }, [groupData, dispatch, groupID])
 
+  if (!groupID) {
+    return (
+      <ErrorComponent
+        error={{
+          status: 500,
+          data: {
+            message: 'Invalid groupID',
+          },
+        }}
+      />
+    )
+  }
+
+  if (groupError) {
+    return <ErrorComponent error={groupError} />
+  }
+
+  if (weeksError) {
+    return <ErrorComponent error={weeksError} />
+  }
+
+  if (scheduleError) {
+    return <ErrorComponent error={scheduleError} />
+  }
+
   return (
     <div className={style.container}>
-      <WeeksList groupID={groupID} />
+      <WeeksList weeksData={weeksData} />
       <div className={style.content} {...contentSwipeHandler}>
         <div className={style.wrapper}>
           <DaysList
             scheduleData={scheduleData}
             toggleIsGroupDaysVisible={toggleGroupDays}
             isGroupDaysVisible={isGroupDaysVisible}
-            {...createTapStopPropagationHandler()}
+            {...tapStopPropagationHandler()}
           />
           <div className={style.schedule}>
             <div className={style.headingContainer}>
               <GroupHeading groupData={groupData} />
-              <div className={style.options}>
-                <OptionsList groupID={groupID} isOptionsListVisible={isOptionsListVisible} />
-                <OptionsButton
-                  toggleIsOptionsListVisible={toggleOptionsList}
-                  isOptionsListVisible={isOptionsListVisible}
-                  {...createTapStopPropagationHandler()}
-                />
-              </div>
+
+              <Options
+                groupID={groupID}
+                isOptionsListVisible={isOptionsListVisible}
+                toggleOptionsList={toggleOptionsList}
+                {...tapStopPropagationHandler()}
+              />
             </div>
             <Schedule scheduleData={scheduleData} />
             <RefreshDate groupData={groupData} />
