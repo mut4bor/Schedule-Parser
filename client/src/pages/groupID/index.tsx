@@ -71,8 +71,6 @@ export const GroupIDPage = () => {
     },
   )
 
-  console.log(weeksData)
-
   const { data: scheduleData, error: scheduleError } =
     useGetWeekScheduleByIDQuery(
       {
