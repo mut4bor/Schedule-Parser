@@ -11,7 +11,8 @@ export const DaysList = forwardRef<HTMLDivElement, DaysListProps>(
   ({ scheduleData, toggleIsGroupDaysVisible, isGroupDaysVisible }, ref) => {
     const dispatch = useAppDispatch()
 
-    const [daysListSkeletonIsEnabled, setDaysListSkeletonIsEnabled] = useState(true)
+    const [daysListSkeletonIsEnabled, setDaysListSkeletonIsEnabled] =
+      useState(true)
 
     useEffect(() => {
       const timer = setTimeout(() => {
@@ -20,15 +21,20 @@ export const DaysList = forwardRef<HTMLDivElement, DaysListProps>(
       return () => clearTimeout(timer)
     }, [scheduleData])
 
-    const pickedDayIndex = useAppSelector((store) => store.navigation.navigationValue.dayIndex)
+    const pickedDayIndex = useAppSelector(
+      (store) => store.navigation.navigationValue.dayIndex,
+    )
     const { dayWeekIndex } = getDayToPick()
 
     useEffect(() => {
       dispatch(dayIndexChanged(dayWeekIndex))
-    }, [])
+    }, [scheduleData])
 
     return (
-      <div ref={ref} className={`${style.container} ${isGroupDaysVisible ? style.visible : style.hidden}`}>
+      <div
+        ref={ref}
+        className={`${style.container} ${isGroupDaysVisible ? style.visible : style.hidden}`}
+      >
         <button
           onClick={toggleIsGroupDaysVisible}
           className={style.arrowButton}
