@@ -1,7 +1,8 @@
-import { Group } from '../models/group.model.js'
-import { getFilterParams } from './getFilterParams.js'
+import { Group } from '@/database/models/group.model'
+import { getFilterParams } from '@/hooks/getFilterParams'
+import { Request, Response } from 'express'
 
-const getGroupNames = async (req, res) => {
+const getGroupNames = async (req: Request, res: Response) => {
   try {
     const names = await Group.find(getFilterParams(req), {
       dates: 0,
@@ -11,18 +12,22 @@ const getGroupNames = async (req, res) => {
 
     res.status(200).json(sortedNames)
   } catch (error) {
-    res.status(500).json({ message: error.message })
+    if (error instanceof Error) {
+      res.status(500).json({ message: error.message })
+    } else {
+      res.status(500).json({ message: 'An unknown error occurred' })
+    }
   }
 }
 
-const getGroupNamesThatMatchWithReqParams = async (req, res) => {
+const getGroupNamesThatMatchWithReqParams = async (req: Request, res: Response) => {
   try {
     const { searchValue } = req.query
     if (!searchValue) {
       return res.status(400).json({ message: 'Search value query parameter is required' })
     }
 
-    const regex = new RegExp(searchValue, 'i')
+    const regex = new RegExp(searchValue as string, 'i')
     const names = await Group.find(
       { group: { $regex: regex } },
       {
@@ -36,7 +41,11 @@ const getGroupNamesThatMatchWithReqParams = async (req, res) => {
 
     res.status(200).json(sortedNames)
   } catch (error) {
-    res.status(500).json({ message: error.message })
+    if (error instanceof Error) {
+      res.status(500).json({ message: error.message })
+    } else {
+      res.status(500).json({ message: 'An unknown error occurred' })
+    }
   }
 }
 

@@ -2,8 +2,6 @@ export interface IName {
   group: string
   _id: string
   index: number
-
-  status: number
 }
 
 export interface IGroup extends IName {
@@ -27,17 +25,4 @@ export interface IDays {
 
 export interface ISchedule {
   [week: string]: IDays
-}
-
-export interface ErrorType {
-  status: number
-}
-
-export type IGroupAPIResponse = IGroup | ErrorType
-
-export function isErrorResponse(data: IGroup) {
-  if ((data as ErrorType).status == 200) {
-    return false
-  }
-  return true
 }

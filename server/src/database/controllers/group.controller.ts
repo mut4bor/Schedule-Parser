@@ -1,16 +1,21 @@
-import { Group } from '../models/group.model.js'
-import { getFilterParams } from './getFilterParams.js'
+import { Group } from '@/database/models/group.model'
+import { getFilterParams } from '@/hooks/getFilterParams'
+import { Request, Response } from 'express'
 
-const getAllGroups = async (req, res) => {
+const getAllGroups = async (req: Request, res: Response) => {
   try {
     const groups = await Group.find(getFilterParams(req))
     res.status(200).json(groups)
   } catch (error) {
-    res.status(500).json({ message: error.message })
+    if (error instanceof Error) {
+      res.status(500).json({ message: error.message })
+    } else {
+      res.status(500).json({ message: 'An unknown error occurred' })
+    }
   }
 }
 
-const getGroupById = async (req, res) => {
+const getGroupById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params
     if (!id) {
@@ -26,11 +31,15 @@ const getGroupById = async (req, res) => {
 
     res.status(200).json(group)
   } catch (error) {
-    res.status(500).json({ message: error.message })
+    if (error instanceof Error) {
+      res.status(500).json({ message: error.message })
+    } else {
+      res.status(500).json({ message: 'An unknown error occurred' })
+    }
   }
 }
 
-const getWeeksByID = async (req, res) => {
+const getWeeksByID = async (req: Request, res: Response) => {
   try {
     const { id } = req.params
 
@@ -52,16 +61,20 @@ const getWeeksByID = async (req, res) => {
 
     res.status(200).json(weeks)
   } catch (error) {
-    res.status(500).json({ message: error.message })
+    if (error instanceof Error) {
+      res.status(500).json({ message: error.message })
+    } else {
+      res.status(500).json({ message: 'An unknown error occurred' })
+    }
   }
 }
 
-const getWeekScheduleByID = async (req, res) => {
+const getWeekScheduleByID = async (req: Request, res: Response) => {
   try {
     const { id, week } = req.params
 
     if (!id || !week) {
-      return res.status(400).json({ message: 'ID, week, and day index are required' })
+      return res.status(400).json({ message: 'ID and week are required' })
     }
 
     const group = await Group.findById(id)
@@ -81,21 +94,29 @@ const getWeekScheduleByID = async (req, res) => {
 
     res.status(200).json(weekData)
   } catch (error) {
-    res.status(500).json({ message: error.message })
+    if (error instanceof Error) {
+      res.status(500).json({ message: error.message })
+    } else {
+      res.status(500).json({ message: 'An unknown error occurred' })
+    }
   }
 }
 
-const createGroup = async (req, res) => {
+const createGroup = async (req: Request, res: Response) => {
   try {
     const group = new Group(req.body)
     await group.save()
     res.status(201).json(group)
   } catch (error) {
-    res.status(500).json({ message: error.message })
+    if (error instanceof Error) {
+      res.status(500).json({ message: error.message })
+    } else {
+      res.status(500).json({ message: 'An unknown error occurred' })
+    }
   }
 }
 
-const updateGroupById = async (req, res) => {
+const updateGroupById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params
     const group = await Group.findByIdAndUpdate(id, req.body)
@@ -105,34 +126,40 @@ const updateGroupById = async (req, res) => {
     const updatedGroup = await Group.findById(id)
     res.status(200).json(updatedGroup)
   } catch (error) {
-    res.status(500).json({ message: error.message })
+    if (error instanceof Error) {
+      res.status(500).json({ message: error.message })
+    } else {
+      res.status(500).json({ message: 'An unknown error occurred' })
+    }
   }
 }
 
-const deleteGroupById = async (req, res) => {
+const deleteGroupById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params
-    const group = await Group.findByIdAndDelete(id, req.body)
+    const group = await Group.findByIdAndDelete(id)
     if (!group) {
       return res.status(404).json({ message: 'Group not found' })
     }
     res.status(200).json({ message: 'Group deleted successfully' })
   } catch (error) {
-    res.status(500).json({ message: error.message })
+    if (error instanceof Error) {
+      res.status(500).json({ message: error.message })
+    } else {
+      res.status(500).json({ message: 'An unknown error occurred' })
+    }
   }
 }
 
-const deleteAllGroups = async (req, res) => {
+const deleteAllGroups = async (req: Request, res: Response) => {
   try {
     await Group.deleteMany({})
     res.status(200).json({ message: 'All groups deleted successfully' })
   } catch (error) {
-    if (error.response) {
-      console.error('Error:', error.response.status, error.response.data)
-    } else if (error.request) {
-      console.error('No response received:', error.request)
+    if (error instanceof Error) {
+      res.status(500).json({ message: error.message })
     } else {
-      console.error('Error:', error.message)
+      res.status(500).json({ message: 'An unknown error occurred' })
     }
   }
 }

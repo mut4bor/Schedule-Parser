@@ -2,17 +2,18 @@
   "name": "schedule-parser-server",
   "version": "1.0.0",
   "description": "Server for university schedule",
-  "main": "index.js",
-  "type": "module",
+  "main": "index.ts",
   "scripts": {
     "lint": "npx eslint ./src",
     "format": "npx eslint ./src --fix",
-    "dev": "nodemon index.js",
-    "start": "node index.js",
-    "delete": "node src/database/scripts/deleteAllGroups.js",
-    "download": "node src/database/scripts/downloadSchedules.js",
-    "update": "npm run download && node src/database/scripts/updateGroups.js",
-    "create": "npm run delete && npm run download && node src/database/scripts/createGroups.js"
+    "build": "tsc && tsc-alias",
+    "start": "node dist/index",
+    "dev": "nodemon",
+    "delete": "node src/database/scripts/deleteAllGroups.ts",
+    "download": "node src/database/scripts/downloadSchedules.ts",
+    "update": "npm run download && node src/database/scripts/updateGroups.ts",
+    "create": "ts-node src/database/scripts/createGroups.ts",
+    "test": "ts-node -r tsconfig-paths/register src/api/getProcessedDataForFile"
   },
   "keywords": [],
   "author": "Matvey Molchanov",
@@ -29,12 +30,15 @@
     "express": "^4.19.2",
     "mongodb": "^6.6.2",
     "mongoose": "^8.4.0",
-    "node-fetch": "^3.3.2",
     "node-html-parser": "^6.1.13",
     "prettier": "^3.2.5",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.5.4",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "nodemon": "^3.1.0"
   }

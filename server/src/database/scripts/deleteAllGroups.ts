@@ -1,14 +1,9 @@
-import fetch from 'node-fetch'
-import { useEnv } from '../../hooks/useEnv.js'
-useEnv()
+import { FETCH_URL, X_ADMIN_PASSWORD } from '@/config/index'
 
-const url = process.env.FETCH_URL
-const password = process.env.X_ADMIN_PASSWORD
-
-fetch(`${url}/groups`, {
+fetch(`${FETCH_URL}/groups`, {
   method: 'DELETE',
   headers: {
-    'x-admin-password': password,
+    'x-admin-password': X_ADMIN_PASSWORD,
   },
 })
   .then(async (response) => {

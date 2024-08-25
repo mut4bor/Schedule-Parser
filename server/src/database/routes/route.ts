@@ -1,6 +1,6 @@
-import express from 'express'
-import { getFaculties } from '../controllers/faculties.controller.js'
-import { getCourses } from '../controllers/courses.controller.js'
+import { Router, Request, Response, NextFunction } from 'express'
+import { getCourses } from '@/database/controllers/courses.controller'
+import { getFaculties } from '@/database/controllers/faculties.controller'
 import {
   getAllGroups,
   getGroupById,
@@ -10,19 +10,16 @@ import {
   updateGroupById,
   deleteGroupById,
   deleteAllGroups,
-} from '../controllers/group.controller.js'
-import { getGroupNames, getGroupNamesThatMatchWithReqParams } from '../controllers/name.controller.js'
+} from '@/database/controllers/group.controller'
+import { getGroupNames, getGroupNamesThatMatchWithReqParams } from '@/database/controllers/name.controller'
+import { X_ADMIN_PASSWORD } from '@/config/index'
 
-import { useEnv } from '../../hooks/useEnv.js'
+const router = Router()
 
-useEnv()
-
-const router = express.Router()
-
-const checkPassword = (req, res, next) => {
+const checkPassword = (req: Request, res: Response, next: NextFunction) => {
   const password = req.headers['x-admin-password']
 
-  if (password === process.env.X_ADMIN_PASSWORD) {
+  if (password === X_ADMIN_PASSWORD) {
     next()
   } else {
     res.status(401).json({ message: 'Unauthorized: Incorrect password' })

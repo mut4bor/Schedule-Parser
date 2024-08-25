@@ -1,17 +1,13 @@
-import { data } from '../../api/getData.js'
-import fetch from 'node-fetch'
-import { waitUntilServerIsAvailable } from '../../hooks/checkServerAvailability.js'
-import { useEnv } from '../../hooks/useEnv.js'
-useEnv()
+import { getData } from '@/api/getData'
+import path from 'path'
+import { FETCH_URL, X_ADMIN_PASSWORD } from '@/config'
+import { IGroup } from '@/types'
 
-const url = process.env.FETCH_URL
-const password = process.env.X_ADMIN_PASSWORD
-
-const fetchGroupNames = await fetch(`${url}/names`, {
+const fetchGroupNames = fetch(`${FETCH_URL}/names`, {
   method: 'GET',
   headers: {
     'Content-Type': 'application/json',
-    'x-admin-password': password,
+    'x-admin-password': X_ADMIN_PASSWORD,
   },
 })
   .then(async (response) => {
@@ -28,14 +24,15 @@ const fetchGroupNames = await fetch(`${url}/names`, {
     return error
   })
 
-async function putData(dataToFetch) {
+const putData = async (dataToFetch: IGroup) => {
   try {
-    const idToFetch = `${fetchGroupNames.find((groupData) => groupData.group === dataToFetch.group)._id}`
-    const response = await fetch(`${url}/groups/${idToFetch}`, {
+    const groupNames = await fetchGroupNames
+    const idToFetch = `${groupNames.find((groupData: { group: string }) => groupData.group === dataToFetch.group)._id}`
+    const response = await fetch(`${FETCH_URL}/groups/${idToFetch}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        'x-admin-password': password,
+        'x-admin-password': X_ADMIN_PASSWORD,
       },
       body: JSON.stringify(dataToFetch),
     })
@@ -48,8 +45,13 @@ async function putData(dataToFetch) {
     console.error('Error:', error)
   }
 }
-async function sendData() {
-  const promises = data.map(async (groupObject, index) => {
+
+const sendData = async () => {
+  const __dirname = path.resolve()
+  const __XLSXFilesDir = path.join(__dirname, 'docs', 'XLSXFiles')
+  const data = await getData(__XLSXFilesDir)
+
+  const promises = data.map(async (groupObject: IGroup, index) => {
     groupObject['index'] = index
     await putData(groupObject)
   })
@@ -60,7 +62,4 @@ async function sendData() {
   }
 }
 
-;(async function main() {
-  await waitUntilServerIsAvailable()
-  await sendData()
-})()
+sendData()

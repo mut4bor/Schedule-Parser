@@ -3,15 +3,13 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import cors from 'cors'
 import mongoose from 'mongoose'
-import { router } from './src/database/routes/route.js'
-import { useEnv } from './src/hooks/useEnv.js'
-useEnv()
+import { router } from './database/routes/route'
+import { PORT, mongodbURL } from './config/index'
 
 const app = express()
-const PORT = process.env.PORT || 3000
-const __dirname = path.resolve()
+const HOST_PORT = PORT || 3000
 const __client = path.join(__dirname, '../', 'client')
-const __clientBuild = path.join(__client, 'build')
+const __clientBuild = path.join(__client, 'dist')
 
 app.use(express.static(__clientBuild))
 app.use(cors())
@@ -31,13 +29,11 @@ app.get('/*', (req, res) => {
   res.sendFile(path.join(__clientBuild, 'index.html'))
 })
 
-const mongodbURL = process.env.MONGODB_URL
-
 mongoose
   .connect(mongodbURL)
   .then(() => {
     console.log('Connected to database!')
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}...`))
+    app.listen(HOST_PORT, () => console.log(`Server running on port ${HOST_PORT}...`))
   })
   .catch(() => {
     console.log('Connection to database failed')

@@ -1,12 +1,32 @@
-import XLSX from 'xlsx'
+import { utils, readFile, WorkBook, WorkSheet } from 'xlsx'
 
-const getJsonFromXLSX = (filePath, skipRows = 0) => {
+// Эту хуйню писал ChatGPT, настоятельно советую даже не пробовать это понять. Она работает исключительно по воле Божьей
+
+type CellValue = string | number | boolean | null
+
+interface CellAddress {
+  c: number
+  r: number
+}
+
+interface MergedCell {
+  s: CellAddress
+  e: CellAddress
+}
+
+interface SheetData {
+  [key: string]: {
+    [key: string]: CellValue
+  }
+}
+
+export const getJsonFromXLSX = (filePath: string, skipRows: number = 0): { [sheetName: string]: SheetData } => {
   try {
     // Чтение книги из указанного файла
-    const workbook = XLSX.readFile(filePath)
+    const workbook: WorkBook = readFile(filePath)
 
     // Функция для преобразования номера столбца в буквенное обозначение
-    function columnToLetter(column) {
+    function columnToLetter(column: number): string {
       let letter = ''
       while (column >= 0) {
         letter = String.fromCharCode((column % 26) + 65) + letter
@@ -16,18 +36,18 @@ const getJsonFromXLSX = (filePath, skipRows = 0) => {
     }
 
     // Функция для заполнения объединенных ячеек
-    function fillMergedCells(sheet) {
-      const merges = sheet['!merges']
+    function fillMergedCells(sheet: WorkSheet): void {
+      const merges = sheet['!merges'] as MergedCell[] | undefined
       if (merges) {
         merges.forEach((merge) => {
           const startCell = merge.s
           const endCell = merge.e
-          const startCellRef = XLSX.utils.encode_cell(startCell)
+          const startCellRef = utils.encode_cell(startCell)
           const startValue = sheet[startCellRef] ? sheet[startCellRef].v : null
 
           for (let R = startCell.r; R <= endCell.r; ++R) {
             for (let C = startCell.c; C <= endCell.c; ++C) {
-              const cellRef = XLSX.utils.encode_cell({ c: C, r: R })
+              const cellRef = utils.encode_cell({ c: C, r: R })
               if (startValue !== null) {
                 sheet[cellRef] = { v: startValue }
               }
@@ -37,33 +57,33 @@ const getJsonFromXLSX = (filePath, skipRows = 0) => {
       }
     }
 
-    function numberToTime(number) {
+    function numberToTime(number: number): string {
       const hours = Math.floor(number * 24)
       const minutes = Math.round((number * 24 - hours) * 60)
       return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`
     }
 
     // Функция для удаления лишних пробелов и других пробельных символов в строке
-    function removeExtraSpaces(str) {
+    function removeExtraSpaces(str: string): string {
       return str.replace(/\s+/g, ' ').trim()
     }
 
     // Функция для преобразования листа в JSON в нужном формате
-    function sheetToJson(sheet, skipRows) {
-      const result = {}
-      const range = XLSX.utils.decode_range(sheet['!ref'])
+    function sheetToJson(sheet: WorkSheet, skipRows: number): SheetData {
+      const result: SheetData = {}
+      const range = utils.decode_range(sheet['!ref'] || '')
 
       for (let R = range.s.r + skipRows; R <= range.e.r; ++R) {
         const rowKey = `${R + 1}`
-        const row = {}
+        const row: { [key: string]: CellValue } = {}
 
         for (let C = range.s.c; C <= range.e.c; ++C) {
-          const cellAddress = { c: C, r: R }
-          const cellRef = XLSX.utils.encode_cell(cellAddress)
+          const cellAddress: CellAddress = { c: C, r: R }
+          const cellRef = utils.encode_cell(cellAddress)
           const cell = sheet[cellRef]
 
           if (cell) {
-            let value = cell.v
+            let value: CellValue = cell.v
             // Если значение ячейки является числом в диапазоне от 0 до 1,
             // то преобразовываем его в соответствующее время
             if (typeof value === 'number' && value >= 0 && value <= 1) {
@@ -86,12 +106,12 @@ const getJsonFromXLSX = (filePath, skipRows = 0) => {
     }
 
     // Объект для хранения всех листов
-    const result = {}
+    const result: { [sheetName: string]: SheetData } = {}
 
     // Итерация по каждому листу в книге
     workbook.SheetNames.forEach((sheetName) => {
       // Доступ к листу по его имени
-      const worksheet = workbook.Sheets[sheetName]
+      const worksheet: WorkSheet = workbook.Sheets[sheetName]
 
       // Заполнение объединенных ячеек
       fillMergedCells(worksheet)
@@ -102,8 +122,6 @@ const getJsonFromXLSX = (filePath, skipRows = 0) => {
 
     return result
   } catch (error) {
-    throw new Error(`Ошибка при обработке файла ${filePath}: ${error}`)
+    throw new Error(`Ошибка при обработке файла ${filePath}: ${(error as Error).message}`)
   }
 }
-
-export { getJsonFromXLSX }
