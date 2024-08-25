@@ -1,12 +1,10 @@
 import axios from 'axios'
-import { parse } from 'node-html-parser'
+import { parse, HTMLElement } from 'node-html-parser'
 import path from 'path'
 import fs from 'fs'
 import crypto from 'crypto'
 import { UNIVERSITY_URL } from '@/config/index'
 import { IPathMap } from '@/types'
-
-const __dirname = path.resolve()
 
 const hashPath = (path: string) => {
   return crypto.createHash('md5').update(path).digest('hex')
@@ -47,80 +45,92 @@ const main = async () => {
     const root = parse(html)
 
     const sections = root.querySelectorAll('.views-row')
-
+    const __dirname = path.resolve()
     const baseDirectory = path.join(__dirname, 'docs', 'XLSXFiles')
 
-    if (!fs.existsSync(baseDirectory)) {
-      fs.mkdirSync(baseDirectory, { recursive: true })
-    } else {
+    if (fs.existsSync(baseDirectory)) {
       clearDirectory(baseDirectory)
+    } else {
+      fs.mkdirSync(baseDirectory, { recursive: true })
     }
 
     const mappingsFile = path.join(baseDirectory, 'pathMappings.json')
-    let pathMappings = {} as IPathMap
+    let pathMappings: IPathMap = {}
 
+    // Проверяем, существует ли файл с маппингами, и если да, читаем его содержимое
     if (fs.existsSync(mappingsFile)) {
       pathMappings = JSON.parse(fs.readFileSync(mappingsFile, 'utf8'))
     }
 
-    for (const section of sections) {
+    // Функция для обработки каждого раздела
+    const processSection = async (section: HTMLElement) => {
       const headerElement = section.querySelector('h2')
       if (headerElement) {
-        let sectionTitle = headerElement.text.trim()
-        let parentDir
+        let sectionTitle = headerElement.textContent?.trim() || ''
+        let educationType: string
 
         if (sectionTitle.toLowerCase().includes('магистратура')) {
-          parentDir = 'Магистратура'
+          educationType = 'Магистратура'
           sectionTitle = sectionTitle.replace(/^\d+\.\s*магистратура.\s*/i, '').trim()
         } else if (sectionTitle.toLowerCase().includes('аспирантура')) {
-          parentDir = 'Аспирантура'
+          educationType = 'Аспирантура'
           sectionTitle = sectionTitle.replace(/^\d+\.\s*аспирантура.\с*/i, '').trim()
         } else {
-          parentDir = 'Бакалавриат'
+          educationType = 'Бакалавриат'
           sectionTitle = sectionTitle.replace(/^\d+\.\s*/, '').trim()
         }
 
         const fileLinkElements = section.querySelectorAll('a[href$=".xlsx"]')
 
         if (fileLinkElements.length > 0) {
-          for (const fileLinkElement of fileLinkElements) {
-            const fileUrl = fileLinkElement.getAttribute('href')
+          await Promise.all(
+            Array.from(fileLinkElements).map(async (fileLinkElement) => {
+              const fileUrl = fileLinkElement.getAttribute('href')
 
-            if (!fileUrl) {
-              continue
-            }
+              if (fileUrl) {
+                const fileName = fileLinkElement.textContent?.trim() || ''
+                let courseDir = 'Прочее'
 
-            const fileName = fileLinkElement.text.trim()
-            let courseDir = 'Прочее'
+                const courseMatch = fileName.match(/(\d+)\s*курс/i)
+                if (courseMatch) {
+                  courseDir = `${courseMatch[1]} курс`
+                }
 
-            const courseMatch = fileName.match(/^(\d+)\s*курс/i)
-            if (courseMatch) {
-              courseDir = `${courseMatch[1]} курс`
-            }
+                const uniqueSuffix = `${Date.now()}-${Math.floor(Math.random() * 10000)}`
+                const hashedFileName = `${hashPath(fileName + uniqueSuffix)}.xlsx`
+                const filePath = path.join(baseDirectory, hashedFileName)
 
-            const uniqueSuffix = `${Date.now()}-${Math.floor(Math.random() * 10000)}`
-            const hashedFileName = `${hashPath(fileName + uniqueSuffix)}.xlsx`
-            const filePath = path.join(baseDirectory, hashedFileName)
+                await downloadFile(fileUrl, filePath)
 
-            await downloadFile(fileUrl, filePath)
+                pathMappings[hashedFileName] = {
+                  educationType: educationType,
+                  faculty: sectionTitle,
+                  course: courseDir,
+                  fileName: fileName.replace(/^(\d+)\s*курс./i, '').trim(),
+                }
 
-            pathMappings[hashedFileName] = {
-              educationType: parentDir,
-              faculty: sectionTitle,
-              course: courseDir,
-              fileName: fileName.replace(/^(\d+)\s*курс./i, '').trim(),
-            }
-
-            console.log(`Файл ${fileName} успешно загружен как ${hashedFileName}!`)
-          }
+                console.log(`Файл ${fileName} успешно загружен как ${hashedFileName}!`)
+              }
+            }),
+          )
         } else {
           console.error(`Ссылки на файлы не найдены в разделе "${sectionTitle}".`)
         }
       }
     }
 
-    fs.writeFileSync(mappingsFile, JSON.stringify(pathMappings, null, 2))
-    console.log('Все файлы успешно загружены и сохранены.')
+    // Основная функция для обработки всех разделов и записи в файл
+    const processAllSections = async () => {
+      await Promise.all(sections.map(processSection))
+
+      // Записываем обновленные маппинги в файл
+      fs.writeFileSync(mappingsFile, JSON.stringify(pathMappings, null, 2))
+
+      console.log('Маппинги успешно записаны в файл.')
+    }
+
+    // Запускаем обработку всех разделов
+    processAllSections()
   } catch (error) {
     console.error('Ошибка при загрузке файлов:', error)
   }

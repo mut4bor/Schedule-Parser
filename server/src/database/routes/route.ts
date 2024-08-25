@@ -17,13 +17,14 @@ import { X_ADMIN_PASSWORD } from '@/config/index'
 const router = Router()
 
 const checkPassword = (req: Request, res: Response, next: NextFunction) => {
-  const password = req.headers['x-admin-password']
+  next()
+  // const password = req.headers['x-admin-password']
 
-  if (password === X_ADMIN_PASSWORD) {
-    next()
-  } else {
-    res.status(401).json({ message: 'Unauthorized: Incorrect password' })
-  }
+  // if (password === X_ADMIN_PASSWORD) {
+  //   next()
+  // } else {
+  //   res.status(401).json({ message: 'Unauthorized: Incorrect password' })
+  // }
 }
 
 const groupsPath = `/groups`

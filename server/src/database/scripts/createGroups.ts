@@ -15,17 +15,16 @@ const postData = async (dataToFetch: IGroup) => {
     })
     if (!response.ok) {
       const errorData = await response.json()
-      throw new Error(`Error ${response.status}: ${errorData.message}`)
+      throw new Error(`Post data error ${response.status}: ${errorData.message}`)
     }
     console.log(`Successfully created!: ${dataToFetch.group}`)
   } catch (error) {
-    console.error('Error:', error)
+    console.error('Post data error:', error)
   }
 }
 
 const sendData = async () => {
-  const __dirname = path.resolve()
-  const __XLSXFilesDir = path.join(__dirname, 'docs', 'XLSXFiles')
+  const __XLSXFilesDir = path.join(path.resolve(), 'docs', 'XLSXFiles')
   const data = await getData(__XLSXFilesDir)
 
   const promises = data.map(async (groupObject: IGroup, index) => {
@@ -36,7 +35,7 @@ const sendData = async () => {
   try {
     await Promise.all(promises)
   } catch (error) {
-    console.error('Error:', error)
+    console.error('Send data error:', error)
   }
 }
 

@@ -3,7 +3,7 @@ import path from 'path'
 import { getProcessedDataForFile } from '@/api/getProcessedDataForFile'
 import { IGroup, IPathMap } from '@/types'
 
-export async function getData(dirPath: string): Promise<IGroup[]> {
+export const getData = async (dirPath: string): Promise<IGroup[]> => {
   const mappingsFile = path.join(dirPath, 'pathMappings.json')
 
   if (!fs.existsSync(mappingsFile)) {

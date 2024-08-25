@@ -28,6 +28,7 @@ export const WeeksList = ({ weeksData }: WeeksListProps) => {
       const { day } = getDayToPick()
 
       const daysRange = weeksData.map((item) => getDaysInRange(item))
+
       const currentWeekIndex = daysRange.findIndex((subArray) =>
         subArray.includes(day),
       )

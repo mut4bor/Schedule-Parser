@@ -1,6 +1,7 @@
 import { Group } from '@/database/models/group.model'
 import { getFilterParams } from '@/hooks/getFilterParams'
 import { Request, Response } from 'express'
+import { IDate } from '@/types'
 
 const getAllGroups = async (req: Request, res: Response) => {
   try {
@@ -53,7 +54,7 @@ const getWeeksByID = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Group not found' })
     }
 
-    if (!group.dates || typeof group.dates !== 'object') {
+    if (!group.dates) {
       return res.status(400).json({ message: 'Invalid group dates' })
     }
 

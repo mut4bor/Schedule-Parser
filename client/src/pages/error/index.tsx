@@ -1,14 +1,13 @@
 import { ErrorComponent } from '@/widgets/error'
+import { useRouteError } from 'react-router-dom'
 
 export const ErrorPage = () => {
-  return (
-    <ErrorComponent
-      error={{
-        status: 404,
-        data: {
-          message: 'Страница не найдена',
-        },
-      }}
-    />
-  )
+  const error = useRouteError() || {
+    status: 500,
+    data: {
+      message: 'Произошла неизвестная ошибка',
+    },
+  }
+
+  return <ErrorComponent error={error} />
 }

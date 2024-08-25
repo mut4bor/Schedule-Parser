@@ -19,7 +19,7 @@ export {
 
 export { inputStateChanged, searchValueChanged } from './slices/searchSlice'
 
-export type { IName } from './slices/types'
+export type { IName } from './types'
 
 export { useAppSelector, useAppDispatch } from './hooks'
 

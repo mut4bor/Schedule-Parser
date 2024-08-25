@@ -1,4 +1,10 @@
 export const getDaysInRange = (range: string): string[] => {
+  const regex = /^\d{2}\.\d{2}-\d{2}\.\d{2}$/
+
+  if (!regex.test(range)) {
+    return [range]
+  }
+
   const [start, end] = range.split('-')
   const [startDay, startMonth] = start.split('.').map(Number)
   const [endDay, endMonth] = end.split('.').map(Number)

@@ -8,7 +8,7 @@ import { PORT, mongodbURL } from './config/index'
 
 const app = express()
 const HOST_PORT = PORT || 3000
-const __client = path.join(__dirname, '../', 'client')
+const __client = path.join(path.resolve(), '../', 'client')
 const __clientBuild = path.join(__client, 'dist')
 
 app.use(express.static(__clientBuild))

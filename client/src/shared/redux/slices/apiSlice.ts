@@ -1,6 +1,6 @@
 import { API_URL, X_ADMIN_PASSWORD } from '@/shared/config'
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { IGroup, IName, IFaculties, IDays, ISchedule } from './types'
+import { IGroup, IName, IFaculties, IDays, ISchedule } from '../types'
 
 const groupsPath = `/groups`
 const namesPath = `/names`
@@ -70,7 +70,10 @@ const api = createApi({
         },
       }),
     }),
-    getWeekScheduleByID: builder.query<ISchedule, { groupID: string; week: string }>({
+    getWeekScheduleByID: builder.query<
+      ISchedule,
+      { groupID: string; week: string }
+    >({
       query: ({ groupID, week }) => ({
         url: `${groupsPath}/${groupID}/weeks/${week}`,
         headers: {

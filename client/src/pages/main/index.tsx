@@ -3,6 +3,7 @@ import { Faculty } from '@/widgets/faculty'
 import { useState, useEffect } from 'react'
 import { useGetFacultiesQuery } from '@/shared/redux'
 import { SkeletonTime } from '@/shared/vars/vars'
+import { ErrorComponent } from '@/widgets/error'
 
 export const MainPage = () => {
   const {
@@ -21,6 +22,10 @@ export const MainPage = () => {
     }, SkeletonTime)
     return () => clearTimeout(timer)
   }, [facultiesData])
+
+  if (facultiesError) {
+    return <ErrorComponent error={facultiesError} hideMainPageButton />
+  }
 
   return (
     <div className={style.container}>

@@ -1,6 +1,7 @@
 mut4bor.yml
 
 client/node_modules
+client/dist
 client/build
 client/.env
 client/.env.local

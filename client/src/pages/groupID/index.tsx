@@ -71,6 +71,8 @@ export const GroupIDPage = () => {
     },
   )
 
+  console.log(weeksData)
+
   const { data: scheduleData, error: scheduleError } =
     useGetWeekScheduleByIDQuery(
       {
@@ -78,7 +80,7 @@ export const GroupIDPage = () => {
         week: pickedWeek,
       },
       {
-        skip: !groupID || !pickedWeek,
+        skip: !groupID || !pickedWeek || pickedWeek === '',
       },
     )
 

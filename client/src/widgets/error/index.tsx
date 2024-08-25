@@ -3,7 +3,10 @@ import { ErrorComponentProps } from './types'
 import { Link } from 'react-router-dom'
 import { BASE_URL } from '@/shared/routes'
 
-export const ErrorComponent = ({ error }: ErrorComponentProps) => {
+export const ErrorComponent = ({
+  error,
+  hideMainPageButton,
+}: ErrorComponentProps) => {
   const { statusCode, errorMessage } = getErrorDetails(error)
 
   return (
@@ -12,9 +15,11 @@ export const ErrorComponent = ({ error }: ErrorComponentProps) => {
         Ошибка {statusCode}: {errorMessage}
       </p>
 
-      <Link className={style.link} to={BASE_URL}>
-        Вернуться на главную
-      </Link>
+      {!hideMainPageButton && (
+        <Link className={style.link} to={BASE_URL}>
+          Вернуться на главную
+        </Link>
+      )}
     </div>
   )
 }
