@@ -40,12 +40,11 @@ export const GroupIDPage = () => {
   const toggleOptionsList = () =>
     setIsOptionsListVisible((prevState) => !prevState)
 
-  const tapStopPropagationHandler = () =>
-    useSwipeable({
-      onTap: (event) => {
-        event.event.stopPropagation()
-      },
-    })
+  const tapStopPropagationHandler = useSwipeable({
+    onTap: (event) => {
+      event.event.stopPropagation()
+    },
+  })
 
   const contentSwipeHandler = useSwipeable({
     onSwipedLeft: hideGroupDays,
@@ -78,18 +77,18 @@ export const GroupIDPage = () => {
         week: pickedWeek,
       },
       {
-        skip: !groupID || !pickedWeek || pickedWeek === '',
+        skip: !groupID || !pickedWeek,
       },
     )
 
   useEffect(() => {
-    if (!!groupID) {
+    if (groupID) {
       dispatch(groupIDChanged(groupID))
     }
   }, [groupID, dispatch])
 
   useEffect(() => {
-    if (!!groupData) {
+    if (groupData) {
       const { educationType, faculty, course } = groupData
       dispatch(educationTypeChanged(educationType))
       dispatch(facultyChanged(faculty))
@@ -131,7 +130,7 @@ export const GroupIDPage = () => {
             scheduleData={scheduleData}
             toggleIsGroupDaysVisible={toggleGroupDays}
             isGroupDaysVisible={isGroupDaysVisible}
-            {...tapStopPropagationHandler()}
+            {...tapStopPropagationHandler}
           />
           <div className={style.schedule}>
             <div className={style.headingContainer}>
@@ -141,7 +140,7 @@ export const GroupIDPage = () => {
                 groupID={groupID}
                 isOptionsListVisible={isOptionsListVisible}
                 toggleOptionsList={toggleOptionsList}
-                {...tapStopPropagationHandler()}
+                {...tapStopPropagationHandler}
               />
             </div>
             <Schedule scheduleData={scheduleData} />
