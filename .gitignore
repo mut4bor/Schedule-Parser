@@ -12,6 +12,7 @@ client/.env.production.local
 server/node_modules
 server/docs
 server/build
+server/dist
 server/.env
 server/.env.local
 server/.env.development.local

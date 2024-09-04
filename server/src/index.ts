@@ -5,8 +5,6 @@ import cors from 'cors'
 import mongoose from 'mongoose'
 import { router } from './database/routes/route'
 import { PORT, mongodbURL } from './config/index'
-import { getProcessedDataForFile } from './api/getProcessedDataForFile'
-import { getJsonFromXLSX } from './api/getJsonFromXLSX'
 
 const app = express()
 const HOST_PORT = PORT || 3000
@@ -26,19 +24,6 @@ app.use(
 )
 
 app.use('/api', router)
-
-app.use('/data', async (req, res) => {
-  const data = await getProcessedDataForFile(
-    path.join(path.resolve(), 'docs/XLSXFiles/a4604827108e4e50331c65e2b5c05c76.xlsx'),
-  )
-  res.json(data)
-})
-app.use('/json', async (req, res) => {
-  const jsonFromXLSX = getJsonFromXLSX(
-    path.join(path.resolve(), 'docs/XLSXFiles/a4604827108e4e50331c65e2b5c05c76.xlsx'),
-  )
-  res.json(jsonFromXLSX)
-})
 
 app.get('/*', (req, res) => {
   res.sendFile(path.join(__clientBuild, 'index.html'))
