@@ -11,7 +11,7 @@
     "dev": "nodemon",
     "delete": "ts-node -r tsconfig-paths/register src/database/scripts/deleteAllGroups",
     "download": "ts-node -r tsconfig-paths/register src/database/scripts/downloadSchedules",
-    "update": "npm run download && ts-node -r tsconfig-paths/register src/database/scripts/updateGroups",
+    "update": "ts-node -r tsconfig-paths/register src/database/scripts/updateGroups",
     "create": "npm run delete && npm run download && ts-node -r tsconfig-paths/register src/database/scripts/createGroups",
     "test": "ts-node -r tsconfig-paths/register src/api/getProcessedDataForFile"
   },

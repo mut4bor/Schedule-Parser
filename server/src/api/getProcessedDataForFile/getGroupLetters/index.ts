@@ -2,10 +2,11 @@ import { IGroupNames, IUnparsedJson } from '@/types'
 import { findObjectWithGroupKeyword } from '../findObjectWithGroupKeyword'
 
 export const getGroupLetters = (unParsedJson: IUnparsedJson): IGroupNames => {
-  const [unParsedJsonValues] = Object.values(unParsedJson)
-  const groupToFind = Object.values(unParsedJsonValues)
+  const unParsedJsonValues = Object.values(unParsedJson).slice(-1)
 
-  const firstObjectWithGroupKeyword = findObjectWithGroupKeyword(groupToFind) ?? Object.values(unParsedJsonValues)[2]
+  const groupToFind = Object.values(unParsedJsonValues[0])
+
+  const firstObjectWithGroupKeyword = findObjectWithGroupKeyword(groupToFind) ?? groupToFind[2]
 
   const excludedKeys = ['A', 'B', 'C']
 

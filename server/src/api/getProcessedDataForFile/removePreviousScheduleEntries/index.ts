@@ -6,10 +6,12 @@ export const removePreviousScheduleEntries = (schedule: IUnparsedJson, day: stri
 
   const daysRange = scheduleKeys.map((item) => getDaysInRange(item))
 
-  const currentWeekIndex = daysRange.findIndex((subArray) => subArray.includes(day))
+  const currentWeekIndex = daysRange.findLastIndex((subArray) => subArray.includes(day))
 
   if (currentWeekIndex !== -1) {
-    const previousWeekIndex = Math.max(0, currentWeekIndex - 1)
+    const currentDate = new Date()
+
+    const previousWeekIndex = currentDate.getMonth() === 9 ? Math.max(0, currentWeekIndex - 2) : currentWeekIndex
 
     scheduleKeys.slice(0, previousWeekIndex).forEach((key) => {
       delete schedule[key]

@@ -22,7 +22,7 @@ export const getGroupWeekDays = (unParsedJson: IUnparsedJson, groupNumber: strin
   Object.entries(groupedData).forEach(([day, schedule]) => {
     const datePrefix = day.substring(0, 5)
 
-    const week = Object.keys(days).find((key) => key && days[key].includes(datePrefix)) || 'Unknown week'
+    const week = Object.keys(days).find((key) => key && days[key].includes(datePrefix))
 
     const weekDays = ['Пн.', 'Вт.', 'Ср.', 'Чт.', 'Пт.', 'Сб.']
 
