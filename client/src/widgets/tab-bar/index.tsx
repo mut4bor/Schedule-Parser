@@ -1,6 +1,6 @@
 import * as style from './style.module.scss'
 import { TabBarLink } from '@/entities/tab-bar/ui/tab-bar-link'
-import { BASE_URL, FAVORITE_PATH } from '@/shared/routes'
+import routes from '@/shared/routes'
 import React from 'react'
 
 export const TabBar = () => {
@@ -8,12 +8,12 @@ export const TabBar = () => {
     {
       text: 'Главная',
       svgHref: '#home',
-      href: BASE_URL,
+      href: routes.BASE_URL,
     },
     {
       text: 'Избранное',
       svgHref: '#heart',
-      href: FAVORITE_PATH,
+      href: routes.FAVORITE_PATH,
     },
   ]
 

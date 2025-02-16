@@ -1,10 +1,9 @@
 import { API_URL, X_ADMIN_PASSWORD } from '@/shared/config'
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { IGroup, IName, IFaculties, IDays, ISchedule } from '../types'
+import { IGroup, IName, IFaculties, ISchedule } from '../types'
 
 const groupsPath = `/groups`
 const namesPath = `/names`
-const educationTypePath = `/educationType`
 const getParams = (params: string | void) => {
   return params ? `?${params}` : ''
 }

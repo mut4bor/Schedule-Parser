@@ -1,6 +1,11 @@
 import * as style from './style.module.scss'
 import { useDebouncedCallback } from 'use-debounce'
-import { useAppDispatch, searchValueChanged, useAppSelector, inputStateChanged } from '@/shared/redux'
+import {
+  useAppDispatch,
+  searchValueChanged,
+  useAppSelector,
+  inputStateChanged,
+} from '@/shared/redux'
 import { SVG } from '@/shared/ui/SVG'
 
 export const HeaderInput = () => {
@@ -17,20 +22,28 @@ export const HeaderInput = () => {
   }, 300)
 
   return (
-    <>
-      <SVG href="#search" svgClassName={style.searchSvg} useClassName={style.searchUse} />
+    <label className={style.label}>
+      <SVG
+        href="#search"
+        svgClassName={style.searchSvg}
+        useClassName={style.searchUse}
+      />
       <input
         placeholder="Поиск группы"
         className={`${style.input}`}
         type="text"
         value={inputState.value}
-        onFocus={() => dispatch(inputStateChanged({ ...inputState, focused: true }))}
+        onFocus={() =>
+          dispatch(inputStateChanged({ ...inputState, focused: true }))
+        }
         onBlur={debouncedOnBlur}
         onChange={(event) => {
-          dispatch(inputStateChanged({ ...inputState, value: event.target.value }))
+          dispatch(
+            inputStateChanged({ ...inputState, value: event.target.value }),
+          )
           debouncedDispatchSearchValue()
         }}
       />
-    </>
+    </label>
   )
 }

@@ -1,7 +1,7 @@
 import * as style from './style.module.scss'
 import { FacultyProps } from './types'
 import { Skeleton } from '@/shared/ui'
-import { COURSES_PATH } from '@/shared/routes'
+import routes from '@/shared/routes'
 import {
   useAppDispatch,
   educationTypeChanged,
@@ -11,7 +11,7 @@ import {
   dayIndexChanged,
 } from '@/shared/redux'
 import { FacultyLink } from '@/entities/faculty'
-import React from 'react'
+import { Fragment } from 'react'
 
 export const Faculty = ({ data, columnsAmount }: FacultyProps) => {
   const dispatch = useAppDispatch()
@@ -35,7 +35,7 @@ export const Faculty = ({ data, columnsAmount }: FacultyProps) => {
   return (
     <div className={style.container}>
       <div className={style.heading}>
-        {!data || !educationType ? (
+        {!data ? (
           <Skeleton />
         ) : (
           <h2 className={style.educationType}>{educationType}</h2>
@@ -45,10 +45,10 @@ export const Faculty = ({ data, columnsAmount }: FacultyProps) => {
       <div className={style.content}>
         {!data || !educationType || !faculties
           ? Array.from({ length: skeletonLenght }).map((_, index, array) => (
-              <React.Fragment key={`skeleton-${index}`}>
+              <Fragment key={`skeleton-${index}`}>
                 <div className={style.skeletonContainer}>
                   <ul className={style.skeletonList}>
-                    {Array.from({ length: 5 }).map((_, index) => (
+                    {Array.from({ length: 3 }).map((_, index) => (
                       <li key={index}>
                         <Skeleton />
                       </li>
@@ -58,19 +58,19 @@ export const Faculty = ({ data, columnsAmount }: FacultyProps) => {
                 {index < array.length - 1 && (
                   <span className={style.pipe}></span>
                 )}
-              </React.Fragment>
+              </Fragment>
             ))
           : faculties.map((faculty, index, array) => (
-              <React.Fragment key={`faculty-link-${index}`}>
+              <Fragment key={`faculty-link-${index}`}>
                 <FacultyLink
                   faculty={faculty}
                   handleLinkClick={() => handleLinkClick(faculty)}
-                  href={COURSES_PATH}
+                  href={routes.COURSES_PATH}
                 />
                 {index < array.length - 1 && (
                   <span className={style.pipe}></span>
                 )}
-              </React.Fragment>
+              </Fragment>
             ))}
       </div>
     </div>

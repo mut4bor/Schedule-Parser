@@ -1,4 +1,10 @@
-export const BASE_URL = '/'
-export const COURSES_PATH = '/courses'
-export const GROUP_ID_PATH = '/groupID/:groupID'
-export const FAVORITE_PATH = '/favorite'
+const routes = {
+  BASE_URL: '/',
+  COURSES_PATH: '/courses',
+  GROUP_ID_PATH: '/groupID/:groupID',
+  FAVORITE_PATH: '/favorite',
+  TEACHER_SEARCH_PATH: '/teacher',
+  TEACHER_ID_PATH: '/teacher/teacherID',
+}
+
+export default routes

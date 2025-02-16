@@ -17,12 +17,10 @@ export interface IFaculties {
   [educationType: string]: string[]
 }
 
-export interface IDays {
-  [day: string]: {
-    [time: string]: string
-  }
-}
-
 export interface ISchedule {
-  [week: string]: IDays
+  [week: string]: {
+    [day: string]: {
+      [time: string]: string
+    }
+  }
 }

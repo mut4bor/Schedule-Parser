@@ -20,10 +20,13 @@ import { RefreshDate } from '@/widgets/refresh-date'
 import { GroupHeading } from '@/entities/group'
 import { ErrorComponent } from '@/widgets/error'
 import { Options } from '@/widgets/options'
+import { createTapStopPropagationHandler } from '@/shared/hooks'
 
 export const GroupIDPage = () => {
   const dispatch = useAppDispatch()
-  const { groupID } = useParams()
+  const { groupID: paramsGroupID } = useParams()
+
+  const groupID = paramsGroupID ?? ''
 
   const { week: pickedWeek } = useAppSelector(
     (store) => store.navigation.navigationValue,
@@ -40,11 +43,7 @@ export const GroupIDPage = () => {
   const toggleOptionsList = () =>
     setIsOptionsListVisible((prevState) => !prevState)
 
-  const tapStopPropagationHandler = useSwipeable({
-    onTap: (event) => {
-      event.event.stopPropagation()
-    },
-  })
+  const tapStopPropagationHandler = createTapStopPropagationHandler()
 
   const contentSwipeHandler = useSwipeable({
     onSwipedLeft: hideGroupDays,
@@ -56,24 +55,18 @@ export const GroupIDPage = () => {
     preventScrollOnSwipe: true,
   })
 
-  const { data: groupData, error: groupError } = useGetGroupByIDQuery(
-    groupID ?? '',
-    {
-      skip: !groupID,
-    },
-  )
+  const { data: groupData, error: groupError } = useGetGroupByIDQuery(groupID, {
+    skip: !groupID,
+  })
 
-  const { data: weeksData, error: weeksError } = useGetWeeksByIDQuery(
-    groupID ?? '',
-    {
-      skip: !groupID,
-    },
-  )
+  const { data: weeksData, error: weeksError } = useGetWeeksByIDQuery(groupID, {
+    skip: !groupID,
+  })
 
   const { data: scheduleData, error: scheduleError } =
     useGetWeekScheduleByIDQuery(
       {
-        groupID: groupID ?? '',
+        groupID: groupID,
         week: pickedWeek,
       },
       {
@@ -89,10 +82,9 @@ export const GroupIDPage = () => {
 
   useEffect(() => {
     if (groupData) {
-      const { educationType, faculty, course } = groupData
-      dispatch(educationTypeChanged(educationType))
-      dispatch(facultyChanged(faculty))
-      dispatch(courseChanged(course))
+      dispatch(educationTypeChanged(groupData.educationType))
+      dispatch(facultyChanged(groupData.faculty))
+      dispatch(courseChanged(groupData.course))
     }
   }, [groupData, dispatch, groupID])
 

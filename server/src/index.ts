@@ -4,7 +4,7 @@ import bodyParser from 'body-parser'
 import cors from 'cors'
 import mongoose from 'mongoose'
 import { router } from './database/routes/route'
-import { PORT, mongodbURL } from './config/index'
+import { PORT, MONGODB_URL } from './config/index'
 
 const app = express()
 const HOST_PORT = PORT || 3000
@@ -30,7 +30,7 @@ app.get('/*', (req, res) => {
 })
 
 mongoose
-  .connect(mongodbURL)
+  .connect(MONGODB_URL)
   .then(() => {
     console.log('Connected to database!')
     app.listen(HOST_PORT, () => console.log(`Server running on port ${HOST_PORT}...`))

@@ -18,14 +18,14 @@ export const HeaderSearchResult = ({ namesData }: HeaderSearchResultProps) => {
     <div
       className={`
 			${style.searchResultWrapper} 
-			${isNamesData && inputState.focused && style.focused} 
-			${!isNamesData && style.empty}`}
+			${isNamesData && inputState.focused ? style.focused : null} 
+			${!isNamesData ? style.empty : null}`}
     >
       <div
         className={`
 				${style.searchResult} 
-				${isNamesData && inputState.focused && style.focused} 
-				${!isNamesData && style.empty}`}
+				${isNamesData && inputState.focused ? style.focused : null} 
+				${!isNamesData ? style.empty : null}`}
       >
         {isNamesData &&
           namesData.map((item, index) => (

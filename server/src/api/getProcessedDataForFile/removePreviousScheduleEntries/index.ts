@@ -4,7 +4,7 @@ import { IUnparsedJson } from '@/types'
 export const removePreviousScheduleEntries = (schedule: IUnparsedJson, day: string): IUnparsedJson => {
   const scheduleKeys = Object.keys(schedule)
 
-  const daysRange = scheduleKeys.map((item) => getDaysInRange(item))
+  const daysRange = scheduleKeys.map((item) => getDaysInRange(item)).filter((item) => item !== null)
 
   const currentWeekIndex = daysRange.findLastIndex((subArray) => subArray.includes(day))
 

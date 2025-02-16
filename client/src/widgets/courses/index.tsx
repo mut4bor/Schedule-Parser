@@ -1,8 +1,7 @@
 import * as style from './style.module.scss'
-import { CoursesProps } from './types'
 import { Skeleton } from '@/shared/ui'
 import { CourseButton } from '@/entities/courses'
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   useAppDispatch,
@@ -10,13 +9,10 @@ import {
   useGetCoursesQuery,
   courseChanged,
 } from '@/shared/redux'
-import { BASE_URL } from '@/shared/routes'
-import { SkeletonTime } from '@/shared/vars/vars'
+import routes from '@/shared/routes'
 import { ErrorComponent } from '../error'
 
-export const Courses = ({
-  handleGroupsListSkeletonStateChange,
-}: CoursesProps) => {
+export const Courses = () => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const { educationType, faculty, course } = useAppSelector(
@@ -25,7 +21,7 @@ export const Courses = ({
 
   useEffect(() => {
     if (!educationType || !faculty) {
-      navigate(BASE_URL)
+      navigate(routes.BASE_URL)
     }
   }, [educationType, faculty])
 
@@ -49,22 +45,13 @@ export const Courses = ({
     }
   }, [coursesData])
 
-  const [coursesSkeletonIsEnabled, setCoursesSkeletonIsEnabled] = useState(true)
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setCoursesSkeletonIsEnabled(false)
-    }, SkeletonTime)
-    return () => clearTimeout(timer)
-  }, [])
-
   if (coursesError) {
     return <ErrorComponent error={coursesError} />
   }
 
   return (
     <ul className={style.list}>
-      {!coursesData || isFetching || isLoading || coursesSkeletonIsEnabled
+      {!coursesData || isFetching || isLoading
         ? Array.from({ length: 4 }).map((_, index) => (
             <li className={style.listElement} key={index}>
               <Skeleton className={style.skeleton} />
@@ -72,10 +59,7 @@ export const Courses = ({
           ))
         : coursesData.map((course, index) => (
             <li className={style.listElement} key={index}>
-              <CourseButton
-                handleSkeletonStateChange={handleGroupsListSkeletonStateChange}
-                course={course}
-              />
+              <CourseButton course={course} />
             </li>
           ))}
     </ul>

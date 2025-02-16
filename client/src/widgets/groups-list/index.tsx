@@ -1,15 +1,9 @@
 import * as style from './style.module.scss'
-import { GroupsProps } from './types'
 import { Skeleton } from '@/shared/ui'
-import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAppSelector, useGetNamesQuery } from '@/shared/redux'
-import { SkeletonTime } from '@/shared/vars/vars'
 
-export const GroupsList = ({
-  skeletonState,
-  handleGroupsListSkeletonStateChange,
-}: GroupsProps) => {
+export const GroupsList = () => {
   const navigationValue = useAppSelector(
     (store) => store.navigation.navigationValue,
   )
@@ -22,31 +16,20 @@ export const GroupsList = ({
     course: course,
   }).toString()
 
-  const {
-    data: namesData,
-    error: namesError,
-    isLoading,
-    isFetching,
-  } = useGetNamesQuery(namesSearchParams)
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      handleGroupsListSkeletonStateChange(false)
-    }, SkeletonTime)
-    return () => clearTimeout(timer)
-  }, [skeletonState])
+  const { data: namesData, error: namesError } =
+    useGetNamesQuery(namesSearchParams)
 
   return (
     <div className={style.container}>
       <div className={style.main}>
-        {!namesData || isLoading || isFetching || skeletonState
+        {!namesData
           ? Array.from({ length: 16 }).map((_, index) => (
               <Skeleton className={style.skeleton} key={index} />
             ))
           : namesData.map((item, index) => (
               <Link
                 to={`/groupID/${item._id}`}
-                className={`${style.link} ${favoriteGroup === item._id ? style.active : ''}`}
+                className={`${style.link} ${favoriteGroup === item._id ? style.active : null}`}
                 key={index}
               >
                 <p className={style.text}>{item.group}</p>

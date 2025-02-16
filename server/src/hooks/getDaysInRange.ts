@@ -1,18 +1,18 @@
 import { IWeekRange } from '@/types'
 import { addYears, eachDayOfInterval, format, parse } from 'date-fns'
 
-export const getDaysInRange = (range: string): IWeekRange => {
+export const getDaysInRange = (range: string): IWeekRange | null => {
   const regex = /(\d{2}\.\d{2})-(\d{2}\.\d{2})/
 
   if (!regex.test(range)) {
-    console.error(`${range}: Invalid range format. Expected format is "dd.MM-dd.MM".`)
+    console.error(`getDaysInRange: ${range}: Invalid range format. Expected format is "dd.MM-dd.MM".`)
     return [range]
   }
 
   const [startStr, endStr] = range.split('-')
 
   if (!startStr || !endStr) {
-    console.error(`${range}: Invalid range format. Both start and end dates must be provided.`)
+    console.error(`getDaysInRange: ${range}: Invalid range format. Both start and end dates must be provided.`)
     return [range]
   }
 
@@ -26,7 +26,7 @@ export const getDaysInRange = (range: string): IWeekRange => {
   }
 
   if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-    console.error(`${range}: Invalid date format provided. Expected format is "dd.MM".`)
+    console.error(`getDaysInRange: ${range}: Invalid date format provided. Expected format is "dd.MM".`)
     return [range]
   }
 

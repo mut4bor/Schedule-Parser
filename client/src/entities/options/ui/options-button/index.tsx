@@ -12,8 +12,12 @@ export const OptionsButton = forwardRef<HTMLButtonElement, OptionsButtonProps>(
         type="button"
         onClick={toggleIsOptionsListVisible}
       >
-        <span className={`${style.optionsIcon} ${isOptionsListVisible ? style.cross : ''}`}></span>
-        <span className={`${style.crossIcon} ${isOptionsListVisible ? style.active : ''}`}></span>
+        <span
+          className={`${style.optionsIcon} ${isOptionsListVisible ? style.cross : null}`}
+        ></span>
+        <span
+          className={`${style.crossIcon} ${isOptionsListVisible ? style.active : null}`}
+        ></span>
       </button>
     )
   },

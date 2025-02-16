@@ -7,25 +7,28 @@ import { FavoritePage } from './favorite'
 import { ErrorPage } from './error'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Provider } from 'react-redux'
-import {
-  BASE_URL,
-  COURSES_PATH,
-  FAVORITE_PATH,
-  GROUP_ID_PATH,
-} from '@/shared/routes'
+import routes from '@/shared/routes'
 import { store } from '@/shared/redux'
 import { Icons } from '@/shared/icons'
+import { TeacherSearchPage } from './teacher-search'
 
-const routes = [
-  { path: `${BASE_URL}`, Component: MainPage },
-  { path: `${BASE_URL}${COURSES_PATH}`, Component: CoursesPage },
-  { path: `${BASE_URL}${FAVORITE_PATH}`, Component: FavoritePage },
-  { path: `${BASE_URL}${GROUP_ID_PATH}`, Component: GroupIDPage },
+const routesArray = [
+  { path: `${routes.BASE_URL}`, Component: MainPage },
+  { path: `${routes.BASE_URL}${routes.COURSES_PATH}`, Component: CoursesPage },
+  {
+    path: `${routes.BASE_URL}${routes.FAVORITE_PATH}`,
+    Component: FavoritePage,
+  },
+  { path: `${routes.BASE_URL}${routes.GROUP_ID_PATH}`, Component: GroupIDPage },
+  {
+    path: `${routes.TEACHER_SEARCH_PATH}`,
+    Component: TeacherSearchPage,
+  },
 ]
 
 export const Routing = () => {
   const router = createBrowserRouter(
-    routes.map(({ path, Component }) => ({
+    routesArray.map(({ path, Component }) => ({
       path,
       element: (
         <>

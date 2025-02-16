@@ -43,7 +43,7 @@ export const DaysList = forwardRef<HTMLDivElement, DaysListProps>(
         >
           <SVG
             href="#arrow"
-            svgClassName={`${style.arrowButtonSvg} ${isGroupDaysVisible ? style.rotated : ''}`}
+            svgClassName={`${style.arrowButtonSvg} ${isGroupDaysVisible ? style.rotated : null}`}
             useClassName={style.arrowButtonSvgUse}
           ></SVG>
         </button>

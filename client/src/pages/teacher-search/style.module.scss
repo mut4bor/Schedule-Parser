@@ -1,0 +1,20 @@
+@import '@/shared/vars/vars';
+
+@media (min-width: $pageWidth320) {
+  .container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 0 auto;
+    padding: $containerPaddingTopMobile $containerPaddingX
+      $containerPaddingBottomMobile;
+    max-width: $containerWidth;
+    min-height: calc(100svh - $headerHeight);
+  }
+}
+
+@media (min-width: $pageWidth768) {
+  .container {
+    padding: $containerPaddingTop $containerPaddingX $containerPaddingBottom;
+  }
+}

@@ -13,7 +13,13 @@ export const getGroupWeekDays = (unParsedJson: IUnparsedJson, groupNumber: strin
 
   const days = weekDatesKeys.reduce(
     (acc, item) => {
-      acc[item] = getDaysInRange(item)
+      const daysInRange = getDaysInRange(item)
+
+      if (!daysInRange) {
+        return acc
+      }
+
+      acc[item] = daysInRange
       return acc
     },
     {} as Record<string, IWeekRange>,

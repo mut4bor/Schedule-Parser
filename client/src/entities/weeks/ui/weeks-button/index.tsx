@@ -3,7 +3,11 @@ import { WeeksButtonProps } from './types'
 
 export const WeeksButton = ({ text, onClick, isActive }: WeeksButtonProps) => {
   return (
-    <button onClick={onClick} className={`${style.button} ${isActive ? style.active : ''}`} type="button">
+    <button
+      onClick={onClick}
+      className={`${style.button} ${isActive ? style.active : null}`}
+      type="button"
+    >
       {text}
     </button>
   )

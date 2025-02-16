@@ -1,37 +1,47 @@
 import * as style from './style.module.scss'
 import { OptionsProps } from './types'
-import { useEffect, useState, forwardRef } from 'react'
+import { useEffect, useState } from 'react'
 import { Radiobox } from '@/shared/ui'
 import { createTapStopPropagationHandler } from '@/shared/hooks'
 
-export const OptionsList = forwardRef<HTMLUListElement, OptionsProps>(({ groupID, isOptionsListVisible }, ref) => {
+export const OptionsList = ({
+  groupID,
+  isOptionsListVisible,
+}: OptionsProps) => {
   const [isRadioboxChecked, setIsRadioboxChecked] = useState(false)
 
+  const favoriteGroup = localStorage.getItem('favorite-group')
+
   useEffect(() => {
-    if (groupID === localStorage.getItem('favorite-group')) {
+    if (favoriteGroup === groupID) {
       setIsRadioboxChecked(true)
     }
   }, [groupID])
 
-  const onRadioboxChange = () => {
-    setIsRadioboxChecked((prevState) => !prevState)
-    isRadioboxChecked ? localStorage.removeItem('favorite-group') : localStorage.setItem('favorite-group', groupID)
-  }
+  useEffect(() => {
+    if (isRadioboxChecked) {
+      localStorage.setItem('favorite-group', groupID)
+    }
+
+    if (!isRadioboxChecked && favoriteGroup === groupID) {
+      localStorage.removeItem('favorite-group')
+    }
+  }, [isRadioboxChecked, groupID])
+
+  const tapStopPropagationHandler = createTapStopPropagationHandler()
 
   return (
     <ul
-      className={`${style.optionsList} ${isOptionsListVisible ? style.active : ''}`}
-      {...createTapStopPropagationHandler()}
+      className={`${style.optionsList} ${isOptionsListVisible ? style.active : null}`}
+      {...tapStopPropagationHandler}
     >
       <li>
         <Radiobox
-          id={'optionsRadiobox'}
-          name={'optionsRadiobox'}
-          onChange={onRadioboxChange}
           title={'Избранная группа'}
           checked={isRadioboxChecked}
+          onChange={() => setIsRadioboxChecked((prevState) => !prevState)}
         />
       </li>
     </ul>
   )
-})
+}

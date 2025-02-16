@@ -1,7 +1,7 @@
 import * as style from './style.module.scss'
 import { ErrorComponentProps } from './types'
 import { Link } from 'react-router-dom'
-import { BASE_URL } from '@/shared/routes'
+import routes from '@/shared/routes'
 
 export const ErrorComponent = ({
   error,
@@ -16,7 +16,7 @@ export const ErrorComponent = ({
       </p>
 
       {!hideMainPageButton && (
-        <Link className={style.link} to={BASE_URL}>
+        <Link className={style.link} to={routes.BASE_URL}>
           Вернуться на главную
         </Link>
       )}
