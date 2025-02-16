@@ -1,6 +1,12 @@
 import { API_URL, X_ADMIN_PASSWORD } from '@/shared/config'
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { IGroup, IName, IFaculties, ISchedule } from '../types'
+import {
+  IGroup,
+  IName,
+  IFaculties,
+  ISchedule,
+  IRefreshSchedule,
+} from '../types'
 
 const groupsPath = `/groups`
 const namesPath = `/names`
@@ -16,6 +22,17 @@ const api = createApi({
   }),
 
   endpoints: (builder) => ({
+    refreshSchedule: builder.mutation<IRefreshSchedule, string>({
+      query: (password) => ({
+        url: `/refresh`,
+        method: 'POST',
+        headers: {
+          'x-admin-password': X_ADMIN_PASSWORD,
+        },
+        body: { password },
+      }),
+    }),
+
     getFaculties: builder.query<IFaculties, void>({
       query: () => ({
         url: `/faculty`,
@@ -84,6 +101,7 @@ const api = createApi({
 })
 
 export const {
+  useRefreshScheduleMutation,
   useGetFacultiesQuery,
   useGetCoursesQuery,
   useGetNamesQuery,

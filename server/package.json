@@ -9,14 +9,8 @@
     "build": "tsc && tsc-alias",
     "start": "node dist/index.js",
     "dev": "nodemon",
-    "delete:dev": "node src/database/scripts/deleteAllGroups.js",
-    "download:dev": "node src/database/scripts/downloadSchedules.js",
-    "update:dev": "npm run download:dev && node src/database/scripts/updateGroups.js",
-    "create:dev": "npm run delete:dev && npm run download:dev && node src/database/scripts/createGroups.js",
-    "delete": "node dist/database/scripts/deleteAllGroups.js",
-    "download": "node dist/database/scripts/downloadSchedules.js",
-    "update": "npm run download && node dist/database/scripts/updateGroups.js",
-    "create": "npm run delete && npm run download && node dist/database/scripts/createGroups.js"
+    "update": "node dist/npm-scripts/update.js",
+    "create": "node dist/npm-scripts/create.js"
   },
   "keywords": [],
   "author": "Matvey Molchanov",

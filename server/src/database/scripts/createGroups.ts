@@ -1,5 +1,5 @@
 import { getData } from '@/api/getData'
-import { FETCH_URL, X_ADMIN_PASSWORD } from '@/config/index'
+import { FETCH_URL, X_ADMIN_PASSWORD } from '@/config'
 import { IGroup } from '@/types'
 import path from 'path'
 
@@ -23,7 +23,7 @@ const postData = async (dataToFetch: IGroup) => {
   }
 }
 
-const sendData = async () => {
+export const createGroups = async () => {
   const __XLSXFilesDir = path.join(path.resolve(), 'docs', 'XLSXFiles')
   const data = await getData(__XLSXFilesDir)
 
@@ -38,5 +38,3 @@ const sendData = async () => {
     console.error('Send data error:', error)
   }
 }
-
-sendData()

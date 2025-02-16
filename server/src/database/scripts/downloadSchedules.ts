@@ -3,7 +3,7 @@ import { parse, HTMLElement } from 'node-html-parser'
 import path from 'path'
 import fs from 'fs'
 import crypto from 'crypto'
-import { UNIVERSITY_URL } from '@/config/index'
+import { UNIVERSITY_URL } from '@/config'
 import { IPathMap } from '@/types'
 
 const hashPath = (path: string) => {
@@ -37,7 +37,7 @@ const downloadFile = async (fileUrl: string, fileName: string) => {
   })
 }
 
-const main = async () => {
+export const downloadSchedules = async () => {
   try {
     const response = await axios.get(UNIVERSITY_URL)
     const html = response.data
@@ -130,10 +130,8 @@ const main = async () => {
     }
 
     // Запускаем обработку всех разделов
-    processAllSections()
+    await processAllSections()
   } catch (error) {
     console.error('Ошибка при загрузке файлов:', error)
   }
 }
-
-main()

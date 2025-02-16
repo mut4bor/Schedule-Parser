@@ -1,16 +1,17 @@
 import { Header } from '@/widgets/header'
 import { TabBar } from '@/widgets/tab-bar'
+import { ErrorPage } from './error'
 import { MainPage } from './main'
 import { CoursesPage } from './courses'
 import { GroupIDPage } from './groupID'
 import { FavoritePage } from './favorite'
-import { ErrorPage } from './error'
+import { TeacherSearchPage } from './teacher-search'
+import { RefreshPage } from './refresh'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import routes from '@/shared/routes'
 import { store } from '@/shared/redux'
 import { Icons } from '@/shared/icons'
-import { TeacherSearchPage } from './teacher-search'
 
 const routesArray = [
   { path: `${routes.BASE_URL}`, Component: MainPage },
@@ -23,6 +24,10 @@ const routesArray = [
   {
     path: `${routes.TEACHER_SEARCH_PATH}`,
     Component: TeacherSearchPage,
+  },
+  {
+    path: `${routes.REFRESH_PATH}`,
+    Component: RefreshPage,
   },
 ]
 

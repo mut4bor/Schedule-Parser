@@ -1,3 +1,7 @@
+export interface IRefreshSchedule {
+  message: string
+}
+
 export interface IName {
   group: string
   _id: string

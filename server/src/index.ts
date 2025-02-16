@@ -4,7 +4,7 @@ import bodyParser from 'body-parser'
 import cors from 'cors'
 import mongoose from 'mongoose'
 import { router } from './database/routes/route'
-import { PORT, MONGODB_URL } from './config/index'
+import { PORT, MONGODB_URL } from '@/config'
 
 const app = express()
 const HOST_PORT = PORT || 3000

@@ -1,4 +1,5 @@
 export {
+  useRefreshScheduleMutation,
   useGetFacultiesQuery,
   useGetCoursesQuery,
   useGetNamesQuery,

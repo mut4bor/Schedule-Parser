@@ -12,7 +12,8 @@ import {
   deleteAllGroups,
 } from '@/database/controllers/group.controller'
 import { getGroupNames, getGroupNamesThatMatchWithReqParams } from '@/database/controllers/name.controller'
-import { X_ADMIN_PASSWORD } from '@/config/index'
+import { X_ADMIN_PASSWORD } from '@/config'
+import { refreshSchedule } from '../controllers/refresh.controller'
 
 const router = Router()
 
@@ -30,11 +31,13 @@ const groupsPath = `/groups`
 const namesPath = `/names`
 const facultyPath = `/faculty`
 const coursePath = `/course`
+const refreshPath = `/refresh`
 
 router.use(groupsPath, checkPassword)
 router.use(namesPath, checkPassword)
 router.use(facultyPath, checkPassword)
 router.use(coursePath, checkPassword)
+router.use(refreshPath, checkPassword)
 
 router.get(groupsPath, getAllGroups)
 router.get(`${groupsPath}/:id`, getGroupById)
@@ -50,5 +53,7 @@ router.get(`${namesPath}/search`, getGroupNamesThatMatchWithReqParams)
 
 router.get(facultyPath, getFaculties)
 router.get(coursePath, getCourses)
+
+router.post(refreshPath, refreshSchedule)
 
 export { router }

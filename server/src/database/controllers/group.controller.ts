@@ -1,7 +1,6 @@
 import { Group } from '@/database/models/group.model'
 import { getFilterParams } from '@/hooks/getFilterParams'
 import { Request, Response } from 'express'
-import { IDate } from '@/types'
 
 const getAllGroups = async (req: Request, res: Response) => {
   try {
