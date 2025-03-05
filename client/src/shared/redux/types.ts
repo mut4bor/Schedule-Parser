@@ -28,3 +28,61 @@ export interface ISchedule {
     }
   }
 }
+
+export type StatusType = 'owner' | 'admin' | 'user'
+
+export interface ApiRegisterRequest {
+  phone_number: string
+  password: string
+}
+
+export interface ApiRegisterResponse {
+  success: boolean
+  message: string
+  phone_number: string
+}
+
+export interface ApiLoginRequest {
+  phone_number: string
+  password: string
+}
+
+export interface ApiLoginResponse {
+  success: boolean
+  message: string
+}
+
+export interface ApiLogoutResponse {
+  success: boolean
+  message: string
+}
+
+export interface ApiGetProfileInfoSuccessResponse {
+  success: true
+  phone_number: string
+  first_name: string
+  last_name: string
+  email: string
+  status: StatusType
+}
+
+export interface ApiGetProfileInfoErrorResponse {
+  success: false
+  message: string
+}
+
+export type ApiGetProfileInfoResponse =
+  | ApiGetProfileInfoSuccessResponse
+  | ApiGetProfileInfoErrorResponse
+
+export interface ApiChangeProfileInfoRequest {
+  first_name: string
+  last_name: string
+  email: string
+  phone_number: string
+}
+
+export interface ApiChangeProfileInfoResponse {
+  success: boolean
+  message: string
+}

@@ -1,16 +1,10 @@
 import * as style from './style.module.scss'
 import { HeaderSearchResultProps } from './types'
 import { Link } from 'react-router-dom'
-import {
-  useAppDispatch,
-  useAppSelector,
-  weekChanged,
-  dayIndexChanged,
-} from '@/shared/redux'
+import { useAppSelector } from '@/shared/redux'
 
 export const HeaderSearchResult = ({ namesData }: HeaderSearchResultProps) => {
-  const dispatch = useAppDispatch()
-  const { inputState } = useAppSelector((store) => store.search)
+  const inputIsFocused = useAppSelector((store) => store.search.inputIsFocused)
 
   const isNamesData = !!namesData && namesData.length !== 0
 
@@ -18,22 +12,18 @@ export const HeaderSearchResult = ({ namesData }: HeaderSearchResultProps) => {
     <div
       className={`
 			${style.searchResultWrapper} 
-			${isNamesData && inputState.focused ? style.focused : null} 
+			${isNamesData && inputIsFocused ? style.focused : null} 
 			${!isNamesData ? style.empty : null}`}
     >
       <div
         className={`
 				${style.searchResult} 
-				${isNamesData && inputState.focused ? style.focused : null} 
+				${isNamesData && inputIsFocused ? style.focused : null} 
 				${!isNamesData ? style.empty : null}`}
       >
         {isNamesData &&
           namesData.map((item, index) => (
             <Link
-              onClick={() => {
-                dispatch(weekChanged(''))
-                dispatch(dayIndexChanged(-1))
-              }}
               className={style.link}
               to={`/groupID/${item._id}`}
               key={index}

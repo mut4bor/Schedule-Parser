@@ -1,7 +1,5 @@
 export type DaysButtonProps = {
-  data: {
-    text: string
-  }
+  children: string
   onClick: () => void
   isActive?: boolean
 }

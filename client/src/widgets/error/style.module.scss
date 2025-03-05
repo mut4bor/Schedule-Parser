@@ -1,6 +1,20 @@
 @import '@/shared/vars/vars';
 
 @media (min-width: $pageWidth320) {
+  .wrapper {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 3;
+    background: $backgroundColor;
+    width: 100%;
+    height: 100%;
+  }
+
   .container {
     display: flex;
     flex-direction: column;
@@ -10,9 +24,8 @@
     margin: 0 auto;
     padding: $containerPaddingTopMobile $containerPaddingX
       $containerPaddingBottomMobile;
-    width: fit-content;
+    width: 100%;
     max-width: 60rem;
-    min-height: 100svh;
   }
 
   .text {

@@ -7,11 +7,13 @@ import {
   educationTypeChanged,
   facultyChanged,
   courseChanged,
-  weekChanged,
-  dayIndexChanged,
 } from '@/shared/redux'
 import { FacultyLink } from '@/entities/faculty'
 import { Fragment } from 'react'
+
+const Pipe = () => {
+  return <span className={style.pipe}></span>
+}
 
 export const Faculty = ({ data, columnsAmount }: FacultyProps) => {
   const dispatch = useAppDispatch()
@@ -19,11 +21,12 @@ export const Faculty = ({ data, columnsAmount }: FacultyProps) => {
   const { educationType, faculties } = data || {}
 
   const handleLinkClick = (faculty: string) => {
-    dispatch(educationTypeChanged(educationType))
+    if (educationType) {
+      dispatch(educationTypeChanged(educationType))
+    }
+
     dispatch(facultyChanged(faculty))
-    dispatch(courseChanged(''))
-    dispatch(weekChanged(''))
-    dispatch(dayIndexChanged(-1))
+    dispatch(courseChanged(null))
   }
 
   const skeletonLenght = columnsAmount
@@ -55,21 +58,17 @@ export const Faculty = ({ data, columnsAmount }: FacultyProps) => {
                     ))}
                   </ul>
                 </div>
-                {index < array.length - 1 && (
-                  <span className={style.pipe}></span>
-                )}
+                {index < array.length - 1 && <Pipe />}
               </Fragment>
             ))
           : faculties.map((faculty, index, array) => (
               <Fragment key={`faculty-link-${index}`}>
                 <FacultyLink
                   faculty={faculty}
-                  handleLinkClick={() => handleLinkClick(faculty)}
                   href={routes.COURSES_PATH}
+                  handleLinkClick={() => handleLinkClick(faculty)}
                 />
-                {index < array.length - 1 && (
-                  <span className={style.pipe}></span>
-                )}
+                {index < array.length - 1 && <Pipe />}
               </Fragment>
             ))}
       </div>

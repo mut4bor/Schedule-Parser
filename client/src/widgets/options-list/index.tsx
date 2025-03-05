@@ -2,7 +2,6 @@ import * as style from './style.module.scss'
 import { OptionsProps } from './types'
 import { useEffect, useState } from 'react'
 import { Radiobox } from '@/shared/ui'
-import { createTapStopPropagationHandler } from '@/shared/hooks'
 
 export const OptionsList = ({
   groupID,
@@ -28,12 +27,9 @@ export const OptionsList = ({
     }
   }, [isRadioboxChecked, groupID])
 
-  const tapStopPropagationHandler = createTapStopPropagationHandler()
-
   return (
     <ul
       className={`${style.optionsList} ${isOptionsListVisible ? style.active : null}`}
-      {...tapStopPropagationHandler}
     >
       <li>
         <Radiobox

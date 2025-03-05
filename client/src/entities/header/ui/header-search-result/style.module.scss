@@ -16,20 +16,22 @@
   width: 100%;
   overflow: hidden;
   pointer-events: none;
+
   &.empty {
     padding: 0;
   }
+
   &.focused {
     top: 2.9rem;
     opacity: 1;
     pointer-events: all;
   }
 }
+
 .searchResult {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  opacity: 1;
   opacity: 0;
   transition:
     all 0.15s ease-in-out,
@@ -42,14 +44,17 @@
   pointer-events: all;
   pointer-events: none;
   font-size: 1.6rem;
+
   &.empty {
     padding: 0;
   }
+
   &.focused {
     opacity: 1;
     pointer-events: all;
   }
 }
+
 .link {
   display: flex;
   flex: 1 0 auto;

@@ -1,21 +1,13 @@
 import * as style from './style.module.scss'
 import { OptionsProps } from './types'
-import { OptionsList } from '../options-list'
+import { OptionsList } from '@/widgets/options-list'
 import { OptionsButton } from '@/entities/options'
 import { forwardRef } from 'react'
 
-export const Options = forwardRef<HTMLButtonElement, OptionsProps>(
-  (
-    {
-      groupID,
-      isOptionsListVisible,
-      toggleOptionsList,
-      ...props
-    }: OptionsProps,
-    ref,
-  ) => {
+export const Options = forwardRef<HTMLDivElement, OptionsProps>(
+  ({ groupID, isOptionsListVisible, toggleOptionsList }: OptionsProps, ref) => {
     return (
-      <div className={style.options}>
+      <div className={style.options} ref={ref}>
         <OptionsList
           groupID={groupID}
           isOptionsListVisible={isOptionsListVisible}
@@ -23,8 +15,6 @@ export const Options = forwardRef<HTMLButtonElement, OptionsProps>(
         <OptionsButton
           toggleIsOptionsListVisible={toggleOptionsList}
           isOptionsListVisible={isOptionsListVisible}
-          ref={ref}
-          {...props}
         />
       </div>
     )

@@ -10,16 +10,18 @@ export const ErrorComponent = ({
   const { statusCode, errorMessage } = getErrorDetails(error)
 
   return (
-    <div className={style.container}>
-      <p className={style.text}>
-        Ошибка {statusCode}: {errorMessage}
-      </p>
+    <div className={style.wrapper}>
+      <div className={style.container}>
+        <p className={style.text}>
+          Ошибка {statusCode}: {errorMessage}
+        </p>
 
-      {!hideMainPageButton && (
-        <Link className={style.link} to={routes.BASE_URL}>
-          Вернуться на главную
-        </Link>
-      )}
+        {!hideMainPageButton && (
+          <Link className={style.link} to={routes.BASE_URL}>
+            Вернуться на главную
+          </Link>
+        )}
+      </div>
     </div>
   )
 }

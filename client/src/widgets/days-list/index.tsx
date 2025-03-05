@@ -1,45 +1,31 @@
 import * as style from './style.module.scss'
 import { DaysListProps } from './types'
-import { useState, useEffect, forwardRef } from 'react'
+import { useEffect, forwardRef } from 'react'
 import { SVG, Skeleton } from '@/shared/ui'
-import { SkeletonTime } from '@/shared/vars/vars'
 import { useAppDispatch, useAppSelector, dayIndexChanged } from '@/shared/redux'
 import { DaysButton } from '@/entities/days'
 import { getDayToPick } from '@/shared/hooks'
+
+const ListElement = ({ children }: { children: React.ReactNode }) => {
+  return <li className={style.listElement}>{children}</li>
+}
 
 export const DaysList = forwardRef<HTMLDivElement, DaysListProps>(
   ({ scheduleData, toggleIsGroupDaysVisible, isGroupDaysVisible }, ref) => {
     const dispatch = useAppDispatch()
 
-    const [daysListSkeletonIsEnabled, setDaysListSkeletonIsEnabled] =
-      useState(true)
-
-    useEffect(() => {
-      const timer = setTimeout(() => {
-        setDaysListSkeletonIsEnabled(false)
-      }, SkeletonTime)
-      return () => clearTimeout(timer)
-    }, [scheduleData])
-
-    const pickedDayIndex = useAppSelector(
-      (store) => store.navigation.navigationValue.dayIndex,
-    )
-    const { dayWeekIndex } = getDayToPick()
-
-    useEffect(() => {
-      dispatch(dayIndexChanged(dayWeekIndex))
-    }, [scheduleData])
+    const pickedDayIndex = useAppSelector((store) => store.navigation.dayIndex)
 
     return (
       <div
-        ref={ref}
         className={`${style.container} ${isGroupDaysVisible ? style.visible : style.hidden}`}
+        ref={ref}
       >
         <button
           onClick={toggleIsGroupDaysVisible}
           className={style.arrowButton}
           type="button"
-          title="Скрыть/Показать дни недели"
+          title={`${isGroupDaysVisible ? 'Скрыть' : 'Показать'} дни недели`}
         >
           <SVG
             href="#arrow"
@@ -48,22 +34,23 @@ export const DaysList = forwardRef<HTMLDivElement, DaysListProps>(
           ></SVG>
         </button>
         <ul className={style.list}>
-          {!scheduleData || daysListSkeletonIsEnabled
+          {!scheduleData
             ? Array.from({ length: 6 }).map((_, index) => (
-                <li className={style.listElement} key={index}>
+                <ListElement key={index}>
                   <Skeleton className={style.skeleton} />
-                </li>
+                </ListElement>
               ))
             : Object.keys(scheduleData).map((day, index) => (
-                <li className={style.listElement} key={index}>
+                <ListElement key={index}>
                   <DaysButton
                     onClick={() => {
                       dispatch(dayIndexChanged(index))
                     }}
-                    data={{ text: day }}
                     isActive={pickedDayIndex === index}
-                  />
-                </li>
+                  >
+                    {day}
+                  </DaysButton>
+                </ListElement>
               ))}
         </ul>
       </div>

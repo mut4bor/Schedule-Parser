@@ -4,16 +4,15 @@ import { Link } from 'react-router-dom'
 import { useAppSelector, useGetNamesQuery } from '@/shared/redux'
 
 export const GroupsList = () => {
-  const navigationValue = useAppSelector(
-    (store) => store.navigation.navigationValue,
+  const { educationType, faculty, course } = useAppSelector(
+    (store) => store.navigation,
   )
-  const { educationType, faculty, course } = navigationValue
   const favoriteGroup = localStorage.getItem('favorite-group')
 
   const namesSearchParams = new URLSearchParams({
-    educationType: educationType,
-    faculty: faculty,
-    course: course,
+    educationType: educationType ?? '',
+    faculty: faculty ?? '',
+    course: course ?? '',
   }).toString()
 
   const { data: namesData, error: namesError } =

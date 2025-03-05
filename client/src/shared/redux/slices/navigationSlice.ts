@@ -1,46 +1,51 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+
+export type dayIndexType = -1 | 0 | 1 | 2 | 3 | 4 | 5 | 6
+
+interface NavigationValue {
+  educationType: string | null
+  faculty: string | null
+  course: string | null
+  week: string | null
+  dayIndex: number
+}
+
+const initialState: NavigationValue = {
+  educationType: null,
+  faculty: null,
+  course: null,
+  week: null,
+  dayIndex: -1,
+}
 
 const navigationSlice = createSlice({
   name: 'navigation',
-
-  initialState: {
-    navigationValue: {
-      educationType: '',
-      faculty: '',
-      course: '',
-      groupID: '',
-      week: '',
-      dayIndex: -1,
-    },
-  },
-
+  initialState,
   reducers: {
-    educationTypeChanged(state, action) {
-      state.navigationValue.educationType = action.payload
+    educationTypeChanged(state, action: PayloadAction<string | null>) {
+      state.educationType = action.payload
     },
-    facultyChanged(state, action) {
-      state.navigationValue.faculty = action.payload
+    facultyChanged(state, action: PayloadAction<string | null>) {
+      state.faculty = action.payload
     },
-    courseChanged(state, action) {
-      state.navigationValue.course = action.payload
+    courseChanged(state, action: PayloadAction<string | null>) {
+      state.course = action.payload
     },
-    groupIDChanged(state, action) {
-      state.navigationValue.groupID = action.payload
+    weekChanged(state, action: PayloadAction<string | null>) {
+      state.week = action.payload
     },
-    weekChanged(state, action) {
-      state.navigationValue.week = action.payload
-    },
-    dayIndexChanged(state, action) {
-      state.navigationValue.dayIndex = action.payload
+    dayIndexChanged(state, action: PayloadAction<number>) {
+      state.dayIndex = action.payload
     },
   },
 })
+
 export const {
   educationTypeChanged,
   facultyChanged,
   courseChanged,
-  groupIDChanged,
   weekChanged,
   dayIndexChanged,
 } = navigationSlice.actions
+
 export default navigationSlice.reducer

@@ -1,24 +1,21 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 const searchSlice = createSlice({
   name: 'search',
 
   initialState: {
-    inputState: {
-      value: '',
-      focused: false,
-    },
+    inputIsFocused: false,
     searchValue: '',
   },
 
   reducers: {
-    inputStateChanged(state, action) {
-      state.inputState = action.payload
+    inputIsFocusedChanged(state, action: PayloadAction<boolean>) {
+      state.inputIsFocused = action.payload
     },
-    searchValueChanged(state, action) {
+    searchValueChanged(state, action: PayloadAction<string>) {
       state.searchValue = action.payload
     },
   },
 })
-export const { inputStateChanged, searchValueChanged } = searchSlice.actions
+export const { inputIsFocusedChanged, searchValueChanged } = searchSlice.actions
 export default searchSlice.reducer

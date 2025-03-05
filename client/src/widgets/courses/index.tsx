@@ -10,13 +10,13 @@ import {
   courseChanged,
 } from '@/shared/redux'
 import routes from '@/shared/routes'
-import { ErrorComponent } from '../error'
+import { ErrorComponent } from '@/widgets/error'
 
 export const Courses = () => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const { educationType, faculty, course } = useAppSelector(
-    (store) => store.navigation.navigationValue,
+    (store) => store.navigation,
   )
 
   useEffect(() => {
@@ -26,18 +26,16 @@ export const Courses = () => {
   }, [educationType, faculty])
 
   const searchParams = new URLSearchParams({
-    educationType: educationType,
-    faculty: faculty,
+    educationType: educationType ?? '',
+    faculty: faculty ?? '',
   }).toString()
 
-  const {
-    data: coursesData,
-    error: coursesError,
-    isFetching,
-    isLoading,
-  } = useGetCoursesQuery(searchParams, {
-    skip: !educationType || !faculty,
-  })
+  const { data: coursesData, error: coursesError } = useGetCoursesQuery(
+    searchParams,
+    {
+      skip: !educationType || !faculty,
+    },
+  )
 
   useEffect(() => {
     if (!!coursesData) {
@@ -51,7 +49,7 @@ export const Courses = () => {
 
   return (
     <ul className={style.list}>
-      {!coursesData || isFetching || isLoading
+      {!coursesData
         ? Array.from({ length: 4 }).map((_, index) => (
             <li className={style.listElement} key={index}>
               <Skeleton className={style.skeleton} />

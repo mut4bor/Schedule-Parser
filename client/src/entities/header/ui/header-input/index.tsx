@@ -1,25 +1,26 @@
 import * as style from './style.module.scss'
-import { useDebouncedCallback } from 'use-debounce'
+import { useDebounceCallback } from 'usehooks-ts'
 import {
   useAppDispatch,
+  inputIsFocusedChanged,
   searchValueChanged,
-  useAppSelector,
-  inputStateChanged,
 } from '@/shared/redux'
 import { SVG } from '@/shared/ui/SVG'
 
 export const HeaderInput = () => {
   const dispatch = useAppDispatch()
 
-  const inputState = useAppSelector((store) => store.search.inputState)
-
-  const debouncedDispatchSearchValue = useDebouncedCallback(() => {
-    dispatch(searchValueChanged(inputState.value))
+  const handleChange = useDebounceCallback((event) => {
+    dispatch(searchValueChanged(event.target.value))
   }, 300)
 
-  const debouncedOnBlur = useDebouncedCallback(() => {
-    dispatch(inputStateChanged({ ...inputState, focused: false }))
-  }, 300)
+  const handleOnBlur = () => {
+    const timer = setTimeout(() => {
+      dispatch(inputIsFocusedChanged(false))
+    }, 300)
+
+    return () => clearTimeout(timer)
+  }
 
   return (
     <label className={style.label}>
@@ -32,17 +33,9 @@ export const HeaderInput = () => {
         placeholder="Поиск группы"
         className={`${style.input}`}
         type="text"
-        value={inputState.value}
-        onFocus={() =>
-          dispatch(inputStateChanged({ ...inputState, focused: true }))
-        }
-        onBlur={debouncedOnBlur}
-        onChange={(event) => {
-          dispatch(
-            inputStateChanged({ ...inputState, value: event.target.value }),
-          )
-          debouncedDispatchSearchValue()
-        }}
+        onFocus={() => dispatch(inputIsFocusedChanged(true))}
+        onBlur={handleOnBlur}
+        onChange={handleChange}
       />
     </label>
   )

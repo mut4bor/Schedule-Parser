@@ -4,11 +4,7 @@ import { useAppDispatch, useAppSelector, courseChanged } from '@/shared/redux'
 
 export const CourseButton = ({ course }: CourseButtonProps) => {
   const dispatch = useAppDispatch()
-  const navigationValue = useAppSelector(
-    (store) => store.navigation.navigationValue,
-  )
-
-  const { course: pickedCourse } = navigationValue
+  const pickedCourse = useAppSelector((store) => store.navigation.course)
 
   return (
     <button

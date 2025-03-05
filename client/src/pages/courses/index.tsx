@@ -1,14 +1,13 @@
 import * as style from './style.module.scss'
-import { BackToPreviousButton } from '@/entities/navigation'
+import { BackToPreviousLink } from '@/entities/navigation'
 import { Courses } from '@/widgets/courses'
 import { GroupsList } from '@/widgets/groups-list'
-import { useNavigate } from 'react-router-dom'
-export const CoursesPage = () => {
-  const navigate = useNavigate()
+import routes from '@/shared/routes'
 
+export const CoursesPage = () => {
   return (
     <div className={style.container}>
-      <BackToPreviousButton onClick={() => navigate('/')} />
+      <BackToPreviousLink href={routes.BASE_URL} />
 
       <div className={style.wrapper}>
         <Courses />

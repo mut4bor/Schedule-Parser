@@ -2,7 +2,7 @@ import * as style from './style.module.scss'
 import { DaysButtonProps } from './types'
 
 export const DaysButton = ({
-  data: { text },
+  children,
   onClick,
   isActive,
 }: DaysButtonProps) => {
@@ -12,7 +12,7 @@ export const DaysButton = ({
       className={`${style.button} ${isActive ? style.active : null}`}
       type="button"
     >
-      {text}
+      {children}
     </button>
   )
 }

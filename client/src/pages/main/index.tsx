@@ -4,12 +4,7 @@ import { useGetFacultiesQuery } from '@/shared/redux'
 import { ErrorComponent } from '@/widgets/error'
 
 export const MainPage = () => {
-  const {
-    data: facultiesData,
-    error: facultiesError,
-    isLoading,
-    isFetching,
-  } = useGetFacultiesQuery()
+  const { data: facultiesData, error: facultiesError } = useGetFacultiesQuery()
 
   if (facultiesError) {
     return <ErrorComponent error={facultiesError} hideMainPageButton />
@@ -17,7 +12,7 @@ export const MainPage = () => {
 
   return (
     <div className={style.container}>
-      {!facultiesData || isLoading || isFetching
+      {!facultiesData
         ? Array.from({ length: 3 }).map((_, index) => (
             <Faculty columnsAmount={4 - index} key={index} />
           ))

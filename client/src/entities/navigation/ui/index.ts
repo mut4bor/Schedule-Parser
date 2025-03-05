@@ -1,1 +1,1 @@
-export { BackToPreviousButton } from './back-to-previous-button'
+export { BackToPreviousLink } from './back-to-previous-link'

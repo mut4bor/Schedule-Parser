@@ -1,65 +1,67 @@
 import * as style from './style.module.scss'
-import { WeeksListProps } from './types'
-import { BackToPreviousButton } from '@/entities/navigation'
+import { BackToPreviousLink } from '@/entities/navigation'
 import { WeeksButton } from '@/entities/weeks'
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { SkeletonTime } from '@/shared/vars/vars'
+import { useEffect } from 'react'
 import {
   useAppDispatch,
   useAppSelector,
+  useGetWeeksByIDQuery,
   weekChanged,
-  dayIndexChanged,
 } from '@/shared/redux'
 import { getDaysInRange, getDayToPick } from '@/shared/hooks'
 import { Skeleton } from '@/shared/ui'
+import routes from '@/shared/routes'
+import { ErrorComponent } from '@/widgets/error'
+import { useParams } from 'react-router-dom'
 
-export const WeeksList = ({ weeksData }: WeeksListProps) => {
-  const navigate = useNavigate()
-  const dispatch = useAppDispatch()
-  const [weeksListSkeletonIsEnabled, setWeeksListSkeletonIsEnabled] =
-    useState(true)
-  const { week: pickedWeek } = useAppSelector(
-    (store) => store.navigation.navigationValue,
+const { day } = getDayToPick()
+
+export const WeeksList = () => {
+  const { groupID } = useParams()
+
+  const { data: weeksData, error: weeksError } = useGetWeeksByIDQuery(
+    groupID ?? '',
+    {
+      skip: !groupID,
+    },
   )
+
+  const dispatch = useAppDispatch()
+
+  const pickedWeek = useAppSelector((store) => store.navigation.week)
 
   useEffect(() => {
     if (!!weeksData) {
-      const { day } = getDayToPick()
-
       const daysRange = weeksData.map((item) => getDaysInRange(item))
 
       const currentWeekIndex = daysRange.findIndex((subArray) =>
         subArray.includes(day),
       )
       const currentWeek = weeksData[currentWeekIndex]
+
       if (currentWeek) {
         dispatch(weekChanged(currentWeek))
         return
       }
+
       dispatch(weekChanged(weeksData[0]))
     }
-  }, [weeksData])
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setWeeksListSkeletonIsEnabled(false)
-    }, SkeletonTime)
-    return () => clearTimeout(timer)
-  }, [weeksData])
+    return () => {
+      dispatch(weekChanged(null))
+    }
+  }, [dispatch, weeksData])
+
+  if (weeksError) {
+    return <ErrorComponent error={weeksError} />
+  }
 
   return (
     <div className={style.container}>
-      <BackToPreviousButton
-        onClick={() => {
-          navigate('/courses')
-          dispatch(weekChanged(''))
-          dispatch(dayIndexChanged(-1))
-        }}
-      />
+      <BackToPreviousLink href={routes.COURSES_PATH} />
 
       <ul className={style.list}>
-        {!weeksData || weeksListSkeletonIsEnabled
+        {!weeksData
           ? Array.from({ length: 7 }).map((_, index) => (
               <li key={index}>
                 <Skeleton className={style.skeleton} />

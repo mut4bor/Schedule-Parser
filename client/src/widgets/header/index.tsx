@@ -3,6 +3,7 @@ import {
   HeaderGithubLink,
   HeaderHeading,
   HeaderInput,
+  HeaderLoginButton,
   HeaderSearchResult,
   HeaderTelegramLink,
 } from '@/entities/header'
@@ -76,6 +77,7 @@ export const Header = () => {
             <HeaderGithubLink />
             <HeaderTelegramLink />
             <HeaderFavoriteLink />
+            <HeaderLoginButton onClick={() => {}} />
           </div>
         </div>
       </div>

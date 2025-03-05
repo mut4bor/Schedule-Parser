@@ -13,12 +13,11 @@ export {
   educationTypeChanged,
   facultyChanged,
   courseChanged,
-  groupIDChanged,
   weekChanged,
   dayIndexChanged,
 } from './slices/navigationSlice'
 
-export { inputStateChanged, searchValueChanged } from './slices/searchSlice'
+export { inputIsFocusedChanged, searchValueChanged } from './slices/searchSlice'
 
 export type { IName } from './types'
 
