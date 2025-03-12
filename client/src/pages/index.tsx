@@ -21,10 +21,10 @@ const routesArray = [
     Component: FavoritePage,
   },
   { path: `${routes.BASE_URL}${routes.GROUP_ID_PATH}`, Component: GroupIDPage },
-  {
-    path: `${routes.TEACHER_SEARCH_PATH}`,
-    Component: TeacherSearchPage,
-  },
+  // {
+  //   path: `${routes.TEACHER_SEARCH_PATH}`,
+  //   Component: TeacherSearchPage,
+  // },
   {
     path: `${routes.REFRESH_PATH}`,
     Component: RefreshPage,

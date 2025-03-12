@@ -12,14 +12,14 @@ import {
   IFaculties,
   ISchedule,
   IRefreshSchedule,
-  ApiLogoutResponse,
-  ApiLoginResponse,
-  ApiLoginRequest,
-  ApiChangeProfileInfoResponse,
-  ApiChangeProfileInfoRequest,
-  ApiGetProfileInfoResponse,
-  ApiRegisterRequest,
-  ApiRegisterResponse,
+  // ApiLogoutResponse,
+  // ApiLoginResponse,
+  // ApiLoginRequest,
+  // ApiChangeProfileInfoResponse,
+  // ApiChangeProfileInfoRequest,
+  // ApiGetProfileInfoResponse,
+  // ApiRegisterRequest,
+  // ApiRegisterResponse,
 } from '../types'
 
 const groupsPath = `groups`
@@ -32,8 +32,6 @@ const getParams = (params: string | void) => {
 const baseQuery = fetchBaseQuery({
   baseUrl: API_URL,
   // credentials: 'include',
-  prepareHeaders: (headers) =>
-    headers.set('x-admin-password', X_ADMIN_PASSWORD),
 })
 
 const baseQueryWithReauth: BaseQueryFn<
@@ -64,64 +62,66 @@ const apiSlice = createApi({
   tagTypes: ['fetchProfileInfo'],
 
   endpoints: (builder) => ({
-    register: builder.mutation<ApiRegisterResponse, ApiRegisterRequest>({
-      query: ({ phone_number, password }) => ({
-        url: '/register',
-        method: 'POST',
-        body: {
-          phone_number,
-          password,
-          status: 'user',
-        },
-      }),
-      invalidatesTags: ['fetchProfileInfo'],
-    }),
+    // register: builder.mutation<ApiRegisterResponse, ApiRegisterRequest>({
+    //   query: ({ phone_number, password }) => ({
+    //     url: '/register',
+    //     method: 'POST',
+    //     body: {
+    //       phone_number,
+    //       password,
+    //       status: 'user',
+    //     },
+    //   }),
+    //   invalidatesTags: ['fetchProfileInfo'],
+    // }),
 
-    login: builder.mutation<ApiLoginResponse, ApiLoginRequest>({
-      query: ({ phone_number, password }) => ({
-        url: '/login',
-        method: 'POST',
-        body: {
-          phone_number,
-          password,
-        },
-      }),
-      invalidatesTags: ['fetchProfileInfo'],
-    }),
+    // login: builder.mutation<ApiLoginResponse, ApiLoginRequest>({
+    //   query: ({ phone_number, password }) => ({
+    //     url: '/login',
+    //     method: 'POST',
+    //     body: {
+    //       phone_number,
+    //       password,
+    //     },
+    //   }),
+    //   invalidatesTags: ['fetchProfileInfo'],
+    // }),
 
-    logout: builder.mutation<ApiLogoutResponse, void>({
-      query: () => ({
-        url: '/logout',
-        method: 'POST',
-      }),
-      invalidatesTags: ['fetchProfileInfo'],
-    }),
+    // logout: builder.mutation<ApiLogoutResponse, void>({
+    //   query: () => ({
+    //     url: '/logout',
+    //     method: 'POST',
+    //   }),
+    //   invalidatesTags: ['fetchProfileInfo'],
+    // }),
 
-    getProfileInfo: builder.query<ApiGetProfileInfoResponse, void>({
-      query: () => ({
-        url: '/get_profile_information',
-        method: 'GET',
-      }),
-      providesTags: ['fetchProfileInfo'],
-    }),
+    // getProfileInfo: builder.query<ApiGetProfileInfoResponse, void>({
+    //   query: () => ({
+    //     url: '/get_profile_information',
+    //     method: 'GET',
+    //   }),
+    //   providesTags: ['fetchProfileInfo'],
+    // }),
 
-    changeProfileInfo: builder.mutation<
-      ApiChangeProfileInfoResponse,
-      ApiChangeProfileInfoRequest
-    >({
-      query: (profileInfo) => ({
-        url: '/change_profile_information',
-        method: 'POST',
-        body: profileInfo,
-      }),
-      invalidatesTags: ['fetchProfileInfo'],
-    }),
+    // changeProfileInfo: builder.mutation<
+    //   ApiChangeProfileInfoResponse,
+    //   ApiChangeProfileInfoRequest
+    // >({
+    //   query: (profileInfo) => ({
+    //     url: '/change_profile_information',
+    //     method: 'POST',
+    //     body: profileInfo,
+    //   }),
+    //   invalidatesTags: ['fetchProfileInfo'],
+    // }),
 
     refreshSchedule: builder.mutation<IRefreshSchedule, string>({
       query: (password) => ({
         url: `/refresh`,
         method: 'POST',
-
+        headers: {
+          'x-admin-password': X_ADMIN_PASSWORD,
+        },
         body: { password },
       }),
     }),

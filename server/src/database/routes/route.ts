@@ -1,4 +1,5 @@
 import { Router, Request, Response, NextFunction } from 'express'
+import { X_ADMIN_PASSWORD } from '@/config'
 import { getCourses } from '@/database/controllers/courses.controller'
 import { getFaculties } from '@/database/controllers/faculties.controller'
 import {
@@ -12,8 +13,7 @@ import {
   deleteAllGroups,
 } from '@/database/controllers/group.controller'
 import { getGroupNames, getGroupNamesThatMatchWithReqParams } from '@/database/controllers/name.controller'
-import { X_ADMIN_PASSWORD } from '@/config'
-import { refreshSchedule } from '../controllers/refresh.controller'
+import { refreshSchedule } from '@/database/controllers/refresh.controller'
 
 const router = Router()
 
@@ -33,11 +33,12 @@ const facultyPath = `/faculty`
 const coursePath = `/course`
 const refreshPath = `/refresh`
 
-router.use(groupsPath, checkPassword)
-router.use(namesPath, checkPassword)
-router.use(facultyPath, checkPassword)
-router.use(coursePath, checkPassword)
-router.use(refreshPath, checkPassword)
+router.use((req, res, next) => {
+  if (req.method !== 'GET') {
+    return checkPassword(req, res, next)
+  }
+  next()
+})
 
 router.get(groupsPath, getAllGroups)
 router.get(`${groupsPath}/:id`, getGroupById)

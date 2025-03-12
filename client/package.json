@@ -4,14 +4,12 @@
   "description": "Client for university schedule",
   "type": "module",
   "scripts": {
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
     "lint": "npx eslint ./src",
     "format": "npx eslint ./src --fix",
     "dev": "vite",
     "dev:host": "vite --host",
     "build": "vite build",
-    "serve": "vite preview"
+    "preview": "vite preview"
   },
   "author": "Matvey Molchanov",
   "license": "ISC",

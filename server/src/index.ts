@@ -4,15 +4,19 @@ import bodyParser from 'body-parser'
 import cors from 'cors'
 import mongoose from 'mongoose'
 import { router } from './database/routes/route'
-import { PORT, MONGODB_URL } from '@/config'
+import { PORT, MONGODB_URL, PRODUCTION_DOMAIN } from '@/config'
 
 const app = express()
 const HOST_PORT = PORT || 3000
 const __client = path.join(path.resolve(), '../', 'client')
 const __clientBuild = path.join(__client, 'dist')
 
+const corsOptions = {
+  origin: PRODUCTION_DOMAIN,
+}
+
 app.use(express.static(__clientBuild))
-app.use(cors())
+app.use(cors(corsOptions))
 app.options('*', cors())
 app.use(bodyParser.json({ limit: '50mb' }))
 app.use(

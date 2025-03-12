@@ -77,7 +77,7 @@ export const Header = () => {
             <HeaderGithubLink />
             <HeaderTelegramLink />
             <HeaderFavoriteLink />
-            <HeaderLoginButton onClick={() => {}} />
+            {/* <HeaderLoginButton onClick={() => {}} /> */}
           </div>
         </div>
       </div>
