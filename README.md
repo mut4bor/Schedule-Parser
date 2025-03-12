@@ -1,11 +1,9 @@
-Вот обновленная версия с добавленной инструкцией для билда проекта:
-
-```md
 # University Schedule Project
 
 Проект для управления расписанием университета. Клиентская часть написана на **React** с использованием **Vite** и **TypeScript**, серверная часть — на **Node.js** с **Express** и **TypeScript**. Данные хранятся в базе данных **MongoDB**.
 
 ## Структура проекта
+
 ```
 
 root/
@@ -14,7 +12,7 @@ root/
 ├── README.md # Документация
 ├── .gitignore
 
-````
+```
 
 ---
 
@@ -27,7 +25,7 @@ root/
 ```bash
 git clone https://github.com/mut4bor/Schedule-Parser.git
 cd Schedule-Parser
-````
+```
 
 ### 2. Установка зависимостей
 
