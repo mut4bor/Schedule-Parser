@@ -17,7 +17,6 @@ const corsOptions = {
 
 app.use(express.static(__clientBuild))
 app.use(cors(corsOptions))
-app.options('*', cors())
 app.use(bodyParser.json({ limit: '50mb' }))
 app.use(
   bodyParser.urlencoded({
