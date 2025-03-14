@@ -48,13 +48,14 @@ npm install
 #### Пример `.env` для клиента:
 
 ```env
-VITE_API_URL="https://example.com"
+VITE_API_URL=https://example.com
 VITE_X_ADMIN_PASSWORD=**********
 ```
 
 #### Пример `.env` для сервера:
 
 ```env
+NODE_ENV=develop/production
 UNIVERSITY_URL=https://example.com
 FETCH_URL=https://example.com
 PRODUCTION_DOMAIN=https://example.com
