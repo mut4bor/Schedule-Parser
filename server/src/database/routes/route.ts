@@ -1,5 +1,5 @@
 import { Router, Request, Response, NextFunction } from 'express'
-import { X_ADMIN_PASSWORD } from '@/config'
+import { NODE_ENV, PRODUCTION_DOMAIN, X_ADMIN_PASSWORD } from '@/config'
 import { getCourses } from '@/database/controllers/courses.controller'
 import { getFaculties } from '@/database/controllers/faculties.controller'
 import {
@@ -34,6 +34,12 @@ const coursePath = `/course`
 const refreshPath = `/refresh`
 
 router.use((req, res, next) => {
+  const requestOrigin = req.get('origin')
+
+  if (NODE_ENV === 'production' && (!requestOrigin || requestOrigin !== PRODUCTION_DOMAIN)) {
+    return res.status(401).json({ message: 'Unauthorized: Incorrect domain' })
+  }
+
   if (req.method !== 'GET') {
     return checkPassword(req, res, next)
   }

@@ -4,7 +4,7 @@ import bodyParser from 'body-parser'
 import cors from 'cors'
 import mongoose from 'mongoose'
 import { router } from './database/routes/route'
-import { PORT, MONGODB_URL, PRODUCTION_DOMAIN } from '@/config'
+import { PORT, MONGODB_URL, PRODUCTION_DOMAIN, NODE_ENV } from '@/config'
 
 const app = express()
 const HOST_PORT = PORT || 3000
@@ -12,7 +12,7 @@ const __client = path.join(path.resolve(), '../', 'client')
 const __clientBuild = path.join(__client, 'dist')
 
 const corsOptions = {
-  origin: PRODUCTION_DOMAIN,
+  origin: NODE_ENV === 'production' ? PRODUCTION_DOMAIN : '*',
 }
 
 app.use(express.static(__clientBuild))
