@@ -34,11 +34,11 @@ const coursePath = `/course`
 const refreshPath = `/refresh`
 
 router.use((req, res, next) => {
-  const requestOrigin = req.get('origin')
+  // const requestOrigin = req.get('origin')
 
-  if (NODE_ENV === 'production' && (!requestOrigin || requestOrigin !== PRODUCTION_DOMAIN)) {
-    return res.status(401).json({ message: 'Unauthorized: Incorrect domain' })
-  }
+  // if (NODE_ENV === 'production' && (!requestOrigin || requestOrigin !== PRODUCTION_DOMAIN)) {
+  //   return res.status(401).json({ message: 'Unauthorized: Incorrect domain' })
+  // }
 
   if (req.method !== 'GET') {
     return checkPassword(req, res, next)
