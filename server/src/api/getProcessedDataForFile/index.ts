@@ -1,4 +1,4 @@
-import { getJsonFromXLSX } from '@/api/getJsonFromXLSX'
+import { getJsonFromXLSX } from '@/api/getJsonFromXLSX/index.js'
 import { getDayToPick } from '@/hooks/getDayToPick'
 import { IDate, IUnparsedJson } from '@/types'
 import { removePreviousScheduleEntries } from './removePreviousScheduleEntries'

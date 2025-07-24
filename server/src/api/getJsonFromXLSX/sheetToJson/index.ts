@@ -1,21 +1,21 @@
-import { utils, WorkSheet, CellAddress } from 'xlsx'
+import XLSX from 'xlsx'
 import { CellValue, ISheet } from '@/types'
 import { numberToTime } from '../numberToTime'
 import { removeExtraSpaces } from '../removeExtraSpaces'
 import { columnToLetter } from '../columnToLetter'
 
 // Функция для преобразования листа в JSON в нужном формате
-export const sheetToJson = (sheet: WorkSheet, skipRows: number): ISheet => {
+export const sheetToJson = (sheet: XLSX.WorkSheet, skipRows: number): ISheet => {
   const result: ISheet = {}
-  const range = utils.decode_range(sheet['!ref'] || '')
+  const range = XLSX.utils.decode_range(sheet['!ref'] || '')
 
   for (let R = range.s.r + skipRows; R <= range.e.r; ++R) {
     const rowKey = `${R + 1}`
     const row: { [key: string]: CellValue } = {}
 
     for (let C = range.s.c; C <= range.e.c; ++C) {
-      const cellAddress: CellAddress = { c: C, r: R }
-      const cellRef = utils.encode_cell(cellAddress)
+      const cellAddress: XLSX.CellAddress = { c: C, r: R }
+      const cellRef = XLSX.utils.encode_cell(cellAddress)
       const cell = sheet[cellRef]
 
       if (cell) {

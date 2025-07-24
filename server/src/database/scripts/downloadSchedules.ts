@@ -31,7 +31,7 @@ const downloadFile = async (fileUrl: string, fileName: string) => {
   const writer = fs.createWriteStream(fileName)
   fileResponse.data.pipe(writer)
 
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     writer.on('finish', resolve)
     writer.on('error', reject)
   })

@@ -3,8 +3,10 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import cors from 'cors'
 import mongoose from 'mongoose'
-import { router } from './database/routes/route'
+import { router } from '@/database/routes/route'
 import { PORT, MONGODB_URL, PRODUCTION_DOMAIN, NODE_ENV } from '@/config'
+import AdminJS from 'adminjs'
+import AdminJSExpress from '@adminjs/express'
 
 const app = express()
 const HOST_PORT = PORT || 3000
@@ -31,6 +33,11 @@ app.use('/api', router)
 app.get('/*', (req, res) => {
   res.sendFile(path.join(__clientBuild, 'index.html'))
 })
+
+const admin = new AdminJS({})
+
+const adminRouter = AdminJSExpress.buildRouter(admin)
+app.use(admin.options.rootPath, adminRouter)
 
 mongoose
   .connect(MONGODB_URL)
