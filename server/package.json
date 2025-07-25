@@ -23,8 +23,6 @@
     "date-fns": "^3.6.0",
     "dotenv": "^16.4.5",
     "express": "^4.21.2",
-    "express-formidable": "^1.2.0",
-    "express-session": "^1.18.2",
     "mongodb": "^6.6.2",
     "mongoose": "^8.4.0",
     "node-html-parser": "^6.1.13",
