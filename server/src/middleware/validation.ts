@@ -2,14 +2,31 @@
 import { Request, Response, NextFunction } from 'express'
 
 export const validateTeacher = (req: Request, res: Response, next: NextFunction) => {
-  const { full_name } = req.body
+  const { first_name, surname, patronymic } = req.body
 
-  if (!full_name || typeof full_name !== 'string' || full_name.trim().length === 0) {
-    return res.status(400).json({ error: 'Full name is required and must be a non-empty string' })
+  if (!first_name || typeof first_name !== 'string' || first_name.trim().length === 0) {
+    return res.status(400).json({ error: 'First name is required and must be a non-empty string' })
   }
 
-  if (full_name.length > 255) {
-    return res.status(400).json({ error: 'Full name must be less than 255 characters' })
+  if (first_name.length > 100) {
+    return res.status(400).json({ error: 'First name must be less than 100 characters' })
+  }
+
+  if (!surname || typeof surname !== 'string' || surname.trim().length === 0) {
+    return res.status(400).json({ error: 'Surname is required and must be a non-empty string' })
+  }
+
+  if (surname.length > 100) {
+    return res.status(400).json({ error: 'Surname must be less than 100 characters' })
+  }
+
+  if (patronymic !== undefined && patronymic !== null) {
+    if (typeof patronymic !== 'string') {
+      return res.status(400).json({ error: 'Patronymic must be a string' })
+    }
+    if (patronymic.length > 100) {
+      return res.status(400).json({ error: 'Patronymic must be less than 100 characters' })
+    }
   }
 
   next()

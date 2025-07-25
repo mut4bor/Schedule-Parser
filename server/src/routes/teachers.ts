@@ -2,6 +2,7 @@
 import { Router } from 'express'
 import { TeachersController } from '../controllers/teachersController.js'
 import { authenticateToken } from '../middleware/auth.js'
+import { validateTeacher } from '@/middleware/validation.js'
 
 const router = Router()
 
@@ -10,8 +11,8 @@ const router = Router()
 
 router.get('/', TeachersController.getAll)
 router.get('/:id', TeachersController.getById)
-router.post('/', TeachersController.create)
-router.put('/:id', TeachersController.update)
+router.post('/', validateTeacher, TeachersController.create)
+router.put('/:id', validateTeacher, TeachersController.update)
 router.delete('/:id', TeachersController.delete)
 
 export { router as teachersRoutes }
