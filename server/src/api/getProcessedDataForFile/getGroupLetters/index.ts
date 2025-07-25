@@ -1,5 +1,5 @@
-import { IGroupNames, IUnparsedJson } from '@/types'
-import { findObjectWithGroupKeyword } from '../findObjectWithGroupKeyword'
+import { IGroupNames, IUnparsedJson } from '@/types/index.js'
+import { findObjectWithGroupKeyword } from '../findObjectWithGroupKeyword/index.js'
 
 export const getGroupLetters = (unParsedJson: IUnparsedJson): IGroupNames => {
   const unParsedJsonValues = Object.values(unParsedJson).slice(-1)

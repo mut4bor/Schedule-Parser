@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
-import { downloadSchedules } from '@/database/scripts/downloadSchedules'
-import { updateGroups } from '@/database/scripts/updateGroups'
-import { REFRESH_PASSWORD } from '@/config'
+import { downloadSchedules } from '@/database/scripts/downloadSchedules.js'
+import { updateGroups } from '@/database/scripts/updateGroups.js'
+import { REFRESH_PASSWORD } from '@/config/index.js'
 
 const refreshSchedule = async (req: Request, res: Response) => {
   try {

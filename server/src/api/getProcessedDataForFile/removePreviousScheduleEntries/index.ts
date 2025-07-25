@@ -1,5 +1,5 @@
-import { getDaysInRange } from '@/hooks/getDaysInRange'
-import { IUnparsedJson } from '@/types'
+import { getDaysInRange } from '@/hooks/getDaysInRange.js'
+import { IUnparsedJson } from '@/types/index.js'
 
 export const removePreviousScheduleEntries = (schedule: IUnparsedJson, day: string): IUnparsedJson => {
   const scheduleKeys = Object.keys(schedule)

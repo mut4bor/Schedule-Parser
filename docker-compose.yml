@@ -1,0 +1,51 @@
+services:
+  postgres:
+    image: postgres:17.5
+    networks:
+      - lesgaft
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+  server:
+    image: 172.16.0.100:8011/lesgaft-server
+    networks:
+      - lesgaft
+    ports:
+      - '8062:3000'
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      UNIVERSITY_URL: ${UNIVERSITY_URL}
+      FETCH_URL: ${VITE_API_URL}
+      PRODUCTION_CLIENT_DOMAIN: ${PRODUCTION_CLIENT_DOMAIN}
+      PORT: ${PORT}
+      VITE_X_ADMIN_PASSWORD: ${VITE_X_ADMIN_PASSWORD}
+      REFRESH_PASSWORD: ${REFRESH_PASSWORD}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+    depends_on:
+      - postgres
+
+  client:
+    image: 172.16.0.100:8011/lesgaft-client
+    networks:
+      - lesgaft
+    ports:
+      - '8061:4173'
+    environment:
+      - VITE_API_URL
+      - VITE_X_ADMIN_PASSWORD
+    depends_on:
+      - server
+
+volumes:
+  postgres_data:
+networks:
+  lesgaft:

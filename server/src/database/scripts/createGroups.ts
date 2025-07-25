@@ -1,6 +1,6 @@
-import { getData } from '@/api/getData'
-import { FETCH_URL, X_ADMIN_PASSWORD } from '@/config'
-import { IGroup } from '@/types'
+import { getData } from '@/api/getData/index.js'
+import { FETCH_URL, X_ADMIN_PASSWORD } from '@/config/index.js'
+import { IGroup } from '@/types/index.js'
 import path from 'path'
 
 const postData = async (dataToFetch: IGroup) => {

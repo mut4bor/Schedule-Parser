@@ -1,7 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express'
-import { NODE_ENV, PRODUCTION_DOMAIN, X_ADMIN_PASSWORD } from '@/config'
-import { getCourses } from '@/database/controllers/courses.controller'
-import { getFaculties } from '@/database/controllers/faculties.controller'
+import { NODE_ENV, PRODUCTION_DOMAIN, X_ADMIN_PASSWORD } from '@/config/index.js'
+import { getCourses } from '@/database/controllers/courses.controller.js'
+import { getFaculties } from '@/database/controllers/faculties.controller.js'
 import {
   getAllGroups,
   getGroupById,
@@ -11,9 +11,9 @@ import {
   updateGroupById,
   deleteGroupById,
   deleteAllGroups,
-} from '@/database/controllers/group.controller'
-import { getGroupNames, getGroupNamesThatMatchWithReqParams } from '@/database/controllers/name.controller'
-import { refreshSchedule } from '@/database/controllers/refresh.controller'
+} from '@/database/controllers/group.controller.js'
+import { getGroupNames, getGroupNamesThatMatchWithReqParams } from '@/database/controllers/name.controller.js'
+import { refreshSchedule } from '@/database/controllers/refresh.controller.js'
 
 const router = Router()
 

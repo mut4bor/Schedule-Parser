@@ -1,5 +1,5 @@
-import { Group } from '@/database/models/group.model'
-import { getFilterParams } from '@/hooks/getFilterParams'
+import { Group } from '@/database/models/group.model.js'
+import { getFilterParams } from '@/hooks/getFilterParams.js'
 import { Request, Response } from 'express'
 
 const getAllGroups = async (req: Request, res: Response) => {

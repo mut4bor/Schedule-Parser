@@ -1,5 +1,5 @@
 import XLSX from 'xlsx'
-import { MergedCell } from '@/types'
+import { MergedCell } from '@/types/index.js'
 
 // Функция для заполнения объединенных ячеек
 export const fillMergedCells = (sheet: XLSX.WorkSheet): void => {

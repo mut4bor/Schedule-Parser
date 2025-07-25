@@ -7,17 +7,13 @@
       "@/*": ["src/*"]
     },
     "target": "esnext",
-    "module": "esnext", // Changed from "commonjs"
-    "moduleResolution": "node",
+    "module": "nodenext", // Changed from "commonjs"
+    "moduleResolution": "nodenext",
     "strict": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true, // Add this
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
-  },
-  "ts-node": {
-    "esm": true, // Add this for ES modules support
-    "require": ["tsconfig-paths/register"]
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]
