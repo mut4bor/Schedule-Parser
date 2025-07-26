@@ -1,7 +1,7 @@
 export type FacultyProps = {
-  data?: {
+  data: {
     educationType: string
     faculties: string[]
-  }
+  } | null
   columnsAmount?: number
 }

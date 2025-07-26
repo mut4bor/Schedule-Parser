@@ -18,17 +18,6 @@ const Pipe = () => {
 export const Faculty = ({ data, columnsAmount }: FacultyProps) => {
   const dispatch = useAppDispatch()
 
-  const { educationType, faculties } = data || {}
-
-  const handleLinkClick = (faculty: string) => {
-    if (educationType) {
-      dispatch(educationTypeChanged(educationType))
-    }
-
-    dispatch(facultyChanged(faculty))
-    dispatch(courseChanged(null))
-  }
-
   const skeletonLenght = columnsAmount
     ? columnsAmount > 0
       ? columnsAmount
@@ -41,14 +30,14 @@ export const Faculty = ({ data, columnsAmount }: FacultyProps) => {
         {!data ? (
           <Skeleton />
         ) : (
-          <h2 className={style.educationType}>{educationType}</h2>
+          <h2 className={style.educationType}>{data.educationType}</h2>
         )}
       </div>
 
       <div className={style.content}>
-        {!data || !educationType || !faculties
+        {!data
           ? Array.from({ length: skeletonLenght }).map((_, index, array) => (
-              <Fragment key={`skeleton-${index}`}>
+              <Fragment key={index}>
                 <div className={style.skeletonContainer}>
                   <ul className={style.skeletonList}>
                     {Array.from({ length: 3 }).map((_, index) => (
@@ -61,12 +50,16 @@ export const Faculty = ({ data, columnsAmount }: FacultyProps) => {
                 {index < array.length - 1 && <Pipe />}
               </Fragment>
             ))
-          : faculties.map((faculty, index, array) => (
-              <Fragment key={`faculty-link-${index}`}>
+          : data.faculties.map((faculty, index, array) => (
+              <Fragment key={index}>
                 <FacultyLink
                   faculty={faculty}
                   href={routes.COURSES_PATH}
-                  handleLinkClick={() => handleLinkClick(faculty)}
+                  handleLinkClick={() => {
+                    dispatch(educationTypeChanged(data.educationType))
+                    dispatch(facultyChanged(faculty))
+                    dispatch(courseChanged(null))
+                  }}
                 />
                 {index < array.length - 1 && <Pipe />}
               </Fragment>

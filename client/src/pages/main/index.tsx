@@ -14,11 +14,11 @@ export const MainPage = () => {
     <div className={style.container}>
       {!facultiesData
         ? Array.from({ length: 3 }).map((_, index) => (
-            <Faculty columnsAmount={4 - index} key={index} />
+            <Faculty data={null} columnsAmount={4 - index} key={index} />
           ))
         : Object.entries(facultiesData).map(
-            ([educationType, faculties], key) => (
-              <Faculty data={{ educationType, faculties }} key={key} />
+            ([educationType, faculties], index) => (
+              <Faculty data={{ educationType, faculties }} key={index} />
             ),
           )}
     </div>
