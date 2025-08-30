@@ -1,21 +1,17 @@
-import path from 'path'
 import express from 'express'
 import bodyParser from 'body-parser'
 import cors from 'cors'
 import mongoose from 'mongoose'
-import { router } from './database/routes/route'
-import { PORT, MONGODB_URL, PRODUCTION_DOMAIN, NODE_ENV } from '@/config'
+import { router } from '@/database/routes/route.js'
+import { PORT, MONGODB_URL, PRODUCTION_DOMAIN, NODE_ENV } from '@/config/index.js'
 
 const app = express()
 const HOST_PORT = PORT || 3000
-const __client = path.join(path.resolve(), '../', 'client')
-const __clientBuild = path.join(__client, 'dist')
 
 const corsOptions = {
   origin: NODE_ENV === 'production' ? PRODUCTION_DOMAIN : '*',
 }
 
-app.use(express.static(__clientBuild))
 app.use(cors(corsOptions))
 app.use(bodyParser.json({ limit: '50mb' }))
 app.use(
@@ -27,10 +23,6 @@ app.use(
 )
 
 app.use('/api', router)
-
-app.get('/*', (req, res) => {
-  res.sendFile(path.join(__clientBuild, 'index.html'))
-})
 
 mongoose
   .connect(MONGODB_URL)

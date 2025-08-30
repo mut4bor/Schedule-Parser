@@ -1,4 +1,4 @@
-import { IColumnLetter, IDay, IUnparsedJson } from '@/types'
+import { IColumnLetter, IDay, IUnparsedJson } from '@/types/index.js'
 
 export const extractGroupedData = (unParsedJson: IUnparsedJson, groupLetters: string[]) => {
   const groupedData: IDay = {}

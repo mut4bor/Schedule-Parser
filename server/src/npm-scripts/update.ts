@@ -1,5 +1,5 @@
-import { downloadSchedules } from '@/database/scripts/downloadSchedules'
-import { updateGroups } from '@/database/scripts/updateGroups'
+import { downloadSchedules } from '@/database/scripts/downloadSchedules.js'
+import { updateGroups } from '@/database/scripts/updateGroups.js'
 
 const createNPM = async () => {
   try {

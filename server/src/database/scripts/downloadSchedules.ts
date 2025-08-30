@@ -3,8 +3,8 @@ import { parse, HTMLElement } from 'node-html-parser'
 import path from 'path'
 import fs from 'fs'
 import crypto from 'crypto'
-import { UNIVERSITY_URL } from '@/config'
-import { IPathMap } from '@/types'
+import { UNIVERSITY_URL } from '@/config/index.js'
+import { IPathMap } from '@/types/index.js'
 
 const hashPath = (path: string) => {
   return crypto.createHash('md5').update(path).digest('hex')

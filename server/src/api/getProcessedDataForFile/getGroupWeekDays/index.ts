@@ -1,9 +1,9 @@
-import { getDaysInRange } from '@/hooks/getDaysInRange'
-import { extractGroupedData } from '../extractGroupedData'
-import { getDateKeys } from '../getDateKeys'
-import { getGroupLetters } from '../getGroupLetters'
-import { IDate, IUnparsedJson, IWeekRange } from '@/types'
-import { removeEmptyObjects } from '@/hooks/removeEmptyObjects'
+import { getDaysInRange } from '@/hooks/getDaysInRange.js'
+import { extractGroupedData } from '../extractGroupedData/index.js'
+import { getDateKeys } from '../getDateKeys/index.js'
+import { getGroupLetters } from '../getGroupLetters/index.js'
+import { IDate, IUnparsedJson, IWeekRange } from '@/types/index.js'
+import { removeEmptyObjects } from '@/hooks/removeEmptyObjects.js'
 
 export const getGroupWeekDays = (unParsedJson: IUnparsedJson, groupNumber: string): IDate => {
   const groupLetters = getGroupLetters(unParsedJson)[groupNumber]

@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
-import { getProcessedDataForFile } from '@/api/getProcessedDataForFile'
-import { IGroup, IPathMap } from '@/types'
+import { getProcessedDataForFile } from '@/api/getProcessedDataForFile/index.js'
+import { IGroup, IPathMap } from '@/types/index.js'
 
 export const getData = async (dirPath: string): Promise<IGroup[]> => {
   const mappingsFile = path.join(dirPath, 'pathMappings.json')

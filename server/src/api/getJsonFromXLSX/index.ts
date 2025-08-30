@@ -1,14 +1,14 @@
-import { readFile, WorkBook, WorkSheet } from 'xlsx'
-import { fillMergedCells } from './fillMergedCells'
-import { sheetToJson } from './sheetToJson'
-import { IUnparsedJson } from '@/types'
+import XLSX from 'xlsx'
+import { fillMergedCells } from './fillMergedCells/index.js'
+import { sheetToJson } from './sheetToJson/index.js'
+import { IUnparsedJson } from '@/types/index.js'
 
 // Эту хуйню писал ChatGPT, настоятельно советую даже не пробовать это понять. Она работает исключительно по воле Божьей
 
 export const getJsonFromXLSX = (filePath: string, skipRows: number = 0): IUnparsedJson => {
   try {
     // Чтение книги из указанного файла
-    const workbook: WorkBook = readFile(filePath)
+    const workbook: XLSX.WorkBook = XLSX.readFile(filePath)
 
     // Объект для хранения всех листов
     const result: IUnparsedJson = {}
@@ -16,7 +16,7 @@ export const getJsonFromXLSX = (filePath: string, skipRows: number = 0): IUnpars
     // Итерация по каждому листу в книге
     workbook.SheetNames.forEach((sheetName) => {
       // Доступ к листу по его имени
-      const worksheet: WorkSheet = workbook.Sheets[sheetName]
+      const worksheet: XLSX.WorkSheet = workbook.Sheets[sheetName]
 
       // Заполнение объединенных ячеек
       fillMergedCells(worksheet)

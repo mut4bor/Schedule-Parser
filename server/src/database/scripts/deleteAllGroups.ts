@@ -1,4 +1,4 @@
-import { FETCH_URL, X_ADMIN_PASSWORD } from '@/config'
+import { FETCH_URL, X_ADMIN_PASSWORD } from '@/config/index.js'
 
 export const deleteAllGroups = async () => {
   try {

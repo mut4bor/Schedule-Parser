@@ -1,8 +1,8 @@
 import { utils, WorkSheet, CellAddress } from 'xlsx'
-import { CellValue, ISheet } from '@/types'
-import { numberToTime } from '../numberToTime'
-import { removeExtraSpaces } from '../removeExtraSpaces'
-import { columnToLetter } from '../columnToLetter'
+import { CellValue, ISheet } from '@/types/index.js'
+import { numberToTime } from '../numberToTime/index.js'
+import { removeExtraSpaces } from '../removeExtraSpaces/index.js'
+import { columnToLetter } from '../columnToLetter/index.js'
 
 // Функция для преобразования листа в JSON в нужном формате
 export const sheetToJson = (sheet: WorkSheet, skipRows: number): ISheet => {

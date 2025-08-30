@@ -1,4 +1,4 @@
-import { IWeekRange } from '@/types'
+import { IWeekRange } from '@/types/index.js'
 import { addYears, eachDayOfInterval, format, parse } from 'date-fns'
 
 export const getDaysInRange = (range: string): IWeekRange | null => {

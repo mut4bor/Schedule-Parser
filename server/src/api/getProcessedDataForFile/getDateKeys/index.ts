@@ -1,4 +1,4 @@
-import { IDate, IUnparsedJson } from '@/types'
+import { IDate, IUnparsedJson } from '@/types/index.js'
 
 export const getDateKeys = (unParsedJson: IUnparsedJson): IDate => {
   return Object.keys(unParsedJson).reduce((acc, key) => {

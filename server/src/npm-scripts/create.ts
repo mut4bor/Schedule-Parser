@@ -1,6 +1,6 @@
-import { deleteAllGroups } from '@/database/scripts/deleteAllGroups'
-import { downloadSchedules } from '@/database/scripts/downloadSchedules'
-import { createGroups } from '@/database/scripts/createGroups'
+import { deleteAllGroups } from '@/database/scripts/deleteAllGroups.js'
+import { downloadSchedules } from '@/database/scripts/downloadSchedules.js'
+import { createGroups } from '@/database/scripts/createGroups.js'
 
 const createNPM = async () => {
   try {
