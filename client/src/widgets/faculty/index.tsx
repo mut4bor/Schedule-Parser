@@ -1,5 +1,4 @@
 import * as style from './style.module.scss'
-import { FacultyProps } from './types'
 import { Skeleton } from '@/shared/ui'
 import routes from '@/shared/routes'
 import {
@@ -15,7 +14,15 @@ const Pipe = () => {
   return <span className={style.pipe}></span>
 }
 
-export const Faculty = ({ data, columnsAmount }: FacultyProps) => {
+type Props = {
+  data?: {
+    educationType: string
+    faculties: string[]
+  }
+  columnsAmount?: number
+}
+
+export const Faculty = ({ data, columnsAmount }: Props) => {
   const dispatch = useAppDispatch()
 
   const { educationType, faculties } = data || {}

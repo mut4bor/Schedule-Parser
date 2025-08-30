@@ -1,13 +1,22 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-export type dayIndexType = -1 | 0 | 1 | 2 | 3 | 4 | 5 | 6
+export enum DayIndex {
+  None = -1,
+  Sunday = 0,
+  Monday = 1,
+  Tuesday = 2,
+  Wednesday = 3,
+  Thursday = 4,
+  Friday = 5,
+  Saturday = 6,
+}
 
 interface NavigationValue {
   educationType: string | null
   faculty: string | null
   course: string | null
   week: string | null
-  dayIndex: number
+  dayIndex: DayIndex
 }
 
 const initialState: NavigationValue = {
@@ -34,7 +43,7 @@ const navigationSlice = createSlice({
     weekChanged(state, action: PayloadAction<string | null>) {
       state.week = action.payload
     },
-    dayIndexChanged(state, action: PayloadAction<number>) {
+    dayIndexChanged(state, action: PayloadAction<DayIndex>) {
       state.dayIndex = action.payload
     },
   },

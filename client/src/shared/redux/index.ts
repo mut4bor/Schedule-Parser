@@ -1,12 +1,45 @@
 export {
+  // Refresh
   useRefreshScheduleMutation,
-  useGetFacultiesQuery,
-  useGetCoursesQuery,
-  useGetNamesQuery,
-  useGetGroupNamesThatMatchWithReqParamsQuery,
+
+  // Groups
+  useGetAllGroupsQuery,
   useGetGroupByIDQuery,
+  useCreateGroupMutation,
+  useUpdateGroupByIDMutation,
+  useDeleteGroupByIDMutation,
+  useDeleteAllGroupsMutation,
   useGetWeeksByIDQuery,
   useGetWeekScheduleByIDQuery,
+  useAddWeekToGroupMutation,
+  useUpdateWeekInGroupMutation,
+  useDeleteWeekFromGroupMutation,
+
+  // Names
+  useGetNamesQuery,
+  useGetGroupNamesThatMatchWithReqParamsQuery,
+
+  // Faculties
+  useGetFacultiesQuery,
+  useGetAllFacultiesQuery,
+  useCreateFacultyMutation,
+  useUpdateFacultyMutation,
+  useDeleteFacultyMutation,
+  useGetGroupsByFacultyQuery,
+
+  // Courses
+  useGetCoursesQuery,
+  useCreateCourseMutation,
+  useUpdateCourseMutation,
+  useDeleteCourseMutation,
+  useGetGroupsByCourseQuery,
+
+  // Education Types
+  useGetEducationTypesQuery,
+  useCreateEducationTypeMutation,
+  useUpdateEducationTypeMutation,
+  useDeleteEducationTypeMutation,
+  useGetGroupsByEducationTypeQuery,
 } from './slices/apiSlice'
 
 export {
@@ -17,7 +50,10 @@ export {
   dayIndexChanged,
 } from './slices/navigationSlice'
 
-export { inputIsFocusedChanged, searchValueChanged } from './slices/searchSlice'
+export {
+  isSearchInputFocusedChanged,
+  searchValueChanged,
+} from './slices/searchSlice'
 
 export type { IName } from './types'
 

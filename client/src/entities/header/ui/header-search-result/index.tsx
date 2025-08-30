@@ -4,7 +4,9 @@ import { Link } from 'react-router-dom'
 import { useAppSelector } from '@/shared/redux'
 
 export const HeaderSearchResult = ({ namesData }: HeaderSearchResultProps) => {
-  const inputIsFocused = useAppSelector((store) => store.search.inputIsFocused)
+  const isSearchInputFocused = useAppSelector(
+    (store) => store.search.isSearchInputFocused,
+  )
 
   const isNamesData = !!namesData && namesData.length !== 0
 
@@ -12,13 +14,13 @@ export const HeaderSearchResult = ({ namesData }: HeaderSearchResultProps) => {
     <div
       className={`
 			${style.searchResultWrapper} 
-			${isNamesData && inputIsFocused ? style.focused : null} 
+			${isNamesData && isSearchInputFocused ? style.focused : null} 
 			${!isNamesData ? style.empty : null}`}
     >
       <div
         className={`
 				${style.searchResult} 
-				${isNamesData && inputIsFocused ? style.focused : null} 
+				${isNamesData && isSearchInputFocused ? style.focused : null} 
 				${!isNamesData ? style.empty : null}`}
       >
         {isNamesData &&

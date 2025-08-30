@@ -3,7 +3,6 @@ import {
   HeaderGithubLink,
   HeaderHeading,
   HeaderInput,
-  HeaderLoginButton,
   HeaderSearchResult,
   HeaderTelegramLink,
 } from '@/entities/header'
@@ -12,8 +11,6 @@ import {
   useGetGroupNamesThatMatchWithReqParamsQuery,
   useAppSelector,
 } from '@/shared/redux'
-import { HeaderTextLink } from '@/entities/header/ui/header-text-link'
-import routes from '@/shared/routes'
 import { HeaderFavoriteLink } from '@/entities/header/ui/header-favorite-link'
 
 export const Header = () => {
@@ -69,15 +66,10 @@ export const Header = () => {
               <HeaderInput />
               <HeaderSearchResult namesData={namesData} />
             </div>
-            {/* <HeaderTextLink
-              text="Преподаватели"
-              href={routes.TEACHER_SEARCH_PATH}
-            />
-            <HeaderTextLink text="Избранное" href={routes.FAVORITE_PATH} /> */}
+
             <HeaderGithubLink />
             <HeaderTelegramLink />
             <HeaderFavoriteLink />
-            {/* <HeaderLoginButton onClick={() => {}} /> */}
           </div>
         </div>
       </div>

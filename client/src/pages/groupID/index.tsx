@@ -21,6 +21,7 @@ import { GroupHeading } from '@/entities/group'
 import { ErrorComponent } from '@/widgets/error'
 import { Options } from '@/widgets/options'
 import { createTapStopPropagationHandler, getDayToPick } from '@/shared/hooks'
+import { DayIndex } from '@/shared/redux/slices/navigationSlice'
 
 const { dayWeekIndex } = getDayToPick()
 
@@ -83,7 +84,7 @@ export const GroupIDPage = () => {
     dispatch(dayIndexChanged(dayWeekIndex))
 
     return () => {
-      dispatch(dayIndexChanged(-1))
+      dispatch(dayIndexChanged(DayIndex.None))
       dispatch(weekChanged(null))
     }
   }, [groupID])

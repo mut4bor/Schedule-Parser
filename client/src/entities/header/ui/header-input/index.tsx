@@ -2,7 +2,7 @@ import * as style from './style.module.scss'
 import { useDebounceCallback } from 'usehooks-ts'
 import {
   useAppDispatch,
-  inputIsFocusedChanged,
+  isSearchInputFocusedChanged,
   searchValueChanged,
 } from '@/shared/redux'
 import { SVG } from '@/shared/ui/SVG'
@@ -16,7 +16,7 @@ export const HeaderInput = () => {
 
   const handleOnBlur = () => {
     const timer = setTimeout(() => {
-      dispatch(inputIsFocusedChanged(false))
+      dispatch(isSearchInputFocusedChanged(false))
     }, 300)
 
     return () => clearTimeout(timer)
@@ -33,7 +33,7 @@ export const HeaderInput = () => {
         placeholder="Поиск группы"
         className={`${style.input}`}
         type="text"
-        onFocus={() => dispatch(inputIsFocusedChanged(true))}
+        onFocus={() => dispatch(isSearchInputFocusedChanged(true))}
         onBlur={handleOnBlur}
         onChange={handleChange}
       />

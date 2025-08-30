@@ -1,4 +1,5 @@
 mut4bor.yml
+docker-compose.yml
 
 client/node_modules
 client/dist

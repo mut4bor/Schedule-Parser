@@ -4,18 +4,19 @@ const searchSlice = createSlice({
   name: 'search',
 
   initialState: {
-    inputIsFocused: false,
+    isSearchInputFocused: false,
     searchValue: '',
   },
 
   reducers: {
-    inputIsFocusedChanged(state, action: PayloadAction<boolean>) {
-      state.inputIsFocused = action.payload
+    isSearchInputFocusedChanged(state, action: PayloadAction<boolean>) {
+      state.isSearchInputFocused = action.payload
     },
     searchValueChanged(state, action: PayloadAction<string>) {
       state.searchValue = action.payload
     },
   },
 })
-export const { inputIsFocusedChanged, searchValueChanged } = searchSlice.actions
+export const { isSearchInputFocusedChanged, searchValueChanged } =
+  searchSlice.actions
 export default searchSlice.reducer

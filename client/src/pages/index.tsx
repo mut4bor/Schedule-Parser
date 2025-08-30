@@ -5,7 +5,6 @@ import { MainPage } from './main'
 import { CoursesPage } from './courses'
 import { GroupIDPage } from './groupID'
 import { FavoritePage } from './favorite'
-import { TeacherSearchPage } from './teacher-search'
 import { RefreshPage } from './refresh'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Provider } from 'react-redux'
@@ -21,10 +20,6 @@ const routesArray = [
     Component: FavoritePage,
   },
   { path: `${routes.BASE_URL}${routes.GROUP_ID_PATH}`, Component: GroupIDPage },
-  // {
-  //   path: `${routes.TEACHER_SEARCH_PATH}`,
-  //   Component: TeacherSearchPage,
-  // },
   {
     path: `${routes.REFRESH_PATH}`,
     Component: RefreshPage,
