@@ -5,7 +5,6 @@ export interface IRefreshSchedule {
 export interface IName {
   group: string
   _id: string
-  index: number
 }
 
 export interface IGroup extends IName {
@@ -35,7 +34,6 @@ export interface CreateGroupDTO {
   faculty: string
   course: string
   group: string
-  index?: number
 }
 
 export interface UpdateGroupDTO {
@@ -43,13 +41,18 @@ export interface UpdateGroupDTO {
   faculty?: string
   course?: string
   group?: string
-  index?: number
 }
 
 // --- Faculties ---
 export interface UpdateFacultyDTO {
+  educationType: string
   oldFaculty: string
   newFaculty: string
+}
+
+export interface DeleteFacultyDTO {
+  educationType: string
+  faculty: string
 }
 
 // --- Courses ---

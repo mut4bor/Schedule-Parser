@@ -22,10 +22,6 @@ const groupSchema = new mongoose.Schema(
       type: Object,
       required: [true, 'Please enter dates'],
     },
-    index: {
-      type: Number,
-      required: [true, 'Please enter index'],
-    },
   },
   { timestamps: true },
 )

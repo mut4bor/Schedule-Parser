@@ -14,6 +14,7 @@ import {
   AddWeekDTO,
   UpdateWeekDTO,
   DeleteWeekDTO,
+  DeleteFacultyDTO,
 } from '../types'
 
 const groupsPath = `groups`
@@ -36,7 +37,7 @@ const apiSlice = createApi({
 
   baseQuery: baseQuery,
 
-  tagTypes: ['Groups', 'Faculties', 'Courses', 'EducationTypes', 'Names'],
+  tagTypes: ['EducationTypes', 'Faculties', 'Courses', 'Groups', 'Names'],
 
   endpoints: (builder) => ({
     // --- Refresh ---
@@ -167,7 +168,7 @@ const apiSlice = createApi({
         headers: { 'x-admin-password': X_ADMIN_PASSWORD },
         body,
       }),
-      invalidatesTags: ['Faculties'],
+      invalidatesTags: ['Faculties', 'Courses', 'Groups', 'Names'],
     }),
     updateFaculty: builder.mutation<
       { message: string; modifiedCount: number },
@@ -179,18 +180,18 @@ const apiSlice = createApi({
         headers: { 'x-admin-password': X_ADMIN_PASSWORD },
         body,
       }),
-      invalidatesTags: ['Faculties'],
+      invalidatesTags: ['Faculties', 'Courses', 'Groups', 'Names'],
     }),
     deleteFaculty: builder.mutation<
       { message: string; deletedCount: number },
-      string
+      DeleteFacultyDTO
     >({
-      query: (faculty) => ({
-        url: `/${facultyPath}/${faculty}`,
+      query: ({ educationType, faculty }) => ({
+        url: `/${facultyPath}/${educationType}/${faculty}`,
         method: 'DELETE',
         headers: { 'x-admin-password': X_ADMIN_PASSWORD },
       }),
-      invalidatesTags: ['Faculties'],
+      invalidatesTags: ['Faculties', 'Courses', 'Groups', 'Names'],
     }),
     getGroupsByFaculty: builder.query<IGroup[], string>({
       query: (faculty) => `/${facultyPath}/${faculty}/groups`,
@@ -209,7 +210,7 @@ const apiSlice = createApi({
         headers: { 'x-admin-password': X_ADMIN_PASSWORD },
         body,
       }),
-      invalidatesTags: ['Courses'],
+      invalidatesTags: ['Courses', 'Groups', 'Names'],
     }),
     updateCourse: builder.mutation<
       { message: string; modifiedCount: number },
@@ -221,7 +222,7 @@ const apiSlice = createApi({
         headers: { 'x-admin-password': X_ADMIN_PASSWORD },
         body,
       }),
-      invalidatesTags: ['Courses'],
+      invalidatesTags: ['Courses', 'Groups', 'Names'],
     }),
     deleteCourse: builder.mutation<
       { message: string; deletedCount: number },
@@ -232,7 +233,7 @@ const apiSlice = createApi({
         method: 'DELETE',
         headers: { 'x-admin-password': X_ADMIN_PASSWORD },
       }),
-      invalidatesTags: ['Courses'],
+      invalidatesTags: ['Courses', 'Groups', 'Names'],
     }),
     getGroupsByCourse: builder.query<IGroup[], string>({
       query: (course) => `/${coursePath}/${course}/groups`,
@@ -251,7 +252,13 @@ const apiSlice = createApi({
         headers: { 'x-admin-password': X_ADMIN_PASSWORD },
         body,
       }),
-      invalidatesTags: ['EducationTypes'],
+      invalidatesTags: [
+        'EducationTypes',
+        'Faculties',
+        'Courses',
+        'Groups',
+        'Names',
+      ],
     }),
     updateEducationType: builder.mutation<
       { message: string; modifiedCount: number },
@@ -263,7 +270,13 @@ const apiSlice = createApi({
         headers: { 'x-admin-password': X_ADMIN_PASSWORD },
         body,
       }),
-      invalidatesTags: ['EducationTypes'],
+      invalidatesTags: [
+        'EducationTypes',
+        'Faculties',
+        'Courses',
+        'Groups',
+        'Names',
+      ],
     }),
     deleteEducationType: builder.mutation<
       { message: string; deletedCount: number },
@@ -274,7 +287,13 @@ const apiSlice = createApi({
         method: 'DELETE',
         headers: { 'x-admin-password': X_ADMIN_PASSWORD },
       }),
-      invalidatesTags: ['EducationTypes'],
+      invalidatesTags: [
+        'EducationTypes',
+        'Faculties',
+        'Courses',
+        'Groups',
+        'Names',
+      ],
     }),
     getGroupsByEducationType: builder.query<IGroup[], string>({
       query: (educationType) => `/${educationTypePath}/${educationType}/groups`,

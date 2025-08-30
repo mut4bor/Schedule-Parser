@@ -59,7 +59,7 @@ const getAllFaculties = async (req: Request, res: Response) => {
 
 const createFaculty = async (req: Request, res: Response) => {
   try {
-    const { educationType, faculty, course, group, index } = req.body
+    const { educationType, faculty, course, group } = req.body
 
     if (!educationType || !faculty || !course || !group) {
       return res.status(400).json({
@@ -73,7 +73,6 @@ const createFaculty = async (req: Request, res: Response) => {
       course,
       group,
       dates: {},
-      index: index || 0,
     })
 
     await newGroup.save()
@@ -92,15 +91,15 @@ const createFaculty = async (req: Request, res: Response) => {
 
 const updateFaculty = async (req: Request, res: Response) => {
   try {
-    const { oldFaculty, newFaculty } = req.body
+    const { educationType, oldFaculty, newFaculty } = req.body
 
-    if (!oldFaculty || !newFaculty) {
+    if (!educationType || !oldFaculty || !newFaculty) {
       return res.status(400).json({
-        message: 'oldFaculty and newFaculty are required',
+        message: 'educationType, oldFaculty и newFaculty обязательны',
       })
     }
 
-    const result = await Group.updateMany({ faculty: oldFaculty }, { faculty: newFaculty })
+    const result = await Group.updateMany({ educationType, faculty: oldFaculty }, { faculty: newFaculty })
 
     res.status(200).json({
       message: 'Faculty updated successfully',
@@ -115,15 +114,17 @@ const updateFaculty = async (req: Request, res: Response) => {
   }
 }
 
+// Удаление факультета
+// DELETE /faculties/:educationType/:faculty
 const deleteFaculty = async (req: Request, res: Response) => {
   try {
-    const { faculty } = req.params
+    const { educationType, faculty } = req.params
 
-    if (!faculty) {
-      return res.status(400).json({ message: 'Faculty is required' })
+    if (!educationType || !faculty) {
+      return res.status(400).json({ message: 'educationType и faculty обязательны' })
     }
 
-    const result = await Group.deleteMany({ faculty })
+    const result = await Group.deleteMany({ educationType, faculty })
 
     if (result.deletedCount === 0) {
       return res.status(404).json({ message: 'Faculty not found' })

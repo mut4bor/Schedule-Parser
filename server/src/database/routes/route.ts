@@ -102,7 +102,7 @@ router.get(facultyPath, getFaculties) // Ваш существующий мет�
 router.get(`${facultyPath}/all`, getAllFaculties) // Новый метод, чтобы получить список всех уникальных факультетов
 router.post(facultyPath, createFaculty) // Создать новый факультет (по сути, новую группу с указанным факультетом)
 router.put(facultyPath, updateFaculty) // Обновить название факультета
-router.delete(`${facultyPath}/:faculty`, deleteFaculty) // Удалить факультет (все группы с этим факультетом)
+router.delete(`${facultyPath}/:educationType/:faculty`, deleteFaculty) // Удалить факультет (все группы с этим факультетом)
 router.get(`${facultyPath}/:faculty/groups`, getGroupsByFaculty) // Получить группы по факультету
 
 // --- Курсы ---

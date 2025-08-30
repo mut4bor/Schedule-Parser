@@ -17,7 +17,7 @@ const getCourses = async (req: Request, res: Response) => {
 
 const createCourse = async (req: Request, res: Response) => {
   try {
-    const { educationType, faculty, course, group, index } = req.body
+    const { educationType, faculty, course, group } = req.body
 
     if (!educationType || !faculty || !course || !group) {
       return res.status(400).json({
@@ -31,7 +31,6 @@ const createCourse = async (req: Request, res: Response) => {
       course,
       group,
       dates: {},
-      index: index || 0,
     })
 
     await newGroup.save()
