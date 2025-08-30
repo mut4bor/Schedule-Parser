@@ -2,10 +2,10 @@ import { Group } from '@/database/models/group.model.js'
 import { getFilterParams } from '@/hooks/getFilterParams.js'
 import { Request, Response } from 'express'
 
-const getCourses = async (req: Request, res: Response) => {
+const getEducationTypes = async (req: Request, res: Response) => {
   try {
-    const uniqueCourseNumbers = await Group.distinct('course', getFilterParams(req))
-    res.status(200).json(uniqueCourseNumbers)
+    const educationTypes = await Group.distinct('educationType', getFilterParams(req))
+    res.status(200).json(educationTypes)
   } catch (error) {
     if (error instanceof Error) {
       res.status(500).json({ message: error.message })
@@ -15,7 +15,7 @@ const getCourses = async (req: Request, res: Response) => {
   }
 }
 
-const createCourse = async (req: Request, res: Response) => {
+const createEducationType = async (req: Request, res: Response) => {
   try {
     const { educationType, faculty, course, group, index } = req.body
 
@@ -36,7 +36,7 @@ const createCourse = async (req: Request, res: Response) => {
 
     await newGroup.save()
     res.status(201).json({
-      message: 'Course created successfully',
+      message: 'Education type created successfully',
       group: newGroup,
     })
   } catch (error) {
@@ -48,20 +48,20 @@ const createCourse = async (req: Request, res: Response) => {
   }
 }
 
-const updateCourse = async (req: Request, res: Response) => {
+const updateEducationType = async (req: Request, res: Response) => {
   try {
-    const { oldCourse, newCourse } = req.body
+    const { oldEducationType, newEducationType } = req.body
 
-    if (!oldCourse || !newCourse) {
+    if (!oldEducationType || !newEducationType) {
       return res.status(400).json({
-        message: 'oldCourse and newCourse are required',
+        message: 'oldEducationType and newEducationType are required',
       })
     }
 
-    const result = await Group.updateMany({ course: oldCourse }, { course: newCourse })
+    const result = await Group.updateMany({ educationType: oldEducationType }, { educationType: newEducationType })
 
     res.status(200).json({
-      message: 'Course updated successfully',
+      message: 'Education type updated successfully',
       modifiedCount: result.modifiedCount,
     })
   } catch (error) {
@@ -73,22 +73,22 @@ const updateCourse = async (req: Request, res: Response) => {
   }
 }
 
-const deleteCourse = async (req: Request, res: Response) => {
+const deleteEducationType = async (req: Request, res: Response) => {
   try {
-    const { course } = req.params
+    const { educationType } = req.params
 
-    if (!course) {
-      return res.status(400).json({ message: 'Course is required' })
+    if (!educationType) {
+      return res.status(400).json({ message: 'Education type is required' })
     }
 
-    const result = await Group.deleteMany({ course })
+    const result = await Group.deleteMany({ educationType })
 
     if (result.deletedCount === 0) {
-      return res.status(404).json({ message: 'Course not found' })
+      return res.status(404).json({ message: 'Education type not found' })
     }
 
     res.status(200).json({
-      message: 'Course deleted successfully',
+      message: 'Education type deleted successfully',
       deletedCount: result.deletedCount,
     })
   } catch (error) {
@@ -100,15 +100,15 @@ const deleteCourse = async (req: Request, res: Response) => {
   }
 }
 
-const getGroupsByCourse = async (req: Request, res: Response) => {
+const getGroupsByEducationType = async (req: Request, res: Response) => {
   try {
-    const { course } = req.params
+    const { educationType } = req.params
 
-    if (!course) {
-      return res.status(400).json({ message: 'Course is required' })
+    if (!educationType) {
+      return res.status(400).json({ message: 'Education type is required' })
     }
 
-    const groups = await Group.find({ course }, { dates: 0 })
+    const groups = await Group.find({ educationType }, { dates: 0 })
     res.status(200).json(groups)
   } catch (error) {
     if (error instanceof Error) {
@@ -119,4 +119,4 @@ const getGroupsByCourse = async (req: Request, res: Response) => {
   }
 }
 
-export { getCourses, createCourse, updateCourse, deleteCourse, getGroupsByCourse }
+export { getEducationTypes, createEducationType, updateEducationType, deleteEducationType, getGroupsByEducationType }
