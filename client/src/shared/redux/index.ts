@@ -13,6 +13,8 @@ export {
   useAddWeekToGroupMutation,
   useUpdateWeekInGroupMutation,
   useDeleteWeekFromGroupMutation,
+  useUpdateLessonInDayMutation,
+  useDeleteLessonFromDayMutation,
 
   // Names
   useGetGroupNamesQuery,

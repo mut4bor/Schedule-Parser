@@ -4,7 +4,6 @@ import {
   IGroup,
   IName,
   IFaculties,
-  ISchedule,
   IRefreshSchedule,
   CreateGroupDTO,
   UpdateGroupDTO,
@@ -19,6 +18,9 @@ import {
   CreateFacultyDTO,
   CreateCourseDTO,
   DeleteCourseDTO,
+  DeleteLessonDTO,
+  UpdateLessonDTO,
+  IWeek,
 } from '../types'
 
 const groupsPath = `groups`
@@ -47,6 +49,7 @@ const apiSlice = createApi({
     'Courses',
     'Groups',
     'Names',
+    'Weeks',
     'Schedule',
   ],
 
@@ -253,13 +256,14 @@ const apiSlice = createApi({
     // --- Weeks inside Groups ---
     getWeeksByID: builder.query<string[], string>({
       query: (groupID) => `/${groupsPath}/${groupID}/weeks`,
-      providesTags: ['Schedule'],
+      providesTags: ['Weeks'],
     }),
     getWeekScheduleByID: builder.query<
-      ISchedule,
+      IWeek,
       { groupID: string; week: string }
     >({
       query: ({ groupID, week }) => `/${groupsPath}/${groupID}/weeks/${week}`,
+      providesTags: ['Schedule'],
     }),
     addWeekToGroup: builder.mutation<{ message: string }, AddWeekDTO>({
       query: ({ id, weekName }) => ({
@@ -268,19 +272,16 @@ const apiSlice = createApi({
         headers: { 'x-admin-password': X_ADMIN_PASSWORD },
         body: { weekName },
       }),
-      invalidatesTags: ['Schedule'],
+      invalidatesTags: ['Weeks'],
     }),
-    updateWeekInGroup: builder.mutation<
-      { message: string; week: ISchedule },
-      UpdateWeekDTO
-    >({
+    updateWeekInGroup: builder.mutation<{ message: string }, UpdateWeekDTO>({
       query: ({ id, oldWeekName, newWeekName }) => ({
         url: `/${groupsPath}/${id}/weeks`,
         method: 'PUT',
         headers: { 'x-admin-password': X_ADMIN_PASSWORD },
         body: { oldWeekName, newWeekName },
       }),
-      invalidatesTags: ['Schedule'],
+      invalidatesTags: ['Weeks'],
     }),
     deleteWeekFromGroup: builder.mutation<{ message: string }, DeleteWeekDTO>({
       query: ({ id, weekName }) => ({
@@ -288,8 +289,29 @@ const apiSlice = createApi({
         method: 'DELETE',
         headers: { 'x-admin-password': X_ADMIN_PASSWORD },
       }),
+      invalidatesTags: ['Weeks'],
+    }),
+
+    updateLessonInDay: builder.mutation<{ message: string }, UpdateLessonDTO>({
+      query: ({ id, weekName, day, time, ...body }) => ({
+        url: `/${groupsPath}/${id}/weeks/${weekName}/days/${day}/times/${time}`,
+        method: 'PUT',
+        headers: { 'x-admin-password': X_ADMIN_PASSWORD },
+        body,
+      }),
       invalidatesTags: ['Schedule'],
     }),
+
+    deleteLessonFromDay: builder.mutation<{ message: string }, DeleteLessonDTO>(
+      {
+        query: ({ id, weekName, day, time }) => ({
+          url: `/${groupsPath}/${id}/weeks/${weekName}/days/${day}/times/${time}`,
+          method: 'DELETE',
+          headers: { 'x-admin-password': X_ADMIN_PASSWORD },
+        }),
+        invalidatesTags: ['Schedule'],
+      },
+    ),
 
     // --- Names ---
     getGroupNames: builder.query<IName[], string | void>({
@@ -318,6 +340,8 @@ export const {
   useAddWeekToGroupMutation,
   useUpdateWeekInGroupMutation,
   useDeleteWeekFromGroupMutation,
+  useUpdateLessonInDayMutation,
+  useDeleteLessonFromDayMutation,
 
   // Names
   useGetGroupNamesQuery,

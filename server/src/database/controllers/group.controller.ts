@@ -1,4 +1,5 @@
 import { Group } from '@/database/models/group.model.js'
+import { getDatesOfISOWeek } from '@/hooks/getDatesOfISOWeek.js'
 import { getFilterParams } from '@/hooks/getFilterParams.js'
 import { Request, Response } from 'express'
 
@@ -81,7 +82,8 @@ const getWeekScheduleByID = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Group not found' })
     }
 
-    const weekData = group.dates?.get(week)
+    const weekData = group.dates.get(week)
+
     if (!weekData) {
       return res.status(404).json({ message: 'Week not found' })
     }
@@ -178,16 +180,62 @@ const addWeekNameToGroup = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Group not found' })
     }
 
-    group.dates.set(weekName, {
-      day: {
-        time: 'subject',
+    // Список времён
+    const times = ['09:45', '11:30', '13:30', '15:15', '17:00']
+
+    // Шаблон пустого урока
+    const emptyLesson = {
+      classroom: '',
+      teacher: {
+        firstName: '',
+        middleName: '',
+        lastName: '',
+        title: '',
       },
-    })
+      subject: '',
+      lessonType: '',
+    }
+
+    // Проверяем формат YYYY-Www
+    const weekMatch = /^(\d{4})-W(\d{2})$/.exec(weekName)
+
+    if (weekMatch) {
+      const year = parseInt(weekMatch[1], 10)
+      const week = parseInt(weekMatch[2], 10)
+
+      const days = getDatesOfISOWeek(year, week)
+
+      // Создаём объект для недели
+      const weekData: {
+        [day: string]: { [time: string]: typeof emptyLesson }
+      } = {}
+
+      days.forEach((date) => {
+        weekData[date] = {}
+        times.forEach((t) => {
+          // Клонируем объект, чтобы не было ссылок на один и тот же
+          weekData[date][t] = { ...emptyLesson, teacher: { ...emptyLesson.teacher } }
+        })
+      })
+
+      group.dates.set(weekName, weekData)
+    } else {
+      // Если это конкретный день (YYYY-MM-DD)
+      const dayData: { [time: string]: typeof emptyLesson } = {}
+      times.forEach((t) => {
+        dayData[t] = { ...emptyLesson, teacher: { ...emptyLesson.teacher } }
+      })
+
+      group.dates.set(weekName, {
+        [weekName]: dayData,
+      })
+    }
 
     await group.save()
 
     res.status(200).json({
-      message: 'Week name added successfully',
+      message: 'Week name (or day) added successfully',
+      dates: group.dates.get(weekName),
     })
   } catch (error) {
     res.status(500).json({
@@ -258,41 +306,101 @@ const deleteWeekNameFromGroup = async (req: Request, res: Response) => {
   }
 }
 
-const updateGroupField = async (req: Request, res: Response) => {
+const updateLessonInDay = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params
-    const { field, value } = req.body
+    const { id, weekName, day, time } = req.params
+    const { classroom, teacher, subject, lessonType, newTime } = req.body
 
-    if (!id || !field || value === undefined) {
+    if (!id || !weekName || !day || !time) {
       return res.status(400).json({
-        message: 'ID, field, and value are required',
+        message: 'ID, weekName, day, and time are required',
       })
     }
 
-    const allowedFields = ['educationType', 'faculty', 'course', 'group', 'index']
-    if (!allowedFields.includes(field)) {
-      return res.status(400).json({
-        message: 'Invalid field. Allowed fields: ' + allowedFields.join(', '),
-      })
-    }
-
-    const updateData = { [field]: value }
-    const group = await Group.findByIdAndUpdate(id, updateData, { new: true })
-
+    const group = await Group.findById(id)
     if (!group) {
       return res.status(404).json({ message: 'Group not found' })
     }
 
+    if (!group.dates.has(weekName)) {
+      return res.status(404).json({ message: 'Week not found' })
+    }
+
+    const weekData = group.dates.get(weekName) || {}
+
+    if (!weekData[day] || !weekData[day][time]) {
+      return res.status(404).json({ message: 'Lesson not found at this time' })
+    }
+
+    // Берём старый урок
+    const oldLesson = weekData[day][time]
+
+    // Если нужно поменять время
+    const targetTime = newTime || time
+
+    // Удаляем старый ключ, если время изменилось
+    if (newTime && newTime !== time) {
+      delete weekData[day][time]
+    }
+
+    // Обновляем данные урока
+    weekData[day][targetTime] = {
+      classroom: classroom ?? oldLesson.classroom,
+      teacher: teacher ?? oldLesson.teacher,
+      subject: subject ?? oldLesson.subject,
+      lessonType: lessonType ?? oldLesson.lessonType,
+    }
+
+    group.dates.set(weekName, weekData)
+    group.markModified('dates')
+    await group.save()
+
     res.status(200).json({
-      message: `${field} updated successfully`,
-      group,
+      message: 'Lesson updated successfully',
+      lesson: weekData[day][targetTime],
     })
   } catch (error) {
-    if (error instanceof Error) {
-      res.status(500).json({ message: error.message })
-    } else {
-      res.status(500).json({ message: 'An unknown error occurred' })
+    res.status(500).json({
+      message: error instanceof Error ? error.message : 'An unknown error occurred',
+    })
+  }
+}
+
+const deleteLessonFromDay = async (req: Request, res: Response) => {
+  try {
+    const { id, weekName, day, time } = req.params
+
+    if (!id || !weekName || !day || !time) {
+      return res.status(400).json({
+        message: 'ID, weekName, day, and time are required',
+      })
     }
+
+    const group = await Group.findById(id)
+    if (!group) {
+      return res.status(404).json({ message: 'Group not found' })
+    }
+
+    if (!group.dates.has(weekName)) {
+      return res.status(404).json({ message: 'Week not found' })
+    }
+
+    const weekData = group.dates.get(weekName) || {}
+
+    if (!weekData[day] || !weekData[day][time]) {
+      return res.status(404).json({ message: 'Lesson not found' })
+    }
+
+    delete weekData[day][time]
+
+    group.dates.set(weekName, weekData)
+    await group.save()
+
+    res.status(200).json({ message: 'Lesson deleted successfully' })
+  } catch (error) {
+    res.status(500).json({
+      message: error instanceof Error ? error.message : 'An unknown error occurred',
+    })
   }
 }
 
@@ -307,5 +415,6 @@ export {
   addWeekNameToGroup,
   updateWeekNameInGroup,
   deleteWeekNameFromGroup,
-  updateGroupField,
+  updateLessonInDay,
+  deleteLessonFromDay,
 }

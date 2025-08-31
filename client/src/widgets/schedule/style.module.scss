@@ -21,4 +21,17 @@
     color: $white;
     font-size: 2rem;
   }
+
+  .lessonBlock {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .editList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-left: 1rem;
+  }
 }

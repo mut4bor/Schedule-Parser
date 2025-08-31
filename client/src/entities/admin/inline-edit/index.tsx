@@ -10,6 +10,7 @@ type InlineEditProps = {
   saveButtonClassName?: string
   cancelButtonClassName?: string
   isLight?: boolean
+  type?: 'text' | 'date' | 'week'
 }
 
 export const InlineEdit = ({
@@ -21,6 +22,7 @@ export const InlineEdit = ({
   saveButtonClassName,
   cancelButtonClassName,
   isLight,
+  type = 'text',
 }: InlineEditProps) => {
   const [value, setValue] = useState(initialValue)
 
@@ -36,7 +38,7 @@ export const InlineEdit = ({
   return (
     <div className={`${style.editForm} ${className || ''}`}>
       <input
-        type="text"
+        type={type}
         value={value}
         onChange={(e) => setValue(e.target.value)}
         className={`${style.editInput} ${isLight ? style.isLight : ''} ${

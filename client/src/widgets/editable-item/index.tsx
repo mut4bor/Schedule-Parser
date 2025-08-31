@@ -12,6 +12,11 @@ interface Props {
   crudHandlers?: CrudHandlers
   children: React.ReactNode
   className?: string
+  type?: 'text' | 'date' | 'week'
+  inputClassName?: string
+  saveButtonClassName?: string
+  cancelButtonClassName?: string
+  isLight?: boolean
 }
 
 export const EditableItem = ({
@@ -19,6 +24,11 @@ export const EditableItem = ({
   crudHandlers,
   children,
   className,
+  type = 'text',
+  inputClassName,
+  saveButtonClassName,
+  cancelButtonClassName,
+  isLight,
 }: Props) => {
   const [isEditing, setIsEditing] = useState(false)
 
@@ -47,6 +57,11 @@ export const EditableItem = ({
         initialValue={value}
         onSave={handleSave}
         onCancel={() => setIsEditing(false)}
+        type={type}
+        inputClassName={inputClassName}
+        saveButtonClassName={saveButtonClassName}
+        cancelButtonClassName={cancelButtonClassName}
+        isLight={isLight}
       />
     )
   }
@@ -57,7 +72,7 @@ export const EditableItem = ({
       {crudHandlers && (
         <EditDeleteActions
           onEdit={() => setIsEditing(true)}
-          onDelete={handleDelete}
+          onDelete={!!crudHandlers?.onDelete ? handleDelete : null}
         />
       )}
     </div>

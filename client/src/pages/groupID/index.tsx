@@ -10,6 +10,7 @@ import {
   useGetWeekScheduleByIDQuery,
   dayIndexChanged,
   weekChanged,
+  useUpdateGroupByIDMutation,
 } from '@/shared/redux'
 import { useState, useEffect } from 'react'
 import { useSwipeable } from 'react-swipeable'
@@ -19,13 +20,13 @@ import { ErrorComponent } from '@/widgets/error'
 import { Options } from '@/widgets/options'
 import { createTapStopPropagationHandler, getDayToPick } from '@/shared/hooks'
 import { DayIndex } from '@/shared/redux/slices/navigationSlice'
+import { EditableItem } from '@/widgets/editable-item'
 
 const { dayWeekIndex } = getDayToPick()
 
 export const GroupIDPage = () => {
   const dispatch = useAppDispatch()
   const { groupID: paramsGroupID } = useParams()
-
   const groupID = paramsGroupID ?? ''
 
   const pickedWeek = useAppSelector((store) => store.navigation.week)
@@ -35,11 +36,10 @@ export const GroupIDPage = () => {
 
   const hideGroupDays = () => setIsGroupDaysVisible(false)
   const showGroupDays = () => setIsGroupDaysVisible(true)
-  const toggleGroupDays = () => setIsGroupDaysVisible((prevState) => !prevState)
+  const toggleGroupDays = () => setIsGroupDaysVisible((prev) => !prev)
 
   const hideOptionsList = () => setIsOptionsListVisible(false)
-  const toggleOptionsList = () =>
-    setIsOptionsListVisible((prevState) => !prevState)
+  const toggleOptionsList = () => setIsOptionsListVisible((prev) => !prev)
 
   const contentSwipeHandler = useSwipeable({
     onSwipedLeft: hideGroupDays,
@@ -69,9 +69,10 @@ export const GroupIDPage = () => {
       },
     )
 
+  const [updateGroup] = useUpdateGroupByIDMutation()
+
   useEffect(() => {
     dispatch(dayIndexChanged(dayWeekIndex))
-
     return () => {
       dispatch(dayIndexChanged(DayIndex.None))
       dispatch(weekChanged(null))
@@ -83,21 +84,14 @@ export const GroupIDPage = () => {
       <ErrorComponent
         error={{
           status: 500,
-          data: {
-            message: 'Invalid groupID',
-          },
+          data: { message: 'Invalid groupID' },
         }}
       />
     )
   }
 
-  if (groupError) {
-    return <ErrorComponent error={groupError} />
-  }
-
-  if (scheduleError) {
-    return <ErrorComponent error={scheduleError} />
-  }
+  if (groupError) return <ErrorComponent error={groupError} />
+  if (scheduleError) return <ErrorComponent error={scheduleError} />
 
   return (
     <div className={style.container}>
@@ -112,7 +106,22 @@ export const GroupIDPage = () => {
           />
           <div className={style.schedule}>
             <div className={style.headingContainer}>
-              <GroupHeading text={groupData?.group} />
+              <div>
+                <EditableItem
+                  value={groupData?.group ?? ''}
+                  crudHandlers={{
+                    onUpdate: async (_, newValue) => {
+                      if (!groupID) return
+                      await updateGroup({
+                        id: groupID,
+                        data: { group: newValue },
+                      }).unwrap()
+                    },
+                  }}
+                >
+                  <GroupHeading text={groupData?.group} />
+                </EditableItem>
+              </div>
 
               <Options
                 groupID={groupID}
@@ -121,7 +130,7 @@ export const GroupIDPage = () => {
                 {...optionsStopPropagationHandler}
               />
             </div>
-            <Schedule scheduleData={scheduleData} />
+            <Schedule scheduleData={scheduleData} groupID={groupID} />
             <RefreshDate date={groupData?.updatedAt} />
           </div>
         </div>

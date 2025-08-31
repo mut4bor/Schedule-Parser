@@ -4,10 +4,11 @@ import { InlineEdit, AdminAddButton } from '@/entities/admin'
 type AddItemProps = {
   label: string
   onAdd: (value: string) => Promise<void>
+  type?: 'text' | 'date' | 'week'
   className?: string
 }
 
-export const AddItem = ({ label, onAdd, className }: AddItemProps) => {
+export const AddItem = ({ label, onAdd, type, className }: AddItemProps) => {
   const [isAdding, setIsAdding] = useState(false)
 
   return (
@@ -20,6 +21,7 @@ export const AddItem = ({ label, onAdd, className }: AddItemProps) => {
             setIsAdding(false)
           }}
           onCancel={() => setIsAdding(false)}
+          type={type}
         />
       ) : (
         <AdminAddButton onClick={() => setIsAdding(true)}>

@@ -1,9 +1,9 @@
 import * as style from './style.module.scss'
 
 type EditDeleteActionsProps = {
-  onEdit?: () => void
-  onDuplicate?: () => void
-  onDelete?: () => void
+  onEdit?: (() => void) | null
+  onDuplicate?: (() => void) | null
+  onDelete?: (() => void) | null
   editLabel?: string
   duplicateLabel?: string
   deleteLabel?: string

@@ -20,9 +20,23 @@ export interface IFaculties {
   [educationType: string]: string[]
 }
 
+export interface ITeacher {
+  firstName: string
+  middleName: string
+  lastName: string
+  title?: string
+}
+
+export interface ILesson {
+  classroom: string
+  teacher: ITeacher
+  subject: string
+  lessonType: string
+}
+
 export interface IWeek {
   [day: string]: {
-    [time: string]: string
+    [time: string]: ILesson
   }
 }
 
@@ -105,4 +119,30 @@ export interface UpdateWeekDTO {
 export interface DeleteWeekDTO {
   id: string
   weekName: string
+}
+
+// DTO для обновления/добавления урока
+export interface UpdateLessonDTO {
+  id: string
+  weekName: string
+  day: string
+  time: string
+  newTime?: string
+  classroom: string
+  teacher: {
+    firstName: string
+    middleName?: string
+    lastName: string
+    title?: string
+  }
+  subject: string
+  lessonType: string
+}
+
+// DTO для удаления урока
+export interface DeleteLessonDTO {
+  id: string
+  weekName: string
+  day: string
+  time: string
 }

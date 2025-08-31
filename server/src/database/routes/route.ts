@@ -9,9 +9,10 @@ import {
   addWeekNameToGroup,
   updateWeekNameInGroup,
   deleteWeekNameFromGroup,
-  updateGroupField,
   getWeeksByID,
   getWeekScheduleByID,
+  deleteLessonFromDay,
+  updateLessonInDay,
 } from '@/database/controllers/group.controller.js'
 
 import {
@@ -105,13 +106,14 @@ router.get(`${groupsPath}/:id/weeks`, getWeeksByID)
 router.get(`${groupsPath}/:id/weeks/:week`, getWeekScheduleByID)
 router.post(groupsPath, createGroup)
 router.put(`${groupsPath}/:id`, updateGroupById)
-router.patch(`${groupsPath}/:id/field`, updateGroupField) // Обновление отдельного поля группы
-router.delete(`${groupsPath}/:id`, deleteGroupById) // Удалить конкретную группу (требует пароль)
+router.delete(`${groupsPath}/:id`, deleteGroupById)
 
 // --- Управление расписанием для групп (требует пароль) ---
 router.post(`${groupsPath}/:id/weeks`, addWeekNameToGroup)
 router.put(`${groupsPath}/:id/weeks`, updateWeekNameInGroup)
 router.delete(`${groupsPath}/:id/weeks/:weekName`, deleteWeekNameFromGroup)
+router.put(`${groupsPath}/:id/weeks/:weekName/days/:day/times/:time`, updateLessonInDay)
+router.delete(`${groupsPath}/:id/weeks/:weekName/days/:day/times/:time`, deleteLessonFromDay)
 
 // --- Названия групп ---
 router.get(namesPath, getGroupNames)

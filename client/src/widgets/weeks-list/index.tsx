@@ -20,6 +20,36 @@ import { AddItem } from '../add-item'
 
 const { day } = getDayToPick()
 
+function formatWeekRange(weekValue: string): string {
+  // Ожидаем формат "YYYY-Www"
+  const match = /^(\d{4})-W(\d{2})$/.exec(weekValue)
+  if (!match) return weekValue
+
+  const year = parseInt(match[1], 10)
+  const week = parseInt(match[2], 10)
+
+  // Находим первый день недели (понедельник)
+  const simple = new Date(year, 0, 1 + (week - 1) * 7)
+  const dayOfWeek = simple.getDay()
+  const ISOweekStart = new Date(simple)
+  if (dayOfWeek <= 4) {
+    ISOweekStart.setDate(simple.getDate() - simple.getDay() + 1)
+  } else {
+    ISOweekStart.setDate(simple.getDate() + 8 - simple.getDay())
+  }
+
+  // Конец недели (суббота)
+  const ISOweekEnd = new Date(ISOweekStart)
+  ISOweekEnd.setDate(ISOweekStart.getDate() + 5)
+
+  const formatDate = (d: Date) =>
+    `${String(d.getDate()).padStart(2, '0')}.${String(
+      d.getMonth() + 1,
+    ).padStart(2, '0')}`
+
+  return `${formatDate(ISOweekStart)} - ${formatDate(ISOweekEnd)}`
+}
+
 export const WeeksList = () => {
   const { educationType, faculty, course, groupID } = useParams()
 
@@ -121,9 +151,10 @@ export const WeeksList = () => {
                     onUpdate: handleUpdateWeek,
                     onDelete: handleDeleteWeek,
                   }}
+                  type="week"
                 >
                   <WeeksButton
-                    text={week}
+                    text={formatWeekRange(week)}
                     onClick={() => {
                       dispatch(weekChanged(week))
                     }}
@@ -133,7 +164,11 @@ export const WeeksList = () => {
               </li>
             ))}
         <li>
-          <AddItem label="Добавить неделю" onAdd={handleCreateWeek} />
+          <AddItem
+            label="Добавить неделю"
+            onAdd={handleCreateWeek}
+            type="week"
+          />
         </li>
       </ul>
     </div>
