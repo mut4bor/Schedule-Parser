@@ -44,6 +44,11 @@ export interface UpdateGroupDTO {
 }
 
 // --- Faculties ---
+export interface CreateFacultyDTO {
+  educationType: string
+  faculty: string
+}
+
 export interface UpdateFacultyDTO {
   educationType: string
   oldFaculty: string
@@ -56,12 +61,28 @@ export interface DeleteFacultyDTO {
 }
 
 // --- Courses ---
+export interface CreateCourseDTO {
+  educationType: string
+  faculty: string
+  course: string
+}
+
 export interface UpdateCourseDTO {
   oldCourse: string
   newCourse: string
 }
 
+export interface DeleteCourseDTO {
+  educationType: string
+  faculty: string
+  course: string
+}
+
 // --- Education Types ---
+export interface CreateEducationTypeDTO {
+  educationType: string
+}
+
 export interface UpdateEducationTypeDTO {
   oldEducationType: string
   newEducationType: string

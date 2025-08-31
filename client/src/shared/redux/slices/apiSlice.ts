@@ -15,6 +15,10 @@ import {
   UpdateWeekDTO,
   DeleteWeekDTO,
   DeleteFacultyDTO,
+  CreateEducationTypeDTO,
+  CreateFacultyDTO,
+  CreateCourseDTO,
+  DeleteCourseDTO,
 } from '../types'
 
 const groupsPath = `groups`
@@ -50,6 +54,154 @@ const apiSlice = createApi({
         },
         body: { password },
       }),
+    }),
+
+    // --- Education Types ---
+    getEducationTypes: builder.query<string[], void>({
+      query: () => `/${educationTypePath}`,
+      providesTags: ['EducationTypes'],
+    }),
+    createEducationType: builder.mutation<IGroup, CreateEducationTypeDTO>({
+      query: (body) => ({
+        url: `/${educationTypePath}`,
+        method: 'POST',
+        headers: { 'x-admin-password': X_ADMIN_PASSWORD },
+        body,
+      }),
+      invalidatesTags: [
+        'EducationTypes',
+        'Faculties',
+        'Courses',
+        'Groups',
+        'Names',
+      ],
+    }),
+    updateEducationType: builder.mutation<
+      { message: string; modifiedCount: number },
+      UpdateEducationTypeDTO
+    >({
+      query: (body) => ({
+        url: `/${educationTypePath}`,
+        method: 'PUT',
+        headers: { 'x-admin-password': X_ADMIN_PASSWORD },
+        body,
+      }),
+      invalidatesTags: [
+        'EducationTypes',
+        'Faculties',
+        'Courses',
+        'Groups',
+        'Names',
+      ],
+    }),
+    deleteEducationType: builder.mutation<
+      { message: string; deletedCount: number },
+      string
+    >({
+      query: (educationType) => ({
+        url: `/${educationTypePath}/${educationType}`,
+        method: 'DELETE',
+        headers: { 'x-admin-password': X_ADMIN_PASSWORD },
+      }),
+      invalidatesTags: [
+        'EducationTypes',
+        'Faculties',
+        'Courses',
+        'Groups',
+        'Names',
+      ],
+    }),
+    getGroupsByEducationType: builder.query<IGroup[], string>({
+      query: (educationType) => `/${educationTypePath}/${educationType}/groups`,
+      providesTags: ['Groups'],
+    }),
+
+    // --- Faculties ---
+    getFaculties: builder.query<IFaculties, void>({
+      query: () => `/${facultyPath}`,
+      providesTags: ['Faculties'],
+    }),
+    getAllFaculties: builder.query<string[], void>({
+      query: () => `/${facultyPath}/all`,
+      providesTags: ['Faculties'],
+    }),
+    createFaculty: builder.mutation<IGroup, CreateFacultyDTO>({
+      query: (body) => ({
+        url: `/${facultyPath}`,
+        method: 'POST',
+        headers: { 'x-admin-password': X_ADMIN_PASSWORD },
+        body,
+      }),
+      invalidatesTags: ['Faculties', 'Courses', 'Groups', 'Names'],
+    }),
+    updateFaculty: builder.mutation<
+      { message: string; modifiedCount: number },
+      UpdateFacultyDTO
+    >({
+      query: (body) => ({
+        url: `/${facultyPath}`,
+        method: 'PUT',
+        headers: { 'x-admin-password': X_ADMIN_PASSWORD },
+        body,
+      }),
+      invalidatesTags: ['Faculties', 'Courses', 'Groups', 'Names'],
+    }),
+    deleteFaculty: builder.mutation<
+      { message: string; deletedCount: number },
+      DeleteFacultyDTO
+    >({
+      query: ({ educationType, faculty }) => ({
+        url: `/${facultyPath}/${educationType}/${faculty}`,
+        method: 'DELETE',
+        headers: { 'x-admin-password': X_ADMIN_PASSWORD },
+      }),
+      invalidatesTags: ['Faculties', 'Courses', 'Groups', 'Names'],
+    }),
+    getGroupsByFaculty: builder.query<IGroup[], string>({
+      query: (faculty) => `/${facultyPath}/${faculty}/groups`,
+      providesTags: ['Groups'],
+    }),
+
+    // --- Courses ---
+    getCourses: builder.query<string[], string | void>({
+      query: (searchParams) => `/${coursePath}${getParams(searchParams)}`,
+      providesTags: ['Courses'],
+    }),
+    createCourse: builder.mutation<IGroup, CreateCourseDTO>({
+      query: (body) => ({
+        url: `/${coursePath}`,
+        method: 'POST',
+        headers: { 'x-admin-password': X_ADMIN_PASSWORD },
+        body,
+      }),
+      invalidatesTags: ['Courses', 'Groups', 'Names'],
+    }),
+    updateCourse: builder.mutation<
+      { message: string; modifiedCount: number },
+      UpdateCourseDTO
+    >({
+      query: (body) => ({
+        url: `/${coursePath}`,
+        method: 'PUT',
+        headers: { 'x-admin-password': X_ADMIN_PASSWORD },
+        body,
+      }),
+      invalidatesTags: ['Courses', 'Groups', 'Names'],
+    }),
+    deleteCourse: builder.mutation<
+      { message: string; deletedCount: number },
+      DeleteCourseDTO
+    >({
+      query: ({ educationType, faculty, course }) => ({
+        url: `/${coursePath}/${educationType}/${faculty}/${course}`,
+        method: 'DELETE',
+        headers: { 'x-admin-password': X_ADMIN_PASSWORD },
+      }),
+      invalidatesTags: ['Courses', 'Groups', 'Names'],
+    }),
+    getGroupsByCourse: builder.query<IGroup[], string>({
+      query: (course) => `/${coursePath}/${course}/groups`,
+      providesTags: ['Groups'],
     }),
 
     // --- Groups ---
@@ -150,154 +302,6 @@ const apiSlice = createApi({
     getGroupNamesThatMatchWithReqParams: builder.query<IName[], string>({
       query: (searchParams) => `/${namesPath}/search${getParams(searchParams)}`,
       providesTags: ['Names'],
-    }),
-
-    // --- Faculties ---
-    getFaculties: builder.query<IFaculties, void>({
-      query: () => `/${facultyPath}`,
-      providesTags: ['Faculties'],
-    }),
-    getAllFaculties: builder.query<string[], void>({
-      query: () => `/${facultyPath}/all`,
-      providesTags: ['Faculties'],
-    }),
-    createFaculty: builder.mutation<IGroup, CreateGroupDTO>({
-      query: (body) => ({
-        url: `/${facultyPath}`,
-        method: 'POST',
-        headers: { 'x-admin-password': X_ADMIN_PASSWORD },
-        body,
-      }),
-      invalidatesTags: ['Faculties', 'Courses', 'Groups', 'Names'],
-    }),
-    updateFaculty: builder.mutation<
-      { message: string; modifiedCount: number },
-      UpdateFacultyDTO
-    >({
-      query: (body) => ({
-        url: `/${facultyPath}`,
-        method: 'PUT',
-        headers: { 'x-admin-password': X_ADMIN_PASSWORD },
-        body,
-      }),
-      invalidatesTags: ['Faculties', 'Courses', 'Groups', 'Names'],
-    }),
-    deleteFaculty: builder.mutation<
-      { message: string; deletedCount: number },
-      DeleteFacultyDTO
-    >({
-      query: ({ educationType, faculty }) => ({
-        url: `/${facultyPath}/${educationType}/${faculty}`,
-        method: 'DELETE',
-        headers: { 'x-admin-password': X_ADMIN_PASSWORD },
-      }),
-      invalidatesTags: ['Faculties', 'Courses', 'Groups', 'Names'],
-    }),
-    getGroupsByFaculty: builder.query<IGroup[], string>({
-      query: (faculty) => `/${facultyPath}/${faculty}/groups`,
-      providesTags: ['Groups'],
-    }),
-
-    // --- Courses ---
-    getCourses: builder.query<string[], string | void>({
-      query: (searchParams) => `/${coursePath}${getParams(searchParams)}`,
-      providesTags: ['Courses'],
-    }),
-    createCourse: builder.mutation<IGroup, CreateGroupDTO>({
-      query: (body) => ({
-        url: `/${coursePath}`,
-        method: 'POST',
-        headers: { 'x-admin-password': X_ADMIN_PASSWORD },
-        body,
-      }),
-      invalidatesTags: ['Courses', 'Groups', 'Names'],
-    }),
-    updateCourse: builder.mutation<
-      { message: string; modifiedCount: number },
-      UpdateCourseDTO
-    >({
-      query: (body) => ({
-        url: `/${coursePath}`,
-        method: 'PUT',
-        headers: { 'x-admin-password': X_ADMIN_PASSWORD },
-        body,
-      }),
-      invalidatesTags: ['Courses', 'Groups', 'Names'],
-    }),
-    deleteCourse: builder.mutation<
-      { message: string; deletedCount: number },
-      string
-    >({
-      query: (course) => ({
-        url: `/${coursePath}/${course}`,
-        method: 'DELETE',
-        headers: { 'x-admin-password': X_ADMIN_PASSWORD },
-      }),
-      invalidatesTags: ['Courses', 'Groups', 'Names'],
-    }),
-    getGroupsByCourse: builder.query<IGroup[], string>({
-      query: (course) => `/${coursePath}/${course}/groups`,
-      providesTags: ['Groups'],
-    }),
-
-    // --- Education Types ---
-    getEducationTypes: builder.query<string[], void>({
-      query: () => `/${educationTypePath}`,
-      providesTags: ['EducationTypes'],
-    }),
-    createEducationType: builder.mutation<IGroup, CreateGroupDTO>({
-      query: (body) => ({
-        url: `/${educationTypePath}`,
-        method: 'POST',
-        headers: { 'x-admin-password': X_ADMIN_PASSWORD },
-        body,
-      }),
-      invalidatesTags: [
-        'EducationTypes',
-        'Faculties',
-        'Courses',
-        'Groups',
-        'Names',
-      ],
-    }),
-    updateEducationType: builder.mutation<
-      { message: string; modifiedCount: number },
-      UpdateEducationTypeDTO
-    >({
-      query: (body) => ({
-        url: `/${educationTypePath}`,
-        method: 'PUT',
-        headers: { 'x-admin-password': X_ADMIN_PASSWORD },
-        body,
-      }),
-      invalidatesTags: [
-        'EducationTypes',
-        'Faculties',
-        'Courses',
-        'Groups',
-        'Names',
-      ],
-    }),
-    deleteEducationType: builder.mutation<
-      { message: string; deletedCount: number },
-      string
-    >({
-      query: (educationType) => ({
-        url: `/${educationTypePath}/${educationType}`,
-        method: 'DELETE',
-        headers: { 'x-admin-password': X_ADMIN_PASSWORD },
-      }),
-      invalidatesTags: [
-        'EducationTypes',
-        'Faculties',
-        'Courses',
-        'Groups',
-        'Names',
-      ],
-    }),
-    getGroupsByEducationType: builder.query<IGroup[], string>({
-      query: (educationType) => `/${educationTypePath}/${educationType}/groups`,
-      providesTags: ['Groups'],
     }),
   }),
 })

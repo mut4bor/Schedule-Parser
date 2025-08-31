@@ -2,22 +2,20 @@ import * as style from './style.module.scss'
 import { Skeleton } from '@/shared/ui'
 import { CourseButton } from '@/entities/courses'
 import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import {
-  useAppDispatch,
-  useAppSelector,
   useGetCoursesQuery,
-  courseChanged,
+  useCreateCourseMutation,
+  useUpdateCourseMutation,
+  useDeleteCourseMutation,
 } from '@/shared/redux'
 import routes from '@/shared/routes'
 import { ErrorComponent } from '@/widgets/error'
+import { AdminAddButton } from '@/entities/admin/addButton'
 
 export const Courses = () => {
   const navigate = useNavigate()
-  const dispatch = useAppDispatch()
-  const { educationType, faculty, course } = useAppSelector(
-    (store) => store.navigation,
-  )
+  const { educationType, faculty, course } = useParams()
 
   useEffect(() => {
     if (!educationType || !faculty) {
@@ -37,9 +35,60 @@ export const Courses = () => {
     },
   )
 
+  const [createCourse] = useCreateCourseMutation()
+  const [updateCourse] = useUpdateCourseMutation()
+  const [deleteCourse] = useDeleteCourseMutation()
+
+  const handleCreateCourse = async () => {
+    const newCourse = prompt('Введите название нового курса:')
+    if (!newCourse || !educationType || !faculty) return
+    try {
+      await createCourse({
+        educationType,
+        faculty,
+        course: newCourse,
+      }).unwrap()
+    } catch (err) {
+      console.error('Ошибка при создании курса:', err)
+    }
+  }
+
+  const handleUpdateCourse = async (oldCourse: string, newCourse: string) => {
+    try {
+      await updateCourse({ oldCourse, newCourse }).unwrap()
+    } catch (err) {
+      console.error('Ошибка при обновлении курса:', err)
+    }
+  }
+
+  const handleDeleteCourse = async (course: string) => {
+    if (!educationType || !faculty) return
+
+    if (window.confirm(`Удалить курс "${course}"?`)) {
+      try {
+        await deleteCourse({
+          educationType,
+          faculty,
+          course,
+        }).unwrap()
+      } catch (err) {
+        console.error('Ошибка при удалении курса:', err)
+      }
+    }
+  }
+
+  const crudHandlers = {
+    onUpdateCourse: handleUpdateCourse,
+    onDeleteCourse: handleDeleteCourse,
+  }
+
   useEffect(() => {
-    if (!!coursesData) {
-      dispatch(courseChanged(!!course ? course : coursesData[0]))
+    if (!!coursesData && coursesData.length > 0) {
+      navigate(
+        `/educationTypes/${educationType}/faculties/${faculty}/courses/${
+          !!course ? course : coursesData[0]
+        }`,
+      )
     }
   }, [coursesData])
 
@@ -57,9 +106,13 @@ export const Courses = () => {
           ))
         : coursesData.map((course, index) => (
             <li className={style.listElement} key={index}>
-              <CourseButton course={course} />
+              <CourseButton course={course} crudHandlers={crudHandlers} />
             </li>
           ))}
+
+      <AdminAddButton onClick={handleCreateCourse}>
+        Добавить курс
+      </AdminAddButton>
     </ul>
   )
 }

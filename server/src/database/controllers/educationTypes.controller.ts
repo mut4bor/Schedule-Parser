@@ -17,20 +17,22 @@ const getEducationTypes = async (req: Request, res: Response) => {
 
 const createEducationType = async (req: Request, res: Response) => {
   try {
-    const { educationType, faculty, course, group } = req.body
+    const { educationType } = req.body
 
-    if (!educationType || !faculty || !course || !group) {
+    if (!educationType) {
       return res.status(400).json({
-        message: 'educationType, faculty, course, and group are required',
+        message: 'educationType и faculty обязательны',
       })
     }
 
     const newGroup = new Group({
       educationType,
-      faculty,
-      course,
-      group,
-      dates: {},
+      faculty: 'Placeholder',
+      course: 'Placeholder',
+      group: 'Placeholder',
+      dates: {
+        Placeholder: 'Placeholder',
+      },
     })
 
     await newGroup.save()

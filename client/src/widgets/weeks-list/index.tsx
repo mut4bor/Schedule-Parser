@@ -6,18 +6,21 @@ import {
   useAppDispatch,
   useAppSelector,
   useGetWeeksByIDQuery,
+  useAddWeekToGroupMutation,
+  useUpdateWeekInGroupMutation,
+  useDeleteWeekFromGroupMutation,
   weekChanged,
 } from '@/shared/redux'
 import { getDaysInRange, getDayToPick } from '@/shared/hooks'
 import { Skeleton } from '@/shared/ui'
-import routes from '@/shared/routes'
 import { ErrorComponent } from '@/widgets/error'
 import { useParams } from 'react-router-dom'
+import { AdminAddButton } from '@/entities/admin/addButton'
 
 const { day } = getDayToPick()
 
 export const WeeksList = () => {
-  const { groupID } = useParams()
+  const { educationType, faculty, course, groupID } = useParams()
 
   const { data: weeksData, error: weeksError } = useGetWeeksByIDQuery(
     groupID ?? '',
@@ -27,13 +30,61 @@ export const WeeksList = () => {
   )
 
   const dispatch = useAppDispatch()
-
   const pickedWeek = useAppSelector((store) => store.navigation.week)
 
+  const [addWeek] = useAddWeekToGroupMutation()
+  const [updateWeek] = useUpdateWeekInGroupMutation()
+  const [deleteWeek] = useDeleteWeekFromGroupMutation()
+
+  // --- CRUD handlers ---
+  const handleCreateWeek = async () => {
+    if (!groupID) return
+    const newWeek = prompt('Введите название новой недели:')
+    if (!newWeek) return
+    try {
+      await addWeek({
+        id: groupID,
+        week: newWeek,
+        weekData: {}, // пустая неделя
+      }).unwrap()
+    } catch (err) {
+      console.error('Ошибка при создании недели:', err)
+    }
+  }
+
+  const handleUpdateWeek = async (oldWeek: string, newWeek: string) => {
+    if (!groupID) return
+    try {
+      await updateWeek({
+        id: groupID,
+        week: oldWeek,
+        weekData: { [newWeek]: {} }, // можно передать пустую структуру
+      }).unwrap()
+    } catch (err) {
+      console.error('Ошибка при обновлении недели:', err)
+    }
+  }
+
+  const handleDeleteWeek = async (week: string) => {
+    if (!groupID) return
+    if (window.confirm(`Удалить неделю "${week}"?`)) {
+      try {
+        await deleteWeek({ id: groupID, week }).unwrap()
+      } catch (err) {
+        console.error('Ошибка при удалении недели:', err)
+      }
+    }
+  }
+
+  const crudHandlers = {
+    onUpdateWeek: handleUpdateWeek,
+    onDeleteWeek: handleDeleteWeek,
+  }
+
+  // --- Автовыбор текущей недели ---
   useEffect(() => {
     if (!!weeksData) {
       const daysRange = weeksData.map((item) => getDaysInRange(item))
-
       const currentWeekIndex = daysRange.findIndex((subArray) =>
         subArray.includes(day),
       )
@@ -58,7 +109,9 @@ export const WeeksList = () => {
 
   return (
     <div className={style.container}>
-      <BackToPreviousLink href={routes.COURSES_PATH} />
+      <BackToPreviousLink
+        href={`/educationTypes/${educationType}/faculties/${faculty}/courses/${course}`}
+      />
 
       <ul className={style.list}>
         {!weeksData
@@ -75,9 +128,15 @@ export const WeeksList = () => {
                     dispatch(weekChanged(week))
                   }}
                   isActive={pickedWeek === week}
+                  crudHandlers={crudHandlers}
                 />
               </li>
             ))}
+        <li>
+          <AdminAddButton onClick={handleCreateWeek}>
+            Добавить неделю
+          </AdminAddButton>
+        </li>
       </ul>
     </div>
   )

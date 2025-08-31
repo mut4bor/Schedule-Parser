@@ -13,15 +13,23 @@ import { store } from '@/shared/redux'
 import { Icons } from '@/shared/icons'
 
 const routesArray = [
-  { path: `${routes.BASE_URL}`, Component: MainPage },
-  { path: `${routes.BASE_URL}${routes.COURSES_PATH}`, Component: CoursesPage },
+  { path: routes.BASE_URL, Component: MainPage },
   {
-    path: `${routes.BASE_URL}${routes.FAVORITE_PATH}`,
+    path: routes.COURSES_PATH,
+    Component: CoursesPage,
+  },
+  {
+    path: `${routes.COURSES_PATH}/:course`,
+    Component: CoursesPage,
+  },
+  {
+    path: routes.FAVORITE_PATH,
     Component: FavoritePage,
   },
-  { path: `${routes.BASE_URL}${routes.GROUP_ID_PATH}`, Component: GroupIDPage },
+  { path: routes.GROUP_PATH, Component: GroupIDPage },
+  { path: `/groups/:groupID`, Component: GroupIDPage },
   {
-    path: `${routes.REFRESH_PATH}`,
+    path: routes.REFRESH_PATH,
     Component: RefreshPage,
   },
 ]

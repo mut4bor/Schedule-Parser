@@ -42,13 +42,7 @@ export {
   useGetGroupsByEducationTypeQuery,
 } from './slices/apiSlice'
 
-export {
-  educationTypeChanged,
-  facultyChanged,
-  courseChanged,
-  weekChanged,
-  dayIndexChanged,
-} from './slices/navigationSlice'
+export { weekChanged, dayIndexChanged } from './slices/navigationSlice'
 
 export {
   isSearchInputFocusedChanged,

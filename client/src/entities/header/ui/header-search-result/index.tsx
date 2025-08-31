@@ -25,11 +25,7 @@ export const HeaderSearchResult = ({ namesData }: HeaderSearchResultProps) => {
       >
         {isNamesData &&
           namesData.map((item, index) => (
-            <Link
-              className={style.link}
-              to={`/groupID/${item._id}`}
-              key={index}
-            >
+            <Link className={style.link} to={`/groups/${item._id}`} key={index}>
               {item.group}
             </Link>
           ))}

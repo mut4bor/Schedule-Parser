@@ -4,9 +4,6 @@ import { WeeksList } from '@/widgets/weeks-list'
 import { DaysList } from '@/widgets/days-list'
 import { Schedule } from '@/widgets/schedule'
 import {
-  educationTypeChanged,
-  facultyChanged,
-  courseChanged,
   useAppDispatch,
   useGetGroupByIDQuery,
   useAppSelector,
@@ -71,14 +68,6 @@ export const GroupIDPage = () => {
         skip: !groupID || !pickedWeek,
       },
     )
-
-  useEffect(() => {
-    if (groupData) {
-      dispatch(educationTypeChanged(groupData.educationType))
-      dispatch(facultyChanged(groupData.faculty))
-      dispatch(courseChanged(groupData.course))
-    }
-  }, [dispatch, groupID, groupData])
 
   useEffect(() => {
     dispatch(dayIndexChanged(dayWeekIndex))

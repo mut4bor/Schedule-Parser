@@ -1,12 +1,10 @@
 import * as style from './style.module.scss'
 import { Skeleton } from '@/shared/ui'
-import { Link } from 'react-router-dom'
-import { useAppSelector, useGetNamesQuery } from '@/shared/redux'
+import { Link, useParams } from 'react-router-dom'
+import { useGetNamesQuery } from '@/shared/redux'
 
 export const GroupsList = () => {
-  const { educationType, faculty, course } = useAppSelector(
-    (store) => store.navigation,
-  )
+  const { educationType, faculty, course } = useParams()
   const favoriteGroup = localStorage.getItem('favorite-group')
 
   const namesSearchParams = new URLSearchParams({
@@ -27,7 +25,7 @@ export const GroupsList = () => {
             ))
           : namesData.map((item, index) => (
               <Link
-                to={`/groupID/${item._id}`}
+                to={`groups/${item._id}`}
                 className={`${style.link} ${favoriteGroup === item._id ? style.active : null}`}
                 key={index}
               >

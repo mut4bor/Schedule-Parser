@@ -1,10 +1,14 @@
 import * as style from './style.module.scss'
-import { FacultyLinkProps } from './types'
 import { Link } from 'react-router-dom'
 
-export const FacultyLink = ({ faculty, handleLinkClick, href }: FacultyLinkProps) => {
+type Props = {
+  faculty: string
+  href: string
+}
+
+export const FacultyLink = ({ faculty, href }: Props) => {
   return (
-    <Link className={style.link} to={href} onClick={() => handleLinkClick(faculty)}>
+    <Link className={style.link} to={href}>
       <ul className={style.list}>
         {faculty.split(',').map((item) => (
           <li className={style.listElement} key={item}>

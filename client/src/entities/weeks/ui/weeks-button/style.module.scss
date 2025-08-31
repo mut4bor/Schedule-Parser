@@ -1,6 +1,18 @@
 @import '@/shared/vars/vars';
 
 @media (min-width: $pageWidth320) {
+  .weekItem {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+
+  .weekActions {
+    display: flex;
+    flex-direction: row;
+    gap: 0.4rem;
+  }
+
   .button {
     display: flex;
     flex-direction: column;
@@ -20,10 +32,18 @@
     &.active {
       background: $accentColor;
     }
+
     @media (hover: hover) {
       &:hover {
         background: $accentColor;
       }
     }
+  }
+
+  .editButton,
+  .deleteButton,
+  .saveButton,
+  .cancelButton {
+    @include actionButton;
   }
 }

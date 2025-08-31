@@ -1,14 +1,8 @@
 import * as style from './style.module.scss'
 import { Skeleton } from '@/shared/ui'
-import routes from '@/shared/routes'
-import {
-  useAppDispatch,
-  educationTypeChanged,
-  facultyChanged,
-  courseChanged,
-} from '@/shared/redux'
 import { FacultyLink } from '@/entities/faculty'
 import { Fragment, useState } from 'react'
+import { AdminAddButton } from '@/entities/admin/addButton'
 
 const Pipe = () => {
   return <span className={style.pipe}></span>
@@ -36,7 +30,6 @@ type Props = {
 }
 
 export const Faculty = ({ data, columnsAmount, crudHandlers }: Props) => {
-  const dispatch = useAppDispatch()
   const [isEditingEducationType, setIsEditingEducationType] = useState(false)
   const [editingEducationType, setEditingEducationType] = useState('')
   const [editingFaculty, setEditingFaculty] = useState<string | null>(null)
@@ -45,14 +38,6 @@ export const Faculty = ({ data, columnsAmount, crudHandlers }: Props) => {
   const [isAddingFaculty, setIsAddingFaculty] = useState(false)
 
   const { educationType, faculties } = data || {}
-
-  const handleLinkClick = (faculty: string) => {
-    if (educationType) {
-      dispatch(educationTypeChanged(educationType))
-    }
-    dispatch(facultyChanged(faculty))
-    dispatch(courseChanged(null))
-  }
 
   const handleEditEducationType = () => {
     if (!educationType) return
@@ -180,17 +165,17 @@ export const Faculty = ({ data, columnsAmount, crudHandlers }: Props) => {
                   type="text"
                   value={editingEducationType}
                   onChange={(e) => setEditingEducationType(e.target.value)}
-                  className={style.editInput}
+                  className={`${style.editInput} ${style.isLight}`}
                 />
                 <button
                   onClick={handleSaveEducationType}
-                  className={style.saveButton}
+                  className={`${style.saveButton} ${style.isLight}`}
                 >
                   ✓
                 </button>
                 <button
                   onClick={handleCancelEditEducationType}
-                  className={style.cancelButton}
+                  className={`${style.cancelButton} ${style.isLight}`}
                 >
                   ✕
                 </button>
@@ -266,8 +251,7 @@ export const Faculty = ({ data, columnsAmount, crudHandlers }: Props) => {
                     <div className={style.facultyWithActions}>
                       <FacultyLink
                         faculty={faculty}
-                        href={routes.COURSES_PATH}
-                        handleLinkClick={() => handleLinkClick(faculty)}
+                        href={`educationTypes/${educationType}/faculties/${faculty}/courses`}
                       />
                       {crudHandlers && (
                         <div className={style.facultyActions}>
@@ -320,12 +304,9 @@ export const Faculty = ({ data, columnsAmount, crudHandlers }: Props) => {
                       </button>
                     </div>
                   ) : (
-                    <button
-                      onClick={handleAddFaculty}
-                      className={style.addButton}
-                    >
-                      ➕ Добавить факультет
-                    </button>
+                    <AdminAddButton onClick={handleAddFaculty}>
+                      Добавить факультет
+                    </AdminAddButton>
                   )}
                 </div>
               </Fragment>

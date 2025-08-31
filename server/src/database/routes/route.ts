@@ -109,7 +109,7 @@ router.get(`${facultyPath}/:faculty/groups`, getGroupsByFaculty) // Получи
 router.get(coursePath, getCourses)
 router.post(coursePath, createCourse) // Создать новый курс (по сути, новую группу с указанным курсом)
 router.put(coursePath, updateCourse) // Обновить номер курса
-router.delete(`${coursePath}/:course`, deleteCourse) // Удалить курс (все группы с этим курсом)
+router.delete(`${coursePath}/:educationType/:faculty/:course`, deleteCourse) // Удалить курс (все группы с этим курсом)
 router.get(`${coursePath}/:course/groups`, getGroupsByCourse) // Получить группы по курсу
 
 // --- Типы образования ---

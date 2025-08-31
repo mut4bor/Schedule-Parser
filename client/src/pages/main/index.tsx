@@ -9,10 +9,14 @@ import {
   useUpdateEducationTypeMutation,
   useDeleteEducationTypeMutation,
 } from '@/shared/redux'
-import { ErrorComponent } from '@/widgets/error'
+import { AdminAddButton } from '@/entities/admin/addButton'
 
 export const MainPage = () => {
-  const { data: facultiesData, error: facultiesError } = useGetFacultiesQuery()
+  const {
+    data: facultiesData,
+    isLoading: isFacultiesLoading,
+    error: facultiesError,
+  } = useGetFacultiesQuery()
 
   const [createEducationType] = useCreateEducationTypeMutation()
   const [updateEducationType] = useUpdateEducationTypeMutation()
@@ -22,19 +26,12 @@ export const MainPage = () => {
   const [updateFaculty] = useUpdateFacultyMutation()
   const [deleteFaculty] = useDeleteFacultyMutation()
 
-  if (facultiesError) {
-    return <ErrorComponent error={facultiesError} hideMainPageButton />
-  }
-
   const handleCreateEducationType = async () => {
     const newType = prompt('Введите название нового типа образования:')
     if (!newType) return
     try {
       await createEducationType({
         educationType: newType,
-        faculty: '123',
-        course: '1',
-        group: 'Группа-1',
       }).unwrap()
     } catch (err) {
       console.error('Ошибка при создании типа образования:', err)
@@ -74,8 +71,6 @@ export const MainPage = () => {
       await createFaculty({
         educationType,
         faculty,
-        course: '1',
-        group: 'Группа-1',
       }).unwrap()
     } catch (err) {
       console.error('Ошибка при создании факультета:', err)
@@ -122,23 +117,27 @@ export const MainPage = () => {
 
   return (
     <div className={style.container}>
-      {!facultiesData
-        ? Array.from({ length: 3 }).map((_, index) => (
-            <Faculty columnsAmount={4 - index} key={index} />
-          ))
-        : Object.entries(facultiesData).map(
-            ([educationType, faculties], key) => (
-              <Faculty
-                key={key}
-                data={{ educationType, faculties }}
-                crudHandlers={crudHandlers}
-              />
-            ),
-          )}
+      {!facultiesError && (
+        <>
+          {!facultiesData || isFacultiesLoading
+            ? Array.from({ length: 3 }).map((_, index) => (
+                <Faculty columnsAmount={4 - index} key={index} />
+              ))
+            : Object.entries(facultiesData).map(
+                ([educationType, faculties], key) => (
+                  <Faculty
+                    key={key}
+                    data={{ educationType, faculties }}
+                    crudHandlers={crudHandlers}
+                  />
+                ),
+              )}
+        </>
+      )}
 
-      <button className={style.addButton} onClick={handleCreateEducationType}>
-        ➕ Добавить тип обучения
-      </button>
+      <AdminAddButton onClick={handleCreateEducationType}>
+        Добавить тип обучения
+      </AdminAddButton>
     </div>
   )
 }

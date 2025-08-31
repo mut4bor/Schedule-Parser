@@ -59,9 +59,9 @@ const getAllFaculties = async (req: Request, res: Response) => {
 
 const createFaculty = async (req: Request, res: Response) => {
   try {
-    const { educationType, faculty, course, group } = req.body
+    const { educationType, faculty } = req.body
 
-    if (!educationType || !faculty || !course || !group) {
+    if (!educationType || !faculty) {
       return res.status(400).json({
         message: 'educationType, faculty, course, and group are required',
       })
@@ -70,9 +70,11 @@ const createFaculty = async (req: Request, res: Response) => {
     const newGroup = new Group({
       educationType,
       faculty,
-      course,
-      group,
-      dates: {},
+      course: 'Placeholder',
+      group: 'Placeholder',
+      dates: {
+        Placeholder: 'Placeholder',
+      },
     })
 
     await newGroup.save()
@@ -115,7 +117,6 @@ const updateFaculty = async (req: Request, res: Response) => {
 }
 
 // Удаление факультета
-// DELETE /faculties/:educationType/:faculty
 const deleteFaculty = async (req: Request, res: Response) => {
   try {
     const { educationType, faculty } = req.params

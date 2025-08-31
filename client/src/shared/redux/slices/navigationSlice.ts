@@ -12,17 +12,11 @@ export enum DayIndex {
 }
 
 interface NavigationValue {
-  educationType: string | null
-  faculty: string | null
-  course: string | null
   week: string | null
   dayIndex: DayIndex
 }
 
 const initialState: NavigationValue = {
-  educationType: null,
-  faculty: null,
-  course: null,
   week: null,
   dayIndex: -1,
 }
@@ -31,15 +25,6 @@ const navigationSlice = createSlice({
   name: 'navigation',
   initialState,
   reducers: {
-    educationTypeChanged(state, action: PayloadAction<string | null>) {
-      state.educationType = action.payload
-    },
-    facultyChanged(state, action: PayloadAction<string | null>) {
-      state.faculty = action.payload
-    },
-    courseChanged(state, action: PayloadAction<string | null>) {
-      state.course = action.payload
-    },
     weekChanged(state, action: PayloadAction<string | null>) {
       state.week = action.payload
     },
@@ -49,12 +34,6 @@ const navigationSlice = createSlice({
   },
 })
 
-export const {
-  educationTypeChanged,
-  facultyChanged,
-  courseChanged,
-  weekChanged,
-  dayIndexChanged,
-} = navigationSlice.actions
+export const { weekChanged, dayIndexChanged } = navigationSlice.actions
 
 export default navigationSlice.reducer

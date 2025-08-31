@@ -17,11 +17,11 @@ const getCourses = async (req: Request, res: Response) => {
 
 const createCourse = async (req: Request, res: Response) => {
   try {
-    const { educationType, faculty, course, group } = req.body
+    const { educationType, faculty, course } = req.body
 
-    if (!educationType || !faculty || !course || !group) {
+    if (!educationType || !faculty || !course) {
       return res.status(400).json({
-        message: 'educationType, faculty, course, and group are required',
+        message: 'educationType, faculty, course are required',
       })
     }
 
@@ -29,8 +29,10 @@ const createCourse = async (req: Request, res: Response) => {
       educationType,
       faculty,
       course,
-      group,
-      dates: {},
+      group: 'Placeholder',
+      dates: {
+        Placeholder: 'Placeholder',
+      },
     })
 
     await newGroup.save()
@@ -74,13 +76,13 @@ const updateCourse = async (req: Request, res: Response) => {
 
 const deleteCourse = async (req: Request, res: Response) => {
   try {
-    const { course } = req.params
+    const { educationType, faculty, course } = req.params
 
-    if (!course) {
-      return res.status(400).json({ message: 'Course is required' })
+    if (!educationType || !faculty || !course) {
+      return res.status(400).json({ message: 'educationType, faculty, and course are required' })
     }
 
-    const result = await Group.deleteMany({ course })
+    const result = await Group.deleteMany({ educationType, faculty, course })
 
     if (result.deletedCount === 0) {
       return res.status(404).json({ message: 'Course not found' })

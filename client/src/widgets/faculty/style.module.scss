@@ -99,31 +99,7 @@
   .deleteButton,
   .saveButton,
   .cancelButton {
-    cursor: pointer;
-    border: none;
-    border-radius: 2px;
-    background: none;
-    padding: 4px;
-    color: #fff;
-    font-size: 16px;
-
-    &:hover {
-      background-color: rgba(0, 0, 0, 0.1);
-    }
-  }
-
-  .addButton {
-    cursor: pointer;
-    border: 1px dashed #ccc;
-    border-radius: 4px;
-    background: none;
-    padding: 8px 12px;
-    color: #666;
-
-    &:hover {
-      border-color: #fff;
-      color: #999;
-    }
+    @include actionButton;
   }
 
   .addFacultyContainer {
