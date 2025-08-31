@@ -28,34 +28,9 @@
     }
   }
 
-  .editButton,
-  .deleteButton,
-  .saveButton,
-  .cancelButton {
-    @include actionButton;
-  }
-
-  .courseItem {
+  .container {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-  }
-
-  .courseActions {
-    display: flex;
-    gap: 0.4rem;
-  }
-
-  .editForm {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-
-  .editInput {
-    border: 1px solid #ccc;
-    border-radius: 0.4rem;
-    padding: 0.4rem 0.8rem;
-    font-size: 1.4rem;
   }
 }

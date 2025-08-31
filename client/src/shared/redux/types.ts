@@ -20,12 +20,14 @@ export interface IFaculties {
   [educationType: string]: string[]
 }
 
-export interface ISchedule {
-  [week: string]: {
-    [day: string]: {
-      [time: string]: string
-    }
+export interface IWeek {
+  [day: string]: {
+    [time: string]: string
   }
+}
+
+export interface ISchedule {
+  [week: string]: IWeek
 }
 
 // --- Groups ---
@@ -91,17 +93,16 @@ export interface UpdateEducationTypeDTO {
 // --- Weeks ---
 export interface AddWeekDTO {
   id: string
-  week: string
-  weekData: ISchedule
+  weekName: string
 }
 
 export interface UpdateWeekDTO {
   id: string
-  week: string
-  weekData: ISchedule
+  oldWeek: string
+  newWeek: string
 }
 
 export interface DeleteWeekDTO {
   id: string
-  week: string
+  weekName: string
 }

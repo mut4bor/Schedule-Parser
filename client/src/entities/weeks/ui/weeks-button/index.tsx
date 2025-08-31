@@ -1,5 +1,6 @@
 import * as style from './style.module.scss'
 import { useState } from 'react'
+import { InlineEdit, EditDeleteActions } from '@/entities/admin'
 
 type CrudHandlers = {
   onUpdateWeek?: (oldWeek: string, newWeek: string) => Promise<void>
@@ -20,12 +21,11 @@ export const WeeksButton = ({
   crudHandlers,
 }: Props) => {
   const [isEditing, setIsEditing] = useState(false)
-  const [editingValue, setEditingValue] = useState(text)
 
-  const handleSave = async () => {
+  const handleSave = async (newValue: string) => {
     if (!crudHandlers?.onUpdateWeek) return
     try {
-      await crudHandlers.onUpdateWeek(text, editingValue)
+      await crudHandlers.onUpdateWeek(text, newValue)
       setIsEditing(false)
     } catch (err) {
       console.error('Ошибка при обновлении недели:', err)
@@ -43,28 +43,16 @@ export const WeeksButton = ({
 
   if (isEditing) {
     return (
-      <div className={style.editForm}>
-        <input
-          type="text"
-          value={editingValue}
-          onChange={(e) => setEditingValue(e.target.value)}
-          className={style.editInput}
-        />
-        <button onClick={handleSave} className={style.saveButton}>
-          ✓
-        </button>
-        <button
-          onClick={() => setIsEditing(false)}
-          className={style.cancelButton}
-        >
-          ✕
-        </button>
-      </div>
+      <InlineEdit
+        initialValue={text}
+        onSave={handleSave}
+        onCancel={() => setIsEditing(false)}
+      />
     )
   }
 
   return (
-    <div className={style.weekItem}>
+    <div className={style.container}>
       <button
         onClick={onClick}
         className={`${style.button} ${isActive ? style.active : ''}`}
@@ -73,17 +61,10 @@ export const WeeksButton = ({
         {text}
       </button>
       {crudHandlers && (
-        <div className={style.weekActions}>
-          <button
-            onClick={() => setIsEditing(true)}
-            className={style.editButton}
-          >
-            ✏️
-          </button>
-          <button onClick={handleDelete} className={style.deleteButton}>
-            🗑️
-          </button>
-        </div>
+        <EditDeleteActions
+          onEdit={() => setIsEditing(true)}
+          onDelete={handleDelete}
+        />
       )}
     </div>
   )

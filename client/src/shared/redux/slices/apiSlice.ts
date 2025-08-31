@@ -41,7 +41,14 @@ const apiSlice = createApi({
 
   baseQuery: baseQuery,
 
-  tagTypes: ['EducationTypes', 'Faculties', 'Courses', 'Groups', 'Names'],
+  tagTypes: [
+    'EducationTypes',
+    'Faculties',
+    'Courses',
+    'Groups',
+    'Names',
+    'Schedule',
+  ],
 
   endpoints: (builder) => ({
     // --- Refresh ---
@@ -254,6 +261,7 @@ const apiSlice = createApi({
     // --- Weeks inside Groups ---
     getWeeksByID: builder.query<string[], string>({
       query: (groupID) => `/${groupsPath}/${groupID}/weeks`,
+      providesTags: ['Schedule'],
     }),
     getWeekScheduleByID: builder.query<
       ISchedule,
@@ -261,37 +269,34 @@ const apiSlice = createApi({
     >({
       query: ({ groupID, week }) => `/${groupsPath}/${groupID}/weeks/${week}`,
     }),
-    addWeekToGroup: builder.mutation<
-      { message: string; week: ISchedule },
-      AddWeekDTO
-    >({
-      query: ({ id, week, weekData }) => ({
+    addWeekToGroup: builder.mutation<{ message: string }, AddWeekDTO>({
+      query: ({ id, weekName }) => ({
         url: `/${groupsPath}/${id}/weeks`,
         method: 'POST',
         headers: { 'x-admin-password': X_ADMIN_PASSWORD },
-        body: { week, weekData },
+        body: { weekName },
       }),
-      invalidatesTags: ['Groups'],
+      invalidatesTags: ['Schedule'],
     }),
     updateWeekInGroup: builder.mutation<
       { message: string; week: ISchedule },
       UpdateWeekDTO
     >({
-      query: ({ id, week, weekData }) => ({
-        url: `/${groupsPath}/${id}/weeks/${week}`,
+      query: ({ id, oldWeek, newWeek }) => ({
+        url: `/${groupsPath}/${id}/weeks`,
         method: 'PUT',
         headers: { 'x-admin-password': X_ADMIN_PASSWORD },
-        body: { weekData },
+        body: { oldWeek, newWeek },
       }),
-      invalidatesTags: ['Groups'],
+      invalidatesTags: ['Schedule'],
     }),
     deleteWeekFromGroup: builder.mutation<{ message: string }, DeleteWeekDTO>({
-      query: ({ id, week }) => ({
-        url: `/${groupsPath}/${id}/weeks/${week}`,
+      query: ({ id, weekName }) => ({
+        url: `/${groupsPath}/${id}/weeks/${weekName}`,
         method: 'DELETE',
         headers: { 'x-admin-password': X_ADMIN_PASSWORD },
       }),
-      invalidatesTags: ['Groups'],
+      invalidatesTags: ['Schedule'],
     }),
 
     // --- Names ---

@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router-dom'
 import * as style from './style.module.scss'
 import { useState } from 'react'
+import { InlineEdit, EditDeleteActions } from '@/entities/admin'
 
 type CrudHandlers = {
   onUpdateCourse?: (oldCourse: string, newCourse: string) => Promise<void>
@@ -15,12 +16,11 @@ type Props = {
 export const CourseButton = ({ course, crudHandlers }: Props) => {
   const { educationType, faculty, course: pickedCourse } = useParams()
   const [isEditing, setIsEditing] = useState(false)
-  const [editingValue, setEditingValue] = useState(course)
 
-  const handleSave = async () => {
+  const handleSave = async (newValue: string) => {
     if (!crudHandlers?.onUpdateCourse) return
     try {
-      await crudHandlers.onUpdateCourse(course, editingValue)
+      await crudHandlers.onUpdateCourse(course, newValue)
       setIsEditing(false)
     } catch (err) {
       console.error('Ошибка при обновлении курса:', err)
@@ -38,28 +38,16 @@ export const CourseButton = ({ course, crudHandlers }: Props) => {
 
   if (isEditing) {
     return (
-      <div className={style.editForm}>
-        <input
-          type="text"
-          value={editingValue}
-          onChange={(e) => setEditingValue(e.target.value)}
-          className={style.editInput}
-        />
-        <button onClick={handleSave} className={style.saveButton}>
-          ✓
-        </button>
-        <button
-          onClick={() => setIsEditing(false)}
-          className={style.cancelButton}
-        >
-          ✕
-        </button>
-      </div>
+      <InlineEdit
+        initialValue={course}
+        onSave={handleSave}
+        onCancel={() => setIsEditing(false)}
+      />
     )
   }
 
   return (
-    <div className={style.courseItem}>
+    <div className={style.container}>
       <Link
         to={`/educationTypes/${educationType}/faculties/${faculty}/courses/${course}`}
         className={`${style.button} ${
@@ -69,17 +57,10 @@ export const CourseButton = ({ course, crudHandlers }: Props) => {
         {course}
       </Link>
       {crudHandlers && (
-        <div className={style.courseActions}>
-          <button
-            onClick={() => setIsEditing(true)}
-            className={style.editButton}
-          >
-            ✏️
-          </button>
-          <button onClick={handleDelete} className={style.deleteButton}>
-            🗑️
-          </button>
-        </div>
+        <EditDeleteActions
+          onEdit={() => setIsEditing(true)}
+          onDelete={handleDelete}
+        />
       )}
     </div>
   )

@@ -30,28 +30,3 @@ $containerPaddingTop: calc($headerHeight + $containerBasicPadding);
 $containerPaddingTopMobile: calc($headerHeightMobile + $containerBasicPadding);
 $containerPaddingBottom: $containerBasicPadding;
 $containerPaddingBottomMobile: calc($tabBarHeight + $containerBasicPadding);
-
-@mixin actionButton {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: 0.15s ease-in-out;
-  cursor: pointer;
-  border: none;
-  border-radius: 0.5rem;
-  background: $white10Alpha;
-  padding: 0 0.8rem;
-  height: 3rem;
-  color: $white;
-  font-size: 1.4rem;
-
-  &.active {
-    background: $accentColor;
-  }
-
-  @media (hover: hover) {
-    &:hover {
-      background: $accentColor;
-    }
-  }
-}

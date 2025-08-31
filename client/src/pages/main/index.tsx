@@ -9,7 +9,7 @@ import {
   useUpdateEducationTypeMutation,
   useDeleteEducationTypeMutation,
 } from '@/shared/redux'
-import { AdminAddButton } from '@/entities/admin/addButton'
+import { AdminAddButton } from '@/entities/admin'
 
 export const MainPage = () => {
   const {

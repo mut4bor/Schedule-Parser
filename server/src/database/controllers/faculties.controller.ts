@@ -70,10 +70,14 @@ const createFaculty = async (req: Request, res: Response) => {
     const newGroup = new Group({
       educationType,
       faculty,
-      course: 'Placeholder',
-      group: 'Placeholder',
+      course: 'course',
+      group: 'group',
       dates: {
-        Placeholder: 'Placeholder',
+        week: {
+          day: {
+            time: 'subject',
+          },
+        },
       },
     })
 

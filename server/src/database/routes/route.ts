@@ -6,9 +6,9 @@ import {
   createGroup,
   updateGroupById,
   deleteGroupById,
-  addWeekToGroup,
-  updateWeekInGroup,
-  deleteWeekFromGroup,
+  addWeekNameToGroup,
+  updateWeekNameInGroup,
+  deleteWeekNameFromGroup,
   updateGroupField,
   getWeeksByID,
   getWeekScheduleByID,
@@ -77,25 +77,12 @@ router.use((req, res, next) => {
   next()
 })
 
-// --- Группы ---
-router.get(groupsPath, getAllGroups)
-router.get(`${groupsPath}/:id`, getGroupById)
-router.get(`${groupsPath}/:id/weeks`, getWeeksByID)
-router.get(`${groupsPath}/:id/weeks/:week`, getWeekScheduleByID)
-router.post(groupsPath, createGroup)
-router.put(`${groupsPath}/:id`, updateGroupById)
-router.patch(`${groupsPath}/:id/field`, updateGroupField) // Обновление отдельного поля группы
-router.delete(groupsPath, deleteAllGroups) // Удалить все группы (требует пароль)
-router.delete(`${groupsPath}/:id`, deleteGroupById) // Удалить конкретную группу (требует пароль)
-
-// --- Управление расписанием для групп (требует пароль) ---
-router.post(`${groupsPath}/:id/weeks`, addWeekToGroup)
-router.put(`${groupsPath}/:id/weeks/:week`, updateWeekInGroup)
-router.delete(`${groupsPath}/:id/weeks/:week`, deleteWeekFromGroup)
-
-// --- Названия групп ---
-router.get(namesPath, getGroupNames)
-router.get(`${namesPath}/search`, getGroupNamesThatMatchWithReqParams)
+// --- Типы образования ---
+router.get(educationTypePath, getEducationTypes)
+router.post(educationTypePath, createEducationType) // Создать новый тип образования (по сути, новую группу)
+router.put(educationTypePath, updateEducationType) // Обновить название типа образования
+router.delete(`${educationTypePath}/:educationType`, deleteEducationType) // Удалить тип образования
+router.get(`${educationTypePath}/:educationType/groups`, getGroupsByEducationType) // Получить группы по типу образования
 
 // --- Факультеты ---
 router.get(facultyPath, getFaculties) // Ваш существующий метод с разделением по educationType
@@ -112,12 +99,25 @@ router.put(coursePath, updateCourse) // Обновить номер курса
 router.delete(`${coursePath}/:educationType/:faculty/:course`, deleteCourse) // Удалить курс (все группы с этим курсом)
 router.get(`${coursePath}/:course/groups`, getGroupsByCourse) // Получить группы по курсу
 
-// --- Типы образования ---
-router.get(educationTypePath, getEducationTypes)
-router.post(educationTypePath, createEducationType) // Создать новый тип образования (по сути, новую группу)
-router.put(educationTypePath, updateEducationType) // Обновить название типа образования
-router.delete(`${educationTypePath}/:educationType`, deleteEducationType) // Удалить тип образования
-router.get(`${educationTypePath}/:educationType/groups`, getGroupsByEducationType) // Получить группы по типу образования
+// --- Группы ---
+router.get(groupsPath, getAllGroups)
+router.get(`${groupsPath}/:id`, getGroupById)
+router.get(`${groupsPath}/:id/weeks`, getWeeksByID)
+router.get(`${groupsPath}/:id/weeks/:week`, getWeekScheduleByID)
+router.post(groupsPath, createGroup)
+router.put(`${groupsPath}/:id`, updateGroupById)
+router.patch(`${groupsPath}/:id/field`, updateGroupField) // Обновление отдельного поля группы
+router.delete(groupsPath, deleteAllGroups) // Удалить все группы (требует пароль)
+router.delete(`${groupsPath}/:id`, deleteGroupById) // Удалить конкретную группу (требует пароль)
+
+// --- Управление расписанием для групп (требует пароль) ---
+router.post(`${groupsPath}/:id/weeks`, addWeekNameToGroup)
+router.put(`${groupsPath}/:id/weeks`, updateWeekNameInGroup)
+router.delete(`${groupsPath}/:id/weeks/:weekName`, deleteWeekNameFromGroup)
+
+// --- Названия групп ---
+router.get(namesPath, getGroupNames)
+router.get(`${namesPath}/search`, getGroupNamesThatMatchWithReqParams)
 
 // --- Обновление данных из внешних источников (требует пароль через req.body) ---
 router.post(refreshPath, refreshSchedule)

@@ -61,11 +61,6 @@
     gap: 8px;
   }
 
-  .educationTypeActions {
-    display: flex;
-    gap: 4px;
-  }
-
   .facultyItem {
     display: flex;
     flex-direction: column;
@@ -75,31 +70,6 @@
     display: flex;
     align-items: center;
     gap: 8px;
-  }
-
-  .facultyActions {
-    display: flex;
-    gap: 4px;
-  }
-
-  .editForm {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-
-  .editInput {
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    padding: 4px 8px;
-    font-size: 14px;
-  }
-
-  .editButton,
-  .deleteButton,
-  .saveButton,
-  .cancelButton {
-    @include actionButton;
   }
 
   .addFacultyContainer {

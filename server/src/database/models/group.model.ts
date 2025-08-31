@@ -1,6 +1,22 @@
-import mongoose from 'mongoose'
+import mongoose, { Schema, Document } from 'mongoose'
 
-const groupSchema = new mongoose.Schema(
+export interface ISchedule {
+  [week: string]: {
+    [day: string]: {
+      [time: string]: string
+    }
+  }
+}
+
+export interface IGroup extends Document {
+  educationType: string
+  faculty: string
+  course: string
+  group: string
+  dates: Map<string, { [day: string]: { [time: string]: string } }>
+}
+
+const groupSchema = new Schema<IGroup>(
   {
     educationType: {
       type: String,
@@ -19,11 +35,20 @@ const groupSchema = new mongoose.Schema(
       required: [true, 'Please enter group number'],
     },
     dates: {
-      type: Object,
-      required: [true, 'Please enter dates'],
+      type: Map,
+      of: new Schema(
+        {
+          // день недели
+          // например: "monday", "tuesday"
+          // внутри — объект с ключами времени
+          // например: "09:00": "Math"
+        },
+        { strict: false, _id: false },
+      ),
+      default: {},
     },
   },
   { timestamps: true },
 )
 
-export const Group = mongoose.model('Group', groupSchema)
+export const Group = mongoose.model<IGroup>('Group', groupSchema)

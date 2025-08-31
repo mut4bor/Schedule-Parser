@@ -57,15 +57,13 @@ const getWeeksByID = async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'Invalid group dates' })
     }
 
-    const weeks = Object.keys(group.dates)
+    const weeks = Array.from(group.dates.keys())
 
     res.status(200).json(weeks)
   } catch (error) {
-    if (error instanceof Error) {
-      res.status(500).json({ message: error.message })
-    } else {
-      res.status(500).json({ message: 'An unknown error occurred' })
-    }
+    res.status(500).json({
+      message: error instanceof Error ? error.message : 'An unknown error occurred',
+    })
   }
 }
 
@@ -83,22 +81,16 @@ const getWeekScheduleByID = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Group not found' })
     }
 
-    if (!group.dates || typeof group.dates !== 'object') {
-      return res.status(400).json({ message: 'Invalid group dates' })
-    }
-
-    const weekData = group.dates[week]
+    const weekData = group.dates?.get(week)
     if (!weekData) {
       return res.status(404).json({ message: 'Week not found' })
     }
 
     res.status(200).json(weekData)
   } catch (error) {
-    if (error instanceof Error) {
-      res.status(500).json({ message: error.message })
-    } else {
-      res.status(500).json({ message: 'An unknown error occurred' })
-    }
+    res.status(500).json({
+      message: error instanceof Error ? error.message : 'An unknown error occurred',
+    })
   }
 }
 
@@ -164,15 +156,14 @@ const deleteAllGroups = async (req: Request, res: Response) => {
   }
 }
 
-// Новые методы для управления расписанием
-const addWeekToGroup = async (req: Request, res: Response) => {
+const addWeekNameToGroup = async (req: Request, res: Response) => {
   try {
     const { id } = req.params
-    const { week, weekData } = req.body
+    const { weekName } = req.body
 
-    if (!id || !week || !weekData) {
+    if (!id || !weekName) {
       return res.status(400).json({
-        message: 'ID, week, and weekData are required',
+        message: 'ID and weekName are required',
       })
     }
 
@@ -181,68 +172,64 @@ const addWeekToGroup = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Group not found' })
     }
 
-    if (!group.dates) {
-      group.dates = {}
-    }
+    group.dates.set(weekName, {
+      day: {
+        time: 'subject',
+      },
+    })
 
-    group.dates[week] = weekData
     await group.save()
 
     res.status(200).json({
-      message: 'Week added successfully',
-      week: group.dates[week],
+      message: 'Week name added successfully',
     })
   } catch (error) {
-    if (error instanceof Error) {
-      res.status(500).json({ message: error.message })
-    } else {
-      res.status(500).json({ message: 'An unknown error occurred' })
-    }
+    res.status(500).json({
+      message: error instanceof Error ? error.message : 'An unknown error occurred',
+    })
   }
 }
 
-const updateWeekInGroup = async (req: Request, res: Response) => {
+const updateWeekNameInGroup = async (req: Request, res: Response) => {
   try {
-    const { id, week } = req.params
-    const { weekData } = req.body
+    const { id } = req.params
+    const { oldWeekName, newWeekName } = req.body
 
-    if (!id || !week || !weekData) {
+    if (!id || !oldWeekName || !newWeekName) {
       return res.status(400).json({
-        message: 'ID, week, and weekData are required',
+        message: 'ID, oldWeekName, and newWeekName are required',
       })
     }
 
-    const group = await Group.findById(id)
-    if (!group) {
-      return res.status(404).json({ message: 'Group not found' })
-    }
+    const updateResult = await Group.updateOne(
+      { _id: id, [`dates.${oldWeekName}`]: { $exists: true } },
+      { $rename: { [`dates.${oldWeekName}`]: `dates.${newWeekName}` } },
+    )
 
-    if (!group.dates || !group.dates[week]) {
-      return res.status(404).json({ message: 'Week not found' })
+    if (updateResult.matchedCount === 0) {
+      const groupExists = await Group.exists({ _id: id })
+      if (!groupExists) {
+        return res.status(404).json({ message: 'Group not found' })
+      }
+      return res.status(404).json({ message: 'Old week name not found' })
     }
-
-    group.dates[week] = weekData
-    await group.save()
 
     res.status(200).json({
-      message: 'Week updated successfully',
-      week: group.dates[week],
+      message: 'Week name updated successfully',
     })
   } catch (error) {
-    if (error instanceof Error) {
-      res.status(500).json({ message: error.message })
-    } else {
-      res.status(500).json({ message: 'An unknown error occurred' })
-    }
+    res.status(500).json({
+      message: error instanceof Error ? error.message : 'An unknown error occurred',
+    })
   }
 }
 
-const deleteWeekFromGroup = async (req: Request, res: Response) => {
+const deleteWeekNameFromGroup = async (req: Request, res: Response) => {
   try {
-    const { id, week } = req.params
+    const { id, weekName } = req.params
 
-    if (!id || !week) {
-      return res.status(400).json({ message: 'ID and week are required' })
+    if (!id || !weekName) {
+      return res.status(400).json({ message: 'ID and weekName are required' })
     }
 
     const group = await Group.findById(id)
@@ -250,20 +237,18 @@ const deleteWeekFromGroup = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Group not found' })
     }
 
-    if (!group.dates || !group.dates[week]) {
-      return res.status(404).json({ message: 'Week not found' })
+    if (!group.dates.has(weekName)) {
+      return res.status(404).json({ message: 'Week name not found' })
     }
 
-    delete group.dates[week]
+    group.dates.delete(weekName)
     await group.save()
 
-    res.status(200).json({ message: 'Week deleted successfully' })
+    res.status(200).json({ message: 'Week name deleted successfully' })
   } catch (error) {
-    if (error instanceof Error) {
-      res.status(500).json({ message: error.message })
-    } else {
-      res.status(500).json({ message: 'An unknown error occurred' })
-    }
+    res.status(500).json({
+      message: error instanceof Error ? error.message : 'An unknown error occurred',
+    })
   }
 }
 
@@ -314,8 +299,8 @@ export {
   updateGroupById,
   deleteGroupById,
   deleteAllGroups,
-  addWeekToGroup,
-  updateWeekInGroup,
-  deleteWeekFromGroup,
+  addWeekNameToGroup,
+  updateWeekNameInGroup,
+  deleteWeekNameFromGroup,
   updateGroupField,
 }

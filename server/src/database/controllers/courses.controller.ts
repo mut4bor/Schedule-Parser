@@ -29,9 +29,13 @@ const createCourse = async (req: Request, res: Response) => {
       educationType,
       faculty,
       course,
-      group: 'Placeholder',
+      group: 'group',
       dates: {
-        Placeholder: 'Placeholder',
+        week: {
+          day: {
+            time: 'subject',
+          },
+        },
       },
     })
 

@@ -11,7 +11,7 @@ import {
 } from '@/shared/redux'
 import routes from '@/shared/routes'
 import { ErrorComponent } from '@/widgets/error'
-import { AdminAddButton } from '@/entities/admin/addButton'
+import { AdminAddButton } from '@/entities/admin'
 
 export const Courses = () => {
   const navigate = useNavigate()

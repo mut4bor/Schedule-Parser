@@ -2,7 +2,7 @@ import * as style from './style.module.scss'
 import { Skeleton } from '@/shared/ui'
 import { FacultyLink } from '@/entities/faculty'
 import { Fragment, useState } from 'react'
-import { AdminAddButton } from '@/entities/admin/addButton'
+import { InlineEdit, EditDeleteActions, AdminAddButton } from '@/entities/admin'
 
 const Pipe = () => {
   return <span className={style.pipe}></span>
@@ -34,7 +34,6 @@ export const Faculty = ({ data, columnsAmount, crudHandlers }: Props) => {
   const [editingEducationType, setEditingEducationType] = useState('')
   const [editingFaculty, setEditingFaculty] = useState<string | null>(null)
   const [editingFacultyValue, setEditingFacultyValue] = useState('')
-  const [newFaculty, setNewFaculty] = useState('')
   const [isAddingFaculty, setIsAddingFaculty] = useState(false)
 
   const { educationType, faculties } = data || {}
@@ -43,30 +42,6 @@ export const Faculty = ({ data, columnsAmount, crudHandlers }: Props) => {
     if (!educationType) return
     setEditingEducationType(educationType)
     setIsEditingEducationType(true)
-  }
-
-  const handleSaveEducationType = async () => {
-    if (
-      !educationType ||
-      !editingEducationType ||
-      !crudHandlers?.onUpdateEducationType
-    )
-      return
-    try {
-      await crudHandlers.onUpdateEducationType(
-        educationType,
-        editingEducationType,
-      )
-      setIsEditingEducationType(false)
-      setEditingEducationType('')
-    } catch (err) {
-      console.error('Ошибка при обновлении типа образования:', err)
-    }
-  }
-
-  const handleCancelEditEducationType = () => {
-    setIsEditingEducationType(false)
-    setEditingEducationType('')
   }
 
   const handleDeleteEducationType = async () => {
@@ -82,23 +57,6 @@ export const Faculty = ({ data, columnsAmount, crudHandlers }: Props) => {
 
   const handleAddFaculty = () => {
     setIsAddingFaculty(true)
-    setNewFaculty('')
-  }
-
-  const handleSaveNewFaculty = async () => {
-    if (!educationType || !newFaculty || !crudHandlers?.onCreateFaculty) return
-    try {
-      await crudHandlers.onCreateFaculty(educationType, newFaculty)
-      setIsAddingFaculty(false)
-      setNewFaculty('')
-    } catch (err) {
-      console.error('Ошибка при создании факультета:', err)
-    }
-  }
-
-  const handleCancelAddFaculty = () => {
-    setIsAddingFaculty(false)
-    setNewFaculty('')
   }
 
   const handleEditFaculty = (faculty: string) => {
@@ -106,36 +64,8 @@ export const Faculty = ({ data, columnsAmount, crudHandlers }: Props) => {
     setEditingFacultyValue(faculty)
   }
 
-  const handleSaveFaculty = async (oldFaculty: string) => {
-    if (
-      !educationType ||
-      !editingFacultyValue ||
-      !crudHandlers?.onUpdateFaculty
-    )
-      return
-    try {
-      await crudHandlers.onUpdateFaculty(
-        educationType,
-        oldFaculty,
-        editingFacultyValue,
-      )
-      setEditingFaculty(null)
-      setEditingFacultyValue('')
-    } catch (err) {
-      console.error('Ошибка при обновлении факультета:', err)
-    }
-  }
-
-  const handleCancelEditFaculty = () => {
-    setEditingFaculty(null)
-    setEditingFacultyValue('')
-  }
-
   const handleDeleteFaculty = async (faculty: string) => {
     if (!educationType || !crudHandlers?.onDeleteFaculty) return
-
-    console.log('educationType', educationType)
-    console.log('faculty', faculty)
 
     if (window.confirm(`Удалить факультет "${faculty}"?`)) {
       try {
@@ -160,44 +90,32 @@ export const Faculty = ({ data, columnsAmount, crudHandlers }: Props) => {
         ) : (
           <div className={style.educationTypeHeader}>
             {isEditingEducationType ? (
-              <div className={style.editForm}>
-                <input
-                  type="text"
-                  value={editingEducationType}
-                  onChange={(e) => setEditingEducationType(e.target.value)}
-                  className={`${style.editInput} ${style.isLight}`}
-                />
-                <button
-                  onClick={handleSaveEducationType}
-                  className={`${style.saveButton} ${style.isLight}`}
-                >
-                  ✓
-                </button>
-                <button
-                  onClick={handleCancelEditEducationType}
-                  className={`${style.cancelButton} ${style.isLight}`}
-                >
-                  ✕
-                </button>
-              </div>
+              <InlineEdit
+                initialValue={editingEducationType}
+                onSave={async (newValue) => {
+                  if (!educationType || !crudHandlers?.onUpdateEducationType)
+                    return
+                  await crudHandlers.onUpdateEducationType(
+                    educationType,
+                    newValue,
+                  )
+                  setIsEditingEducationType(false)
+                  setEditingEducationType('')
+                }}
+                onCancel={() => {
+                  setIsEditingEducationType(false)
+                  setEditingEducationType('')
+                }}
+                isLight
+              />
             ) : (
               <>
                 <h2 className={style.educationType}>{educationType}</h2>
                 {crudHandlers && (
-                  <div className={style.educationTypeActions}>
-                    <button
-                      onClick={handleEditEducationType}
-                      className={style.editButton}
-                    >
-                      ✏️
-                    </button>
-                    <button
-                      onClick={handleDeleteEducationType}
-                      className={style.deleteButton}
-                    >
-                      🗑️
-                    </button>
-                  </div>
+                  <EditDeleteActions
+                    onEdit={handleEditEducationType}
+                    onDelete={handleDeleteEducationType}
+                  />
                 )}
               </>
             )}
@@ -227,26 +145,24 @@ export const Faculty = ({ data, columnsAmount, crudHandlers }: Props) => {
               <Fragment key={`faculty-${index}`}>
                 <div className={style.facultyItem}>
                   {editingFaculty === faculty ? (
-                    <div className={style.editForm}>
-                      <input
-                        type="text"
-                        value={editingFacultyValue}
-                        onChange={(e) => setEditingFacultyValue(e.target.value)}
-                        className={style.editInput}
-                      />
-                      <button
-                        onClick={() => handleSaveFaculty(faculty)}
-                        className={style.saveButton}
-                      >
-                        ✓
-                      </button>
-                      <button
-                        onClick={handleCancelEditFaculty}
-                        className={style.cancelButton}
-                      >
-                        ✕
-                      </button>
-                    </div>
+                    <InlineEdit
+                      initialValue={editingFacultyValue}
+                      onSave={async (newValue) => {
+                        if (!educationType || !crudHandlers?.onUpdateFaculty)
+                          return
+                        await crudHandlers.onUpdateFaculty(
+                          educationType,
+                          faculty,
+                          newValue,
+                        )
+                        setEditingFaculty(null)
+                        setEditingFacultyValue('')
+                      }}
+                      onCancel={() => {
+                        setEditingFaculty(null)
+                        setEditingFacultyValue('')
+                      }}
+                    />
                   ) : (
                     <div className={style.facultyWithActions}>
                       <FacultyLink
@@ -254,20 +170,10 @@ export const Faculty = ({ data, columnsAmount, crudHandlers }: Props) => {
                         href={`educationTypes/${educationType}/faculties/${faculty}/courses`}
                       />
                       {crudHandlers && (
-                        <div className={style.facultyActions}>
-                          <button
-                            onClick={() => handleEditFaculty(faculty)}
-                            className={style.editButton}
-                          >
-                            ✏️
-                          </button>
-                          <button
-                            onClick={() => handleDeleteFaculty(faculty)}
-                            className={style.deleteButton}
-                          >
-                            🗑️
-                          </button>
-                        </div>
+                        <EditDeleteActions
+                          onEdit={() => handleEditFaculty(faculty)}
+                          onDelete={() => handleDeleteFaculty(faculty)}
+                        />
                       )}
                     </div>
                   )}
@@ -276,33 +182,26 @@ export const Faculty = ({ data, columnsAmount, crudHandlers }: Props) => {
               </Fragment>
             ))}
 
-            {/* Добавление нового факультета */}
             {crudHandlers && (
               <Fragment>
                 {faculties.length > 0 && <Pipe />}
                 <div className={style.addFacultyContainer}>
                   {isAddingFaculty ? (
-                    <div className={style.editForm}>
-                      <input
-                        type="text"
-                        value={newFaculty}
-                        onChange={(e) => setNewFaculty(e.target.value)}
-                        placeholder="Название факультета"
-                        className={style.editInput}
-                      />
-                      <button
-                        onClick={handleSaveNewFaculty}
-                        className={style.saveButton}
-                      >
-                        ✓
-                      </button>
-                      <button
-                        onClick={handleCancelAddFaculty}
-                        className={style.cancelButton}
-                      >
-                        ✕
-                      </button>
-                    </div>
+                    <InlineEdit
+                      initialValue=""
+                      onSave={async (newValue) => {
+                        if (!educationType || !crudHandlers?.onCreateFaculty)
+                          return
+                        await crudHandlers.onCreateFaculty(
+                          educationType,
+                          newValue,
+                        )
+                        setIsAddingFaculty(false)
+                      }}
+                      onCancel={() => {
+                        setIsAddingFaculty(false)
+                      }}
+                    />
                   ) : (
                     <AdminAddButton onClick={handleAddFaculty}>
                       Добавить факультет

@@ -15,7 +15,7 @@ import { getDaysInRange, getDayToPick } from '@/shared/hooks'
 import { Skeleton } from '@/shared/ui'
 import { ErrorComponent } from '@/widgets/error'
 import { useParams } from 'react-router-dom'
-import { AdminAddButton } from '@/entities/admin/addButton'
+import { AdminAddButton } from '@/entities/admin'
 
 const { day } = getDayToPick()
 
@@ -44,8 +44,7 @@ export const WeeksList = () => {
     try {
       await addWeek({
         id: groupID,
-        week: newWeek,
-        weekData: {}, // пустая неделя
+        weekName: newWeek,
       }).unwrap()
     } catch (err) {
       console.error('Ошибка при создании недели:', err)
@@ -57,8 +56,8 @@ export const WeeksList = () => {
     try {
       await updateWeek({
         id: groupID,
-        week: oldWeek,
-        weekData: { [newWeek]: {} }, // можно передать пустую структуру
+        oldWeek,
+        newWeek,
       }).unwrap()
     } catch (err) {
       console.error('Ошибка при обновлении недели:', err)
@@ -69,7 +68,7 @@ export const WeeksList = () => {
     if (!groupID) return
     if (window.confirm(`Удалить неделю "${week}"?`)) {
       try {
-        await deleteWeek({ id: groupID, week }).unwrap()
+        await deleteWeek({ id: groupID, weekName: week }).unwrap()
       } catch (err) {
         console.error('Ошибка при удалении недели:', err)
       }
