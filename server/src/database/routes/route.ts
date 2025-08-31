@@ -12,7 +12,6 @@ import {
   updateGroupField,
   getWeeksByID,
   getWeekScheduleByID,
-  deleteAllGroups,
 } from '@/database/controllers/group.controller.js'
 
 import {
@@ -107,7 +106,6 @@ router.get(`${groupsPath}/:id/weeks/:week`, getWeekScheduleByID)
 router.post(groupsPath, createGroup)
 router.put(`${groupsPath}/:id`, updateGroupById)
 router.patch(`${groupsPath}/:id/field`, updateGroupField) // Обновление отдельного поля группы
-router.delete(groupsPath, deleteAllGroups) // Удалить все группы (требует пароль)
 router.delete(`${groupsPath}/:id`, deleteGroupById) // Удалить конкретную группу (требует пароль)
 
 // --- Управление расписанием для групп (требует пароль) ---

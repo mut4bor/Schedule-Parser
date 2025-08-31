@@ -227,7 +227,7 @@ const apiSlice = createApi({
         headers: { 'x-admin-password': X_ADMIN_PASSWORD },
         body,
       }),
-      invalidatesTags: ['Groups'],
+      invalidatesTags: ['Groups', 'Names'],
     }),
     updateGroupByID: builder.mutation<
       IGroup,
@@ -239,7 +239,7 @@ const apiSlice = createApi({
         headers: { 'x-admin-password': X_ADMIN_PASSWORD },
         body: data,
       }),
-      invalidatesTags: ['Groups'],
+      invalidatesTags: ['Groups', 'Names'],
     }),
     deleteGroupByID: builder.mutation<{ message: string }, string>({
       query: (id) => ({
@@ -247,15 +247,7 @@ const apiSlice = createApi({
         method: 'DELETE',
         headers: { 'x-admin-password': X_ADMIN_PASSWORD },
       }),
-      invalidatesTags: ['Groups'],
-    }),
-    deleteAllGroups: builder.mutation<{ message: string }, void>({
-      query: () => ({
-        url: `/${groupsPath}`,
-        method: 'DELETE',
-        headers: { 'x-admin-password': X_ADMIN_PASSWORD },
-      }),
-      invalidatesTags: ['Groups'],
+      invalidatesTags: ['Groups', 'Names'],
     }),
 
     // --- Weeks inside Groups ---
@@ -282,11 +274,11 @@ const apiSlice = createApi({
       { message: string; week: ISchedule },
       UpdateWeekDTO
     >({
-      query: ({ id, oldWeek, newWeek }) => ({
+      query: ({ id, oldWeekName, newWeekName }) => ({
         url: `/${groupsPath}/${id}/weeks`,
         method: 'PUT',
         headers: { 'x-admin-password': X_ADMIN_PASSWORD },
-        body: { oldWeek, newWeek },
+        body: { oldWeekName, newWeekName },
       }),
       invalidatesTags: ['Schedule'],
     }),
@@ -300,7 +292,7 @@ const apiSlice = createApi({
     }),
 
     // --- Names ---
-    getNames: builder.query<IName[], string | void>({
+    getGroupNames: builder.query<IName[], string | void>({
       query: (searchParams) => `/${namesPath}${getParams(searchParams)}`,
       providesTags: ['Names'],
     }),
@@ -321,7 +313,6 @@ export const {
   useCreateGroupMutation,
   useUpdateGroupByIDMutation,
   useDeleteGroupByIDMutation,
-  useDeleteAllGroupsMutation,
   useGetWeeksByIDQuery,
   useGetWeekScheduleByIDQuery,
   useAddWeekToGroupMutation,
@@ -329,7 +320,7 @@ export const {
   useDeleteWeekFromGroupMutation,
 
   // Names
-  useGetNamesQuery,
+  useGetGroupNamesQuery,
   useGetGroupNamesThatMatchWithReqParamsQuery,
 
   // Faculties

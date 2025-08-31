@@ -1,10 +1,9 @@
 import * as style from './style.module.scss'
 import { DaysListProps } from './types'
-import { useEffect, forwardRef } from 'react'
+import { forwardRef } from 'react'
 import { SVG, Skeleton } from '@/shared/ui'
 import { useAppDispatch, useAppSelector, dayIndexChanged } from '@/shared/redux'
 import { DaysButton } from '@/entities/days'
-import { getDayToPick } from '@/shared/hooks'
 
 const ListElement = ({ children }: { children: React.ReactNode }) => {
   return <li className={style.listElement}>{children}</li>

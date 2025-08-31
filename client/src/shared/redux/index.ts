@@ -8,7 +8,6 @@ export {
   useCreateGroupMutation,
   useUpdateGroupByIDMutation,
   useDeleteGroupByIDMutation,
-  useDeleteAllGroupsMutation,
   useGetWeeksByIDQuery,
   useGetWeekScheduleByIDQuery,
   useAddWeekToGroupMutation,
@@ -16,7 +15,7 @@ export {
   useDeleteWeekFromGroupMutation,
 
   // Names
-  useGetNamesQuery,
+  useGetGroupNamesQuery,
   useGetGroupNamesThatMatchWithReqParamsQuery,
 
   // Faculties

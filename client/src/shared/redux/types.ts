@@ -30,19 +30,14 @@ export interface ISchedule {
   [week: string]: IWeek
 }
 
-// --- Groups ---
-export interface CreateGroupDTO {
+// --- Education Types ---
+export interface CreateEducationTypeDTO {
   educationType: string
-  faculty: string
-  course: string
-  group: string
 }
 
-export interface UpdateGroupDTO {
-  educationType?: string
-  faculty?: string
-  course?: string
-  group?: string
+export interface UpdateEducationTypeDTO {
+  oldEducationType: string
+  newEducationType: string
 }
 
 // --- Faculties ---
@@ -80,14 +75,19 @@ export interface DeleteCourseDTO {
   course: string
 }
 
-// --- Education Types ---
-export interface CreateEducationTypeDTO {
+// --- Groups ---
+export interface CreateGroupDTO {
   educationType: string
+  faculty: string
+  course: string
+  group: string
 }
 
-export interface UpdateEducationTypeDTO {
-  oldEducationType: string
-  newEducationType: string
+export interface UpdateGroupDTO {
+  educationType?: string
+  faculty?: string
+  course?: string
+  group?: string
 }
 
 // --- Weeks ---
@@ -98,8 +98,8 @@ export interface AddWeekDTO {
 
 export interface UpdateWeekDTO {
   id: string
-  oldWeek: string
-  newWeek: string
+  oldWeekName: string
+  newWeekName: string
 }
 
 export interface DeleteWeekDTO {

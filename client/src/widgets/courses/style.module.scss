@@ -11,16 +11,13 @@
     background: $darkGray;
     padding: 1rem;
   }
+
   .listElement {
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: space-between;
+    align-items: stretch;
     width: 100%;
     min-width: 10rem;
-  }
-
-  .addButton {
-    width: 100%;
   }
 
   .skeleton {
@@ -32,6 +29,7 @@
   .list {
     padding: 2rem;
   }
+
   .listElement {
     min-width: 13rem;
   }

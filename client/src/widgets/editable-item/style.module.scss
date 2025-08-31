@@ -1,6 +1,22 @@
 @import '@/shared/vars/vars';
 
 @media (min-width: $pageWidth320) {
+  .container {
+    display: flex;
+    flex: 1 0 auto;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: stretch;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .item {
+    display: flex;
+    flex: 1 0 auto;
+    flex-direction: row;
+  }
+
   .button {
     display: flex;
     flex-direction: column;
@@ -12,7 +28,6 @@
     background: transparent;
     background: $white10Alpha;
     padding: 0.5rem 1rem;
-    // min-width: 11rem;
     min-height: 3rem;
     color: $white;
     font-size: 1.6rem;

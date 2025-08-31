@@ -9,7 +9,7 @@ import {
   useUpdateEducationTypeMutation,
   useDeleteEducationTypeMutation,
 } from '@/shared/redux'
-import { AdminAddButton } from '@/entities/admin'
+import { AddItem } from '@/widgets/add-item'
 
 export const MainPage = () => {
   const {
@@ -26,8 +26,7 @@ export const MainPage = () => {
   const [updateFaculty] = useUpdateFacultyMutation()
   const [deleteFaculty] = useDeleteFacultyMutation()
 
-  const handleCreateEducationType = async () => {
-    const newType = prompt('Введите название нового типа образования:')
+  const handleCreateEducationType = async (newType: string) => {
     if (!newType) return
     try {
       await createEducationType({
@@ -135,9 +134,11 @@ export const MainPage = () => {
         </>
       )}
 
-      <AdminAddButton onClick={handleCreateEducationType}>
-        Добавить тип обучения
-      </AdminAddButton>
+      <AddItem
+        label="Добавить тип обучения"
+        onAdd={handleCreateEducationType}
+        className={style.addEducationTypeContainer}
+      />
     </div>
   )
 }

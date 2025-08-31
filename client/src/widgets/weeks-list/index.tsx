@@ -15,7 +15,8 @@ import { getDaysInRange, getDayToPick } from '@/shared/hooks'
 import { Skeleton } from '@/shared/ui'
 import { ErrorComponent } from '@/widgets/error'
 import { useParams } from 'react-router-dom'
-import { AdminAddButton } from '@/entities/admin'
+import { EditableItem } from '../editable-item'
+import { AddItem } from '../add-item'
 
 const { day } = getDayToPick()
 
@@ -37,10 +38,8 @@ export const WeeksList = () => {
   const [deleteWeek] = useDeleteWeekFromGroupMutation()
 
   // --- CRUD handlers ---
-  const handleCreateWeek = async () => {
-    if (!groupID) return
-    const newWeek = prompt('Введите название новой недели:')
-    if (!newWeek) return
+  const handleCreateWeek = async (newWeek: string) => {
+    if (!newWeek || !groupID) return
     try {
       await addWeek({
         id: groupID,
@@ -56,8 +55,8 @@ export const WeeksList = () => {
     try {
       await updateWeek({
         id: groupID,
-        oldWeek,
-        newWeek,
+        oldWeekName: oldWeek,
+        newWeekName: newWeek,
       }).unwrap()
     } catch (err) {
       console.error('Ошибка при обновлении недели:', err)
@@ -73,11 +72,6 @@ export const WeeksList = () => {
         console.error('Ошибка при удалении недели:', err)
       }
     }
-  }
-
-  const crudHandlers = {
-    onUpdateWeek: handleUpdateWeek,
-    onDeleteWeek: handleDeleteWeek,
   }
 
   // --- Автовыбор текущей недели ---
@@ -120,21 +114,26 @@ export const WeeksList = () => {
               </li>
             ))
           : weeksData.map((week, index) => (
-              <li key={index}>
-                <WeeksButton
-                  text={week}
-                  onClick={() => {
-                    dispatch(weekChanged(week))
+              <li className={style.listItem} key={index}>
+                <EditableItem
+                  value={week}
+                  crudHandlers={{
+                    onUpdate: handleUpdateWeek,
+                    onDelete: handleDeleteWeek,
                   }}
-                  isActive={pickedWeek === week}
-                  crudHandlers={crudHandlers}
-                />
+                >
+                  <WeeksButton
+                    text={week}
+                    onClick={() => {
+                      dispatch(weekChanged(week))
+                    }}
+                    isActive={pickedWeek === week}
+                  />
+                </EditableItem>
               </li>
             ))}
         <li>
-          <AdminAddButton onClick={handleCreateWeek}>
-            Добавить неделю
-          </AdminAddButton>
+          <AddItem label="Добавить неделю" onAdd={handleCreateWeek} />
         </li>
       </ul>
     </div>

@@ -1,21 +1,25 @@
 @import '@/shared/vars/vars';
 
 @media (min-width: $pageWidth320) {
-  .button {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 1rem;
+  .link {
+    display: block;
+    flex: 1 0 auto;
     transition: 0.15s ease-in-out;
     border-radius: 0.5rem;
     background: $white10Alpha;
     padding: 0 2rem;
+    width: 100%;
     min-width: 10rem;
+    max-width: 20rem;
     height: 3.6rem;
+    overflow: hidden;
     color: $white;
     font-size: 1.6rem;
+    line-height: 3.6rem;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    word-break: break-all;
 
     &.active {
       background: $accentColor;
@@ -26,11 +30,5 @@
         background: $accentColor;
       }
     }
-  }
-
-  .container {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
   }
 }

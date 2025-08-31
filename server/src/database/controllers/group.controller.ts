@@ -96,9 +96,28 @@ const getWeekScheduleByID = async (req: Request, res: Response) => {
 
 const createGroup = async (req: Request, res: Response) => {
   try {
-    const group = new Group(req.body)
-    await group.save()
-    res.status(201).json(group)
+    const { educationType, faculty, course, group } = req.body
+
+    if (!educationType || !faculty || !course || !group) {
+      return res.status(400).json({ message: 'educationType, faculty, course, and group are required' })
+    }
+
+    const newGroup = new Group({
+      educationType,
+      faculty,
+      course,
+      group,
+      dates: {
+        week: {
+          day: {
+            time: 'subject',
+          },
+        },
+      },
+    })
+
+    await newGroup.save()
+    res.status(201).json(newGroup)
   } catch (error) {
     if (error instanceof Error) {
       res.status(500).json({ message: error.message })
@@ -134,19 +153,6 @@ const deleteGroupById = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Group not found' })
     }
     res.status(200).json({ message: 'Group deleted successfully' })
-  } catch (error) {
-    if (error instanceof Error) {
-      res.status(500).json({ message: error.message })
-    } else {
-      res.status(500).json({ message: 'An unknown error occurred' })
-    }
-  }
-}
-
-const deleteAllGroups = async (req: Request, res: Response) => {
-  try {
-    await Group.deleteMany({})
-    res.status(200).json({ message: 'All groups deleted successfully' })
   } catch (error) {
     if (error instanceof Error) {
       res.status(500).json({ message: error.message })
@@ -298,7 +304,6 @@ export {
   createGroup,
   updateGroupById,
   deleteGroupById,
-  deleteAllGroups,
   addWeekNameToGroup,
   updateWeekNameInGroup,
   deleteWeekNameFromGroup,

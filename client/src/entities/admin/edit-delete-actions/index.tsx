@@ -2,31 +2,45 @@ import * as style from './style.module.scss'
 
 type EditDeleteActionsProps = {
   onEdit?: () => void
+  onDuplicate?: () => void
   onDelete?: () => void
   editLabel?: string
+  duplicateLabel?: string
   deleteLabel?: string
   className?: string
   editButtonClassName?: string
+  duplicateButtonClassName?: string
   deleteButtonClassName?: string
 }
 
 export const EditDeleteActions = ({
   onEdit,
   onDelete,
+  onDuplicate,
   editLabel = '✏️',
+  duplicateLabel = '📄',
   deleteLabel = '🗑️',
   className,
   editButtonClassName,
+  duplicateButtonClassName,
   deleteButtonClassName,
 }: EditDeleteActionsProps) => {
   return (
-    <div className={`${style.actions} ${className || ''}`}>
+    <div className={`${style.container} ${className || ''}`}>
       {onEdit && (
         <button
           onClick={onEdit}
           className={`${style.editButton} ${editButtonClassName || ''}`}
         >
           {editLabel}
+        </button>
+      )}
+      {onDuplicate && (
+        <button
+          onClick={onDuplicate}
+          className={`${style.duplicateButton} ${duplicateButtonClassName || ''}`}
+        >
+          {duplicateLabel}
         </button>
       )}
       {onDelete && (

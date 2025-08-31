@@ -11,7 +11,8 @@ import {
 } from '@/shared/redux'
 import routes from '@/shared/routes'
 import { ErrorComponent } from '@/widgets/error'
-import { AdminAddButton } from '@/entities/admin'
+import { AddItem } from '@/widgets/add-item'
+import { EditableItem } from '../editable-item'
 
 export const Courses = () => {
   const navigate = useNavigate()
@@ -39,8 +40,7 @@ export const Courses = () => {
   const [updateCourse] = useUpdateCourseMutation()
   const [deleteCourse] = useDeleteCourseMutation()
 
-  const handleCreateCourse = async () => {
-    const newCourse = prompt('Введите название нового курса:')
+  const handleCreateCourse = async (newCourse: string) => {
     if (!newCourse || !educationType || !faculty) return
     try {
       await createCourse({
@@ -106,13 +106,26 @@ export const Courses = () => {
           ))
         : coursesData.map((course, index) => (
             <li className={style.listElement} key={index}>
-              <CourseButton course={course} crudHandlers={crudHandlers} />
+              <EditableItem
+                value={course}
+                crudHandlers={{
+                  onUpdate: (_, newValue) =>
+                    crudHandlers.onUpdateCourse(course, newValue),
+                  onDelete: () => crudHandlers.onDeleteCourse(course),
+                }}
+              >
+                <CourseButton course={course} />
+              </EditableItem>
             </li>
           ))}
 
-      <AdminAddButton onClick={handleCreateCourse}>
-        Добавить курс
-      </AdminAddButton>
+      <li className={style.listElement}>
+        <AddItem
+          label="Добавить курс"
+          onAdd={handleCreateCourse}
+          className={style.addCourseContainer}
+        />
+      </li>
     </ul>
   )
 }
