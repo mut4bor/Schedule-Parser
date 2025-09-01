@@ -1,36 +1,6 @@
-import mongoose, { Schema, Document } from 'mongoose'
+import mongoose, { Schema } from 'mongoose'
+import { ITeacher, ILesson, IGroup } from '@/types/index.js'
 
-export interface ITeacher {
-  firstName: string
-  middleName?: string
-  lastName: string
-  title?: string
-}
-
-export interface ILesson {
-  classroom: string
-  teacher: ITeacher
-  subject: string
-  lessonType: string
-}
-
-export interface ISchedule {
-  [week: string]: {
-    [day: string]: {
-      [time: string]: ILesson
-    }
-  }
-}
-
-export interface IGroup extends Document {
-  educationType: string
-  faculty: string
-  course: string
-  group: string
-  dates: Map<string, { [day: string]: { [time: string]: ILesson } }>
-}
-
-// --- Schemas ---
 const teacherSchema = new Schema<ITeacher>(
   {
     firstName: { type: String, required: true },
@@ -51,15 +21,16 @@ const lessonSchema = new Schema<ILesson>(
   { _id: false },
 )
 
-// DaySchema: ключи = время, значения = Lesson
+// День: объект, где ключи = время ("09:45"), значения = lessonSchema
 const daySchema = new Schema<Record<string, ILesson>>({}, { _id: false, strict: false })
-daySchema.add({ any: { type: lessonSchema } }) // "any" ключи времени
 
-// WeekSchema: ключи = дни, значения = DaySchema
-const weekSchema = new Schema<Record<string, typeof daySchema>>({}, { _id: false, strict: false })
-weekSchema.add({ any: { type: daySchema } }) // "any" ключи дней
+// Указываем, что значения daySchema — это lessonSchema
+daySchema.add({
+  // любое время (динамический ключ)
+  time: { type: lessonSchema },
+})
 
-// GroupSchema
+// Группа
 const groupSchema = new Schema<IGroup>(
   {
     educationType: {
@@ -80,7 +51,7 @@ const groupSchema = new Schema<IGroup>(
     },
     dates: {
       type: Map,
-      of: weekSchema, // теперь Mongoose знает, что внутри
+      of: [daySchema], // ключ = "2025-W01", значение = массив дней
       default: {},
     },
   },

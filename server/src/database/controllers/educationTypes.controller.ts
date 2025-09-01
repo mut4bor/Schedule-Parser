@@ -1,5 +1,6 @@
 import { Group } from '@/database/models/group.model.js'
 import { getFilterParams } from '@/hooks/getFilterParams.js'
+import { datesMap } from './helpers.js'
 import { Request, Response } from 'express'
 
 const getEducationTypes = async (req: Request, res: Response) => {
@@ -30,13 +31,7 @@ const createEducationType = async (req: Request, res: Response) => {
       faculty: 'faculty',
       course: 'course',
       group: 'group',
-      dates: {
-        week: {
-          day: {
-            time: 'subject',
-          },
-        },
-      },
+      dates: datesMap,
     })
 
     await newGroup.save()

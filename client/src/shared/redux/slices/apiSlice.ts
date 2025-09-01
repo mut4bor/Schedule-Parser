@@ -293,8 +293,8 @@ const apiSlice = createApi({
     }),
 
     updateLessonInDay: builder.mutation<{ message: string }, UpdateLessonDTO>({
-      query: ({ id, weekName, day, time, ...body }) => ({
-        url: `/${groupsPath}/${id}/weeks/${weekName}/days/${day}/times/${time}`,
+      query: ({ id, weekName, dayIndex, time, ...body }) => ({
+        url: `/${groupsPath}/${id}/weeks/${weekName}/days/${dayIndex}/times/${time}`,
         method: 'PUT',
         headers: { 'x-admin-password': X_ADMIN_PASSWORD },
         body,
@@ -304,8 +304,8 @@ const apiSlice = createApi({
 
     deleteLessonFromDay: builder.mutation<{ message: string }, DeleteLessonDTO>(
       {
-        query: ({ id, weekName, day, time }) => ({
-          url: `/${groupsPath}/${id}/weeks/${weekName}/days/${day}/times/${time}`,
+        query: ({ id, weekName, dayIndex, time }) => ({
+          url: `/${groupsPath}/${id}/weeks/${weekName}/days/${dayIndex}/times/${time}`,
           method: 'DELETE',
           headers: { 'x-admin-password': X_ADMIN_PASSWORD },
         }),

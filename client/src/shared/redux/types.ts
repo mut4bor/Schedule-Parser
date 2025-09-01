@@ -20,9 +20,16 @@ export interface IFaculties {
   [educationType: string]: string[]
 }
 
+export interface ILesson {
+  classroom: string
+  teacher: ITeacher
+  subject: string
+  lessonType: string
+}
+
 export interface ITeacher {
   firstName: string
-  middleName: string
+  middleName?: string
   lastName: string
   title?: string
 }
@@ -34,14 +41,20 @@ export interface ILesson {
   lessonType: string
 }
 
-export interface IWeek {
-  [day: string]: {
-    [time: string]: ILesson
-  }
+export interface IDay {
+  [time: string]: ILesson
 }
 
-export interface ISchedule {
-  [week: string]: IWeek
+export type IWeek = IDay[]
+
+export type ISchedule = Record<string, IWeek>
+
+export interface IGroup extends Document {
+  educationType: string
+  faculty: string
+  course: string
+  group: string
+  dates: ISchedule
 }
 
 // --- Education Types ---
@@ -125,24 +138,19 @@ export interface DeleteWeekDTO {
 export interface UpdateLessonDTO {
   id: string
   weekName: string
-  day: string
+  dayIndex: number
   time: string
   newTime?: string
-  classroom: string
-  teacher: {
-    firstName: string
-    middleName?: string
-    lastName: string
-    title?: string
-  }
-  subject: string
-  lessonType: string
+  classroom?: string
+  teacher?: ITeacher
+  subject?: string
+  lessonType?: string
 }
 
 // DTO для удаления урока
 export interface DeleteLessonDTO {
   id: string
   weekName: string
-  day: string
+  dayIndex: number
   time: string
 }

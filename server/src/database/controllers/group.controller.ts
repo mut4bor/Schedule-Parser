@@ -2,6 +2,7 @@ import { Group } from '@/database/models/group.model.js'
 import { getDatesOfISOWeek } from '@/hooks/getDatesOfISOWeek.js'
 import { getFilterParams } from '@/hooks/getFilterParams.js'
 import { Request, Response } from 'express'
+import { lessonPlaceholder, lessonTimes } from './helpers.js'
 
 const getAllGroups = async (req: Request, res: Response) => {
   try {
@@ -180,22 +181,6 @@ const addWeekNameToGroup = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Group not found' })
     }
 
-    // Список времён
-    const times = ['09:45', '11:30', '13:30', '15:15', '17:00']
-
-    // Шаблон пустого урока
-    const emptyLesson = {
-      classroom: '',
-      teacher: {
-        firstName: '',
-        middleName: '',
-        lastName: '',
-        title: '',
-      },
-      subject: '',
-      lessonType: '',
-    }
-
     // Проверяем формат YYYY-Www
     const weekMatch = /^(\d{4})-W(\d{2})$/.exec(weekName)
 
@@ -203,32 +188,33 @@ const addWeekNameToGroup = async (req: Request, res: Response) => {
       const year = parseInt(weekMatch[1], 10)
       const week = parseInt(weekMatch[2], 10)
 
-      const days = getDatesOfISOWeek(year, week)
+      const days = getDatesOfISOWeek(year, week) // массив из 7 дат (YYYY-MM-DD)
 
-      // Создаём объект для недели
-      const weekData: {
-        [day: string]: { [time: string]: typeof emptyLesson }
-      } = {}
-
-      days.forEach((date) => {
-        weekData[date] = {}
-        times.forEach((t) => {
-          // Клонируем объект, чтобы не было ссылок на один и тот же
-          weekData[date][t] = { ...emptyLesson, teacher: { ...emptyLesson.teacher } }
+      // Создаём массив дней
+      const weekData = days.map(() => {
+        const dayData: { [time: string]: typeof lessonPlaceholder } = {}
+        lessonTimes.forEach((t) => {
+          dayData[t] = {
+            ...lessonPlaceholder,
+            teacher: { ...lessonPlaceholder.teacher },
+          }
         })
+        return dayData
       })
 
       group.dates.set(weekName, weekData)
     } else {
       // Если это конкретный день (YYYY-MM-DD)
-      const dayData: { [time: string]: typeof emptyLesson } = {}
-      times.forEach((t) => {
-        dayData[t] = { ...emptyLesson, teacher: { ...emptyLesson.teacher } }
+      const dayData: { [time: string]: typeof lessonPlaceholder } = {}
+      lessonTimes.forEach((t) => {
+        dayData[t] = {
+          ...lessonPlaceholder,
+          teacher: { ...lessonPlaceholder.teacher },
+        }
       })
 
-      group.dates.set(weekName, {
-        [weekName]: dayData,
-      })
+      // Оборачиваем в массив, т.к. ISchedule = Map<string, IDay[]>
+      group.dates.set(weekName, [dayData])
     }
 
     await group.save()
@@ -308,13 +294,19 @@ const deleteWeekNameFromGroup = async (req: Request, res: Response) => {
 
 const updateLessonInDay = async (req: Request, res: Response) => {
   try {
-    const { id, weekName, day, time } = req.params
+    const { id, weekName, dayIndex: day, time } = req.params
     const { classroom, teacher, subject, lessonType, newTime } = req.body
 
-    if (!id || !weekName || !day || !time) {
+    if (!id || !weekName || day === undefined || !time) {
       return res.status(400).json({
         message: 'ID, weekName, day, and time are required',
       })
+    }
+
+    const dayIndex = parseInt(day, 10)
+
+    if (isNaN(dayIndex)) {
+      return res.status(400).json({ message: 'Day must be a number (index)' })
     }
 
     const group = await Group.findById(id)
@@ -322,29 +314,28 @@ const updateLessonInDay = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Group not found' })
     }
 
-    if (!group.dates.has(weekName)) {
+    const weekData = group.dates.get(weekName)
+    if (!weekData) {
       return res.status(404).json({ message: 'Week not found' })
     }
 
-    const weekData = group.dates.get(weekName) || {}
-
-    if (!weekData[day] || !weekData[day][time]) {
+    if (!weekData[dayIndex] || !weekData[dayIndex][time]) {
       return res.status(404).json({ message: 'Lesson not found at this time' })
     }
 
     // Берём старый урок
-    const oldLesson = weekData[day][time]
+    const oldLesson = weekData[dayIndex][time]
 
     // Если нужно поменять время
     const targetTime = newTime || time
 
     // Удаляем старый ключ, если время изменилось
     if (newTime && newTime !== time) {
-      delete weekData[day][time]
+      delete weekData[dayIndex][time]
     }
 
     // Обновляем данные урока
-    weekData[day][targetTime] = {
+    weekData[dayIndex][targetTime] = {
       classroom: classroom ?? oldLesson.classroom,
       teacher: teacher ?? oldLesson.teacher,
       subject: subject ?? oldLesson.subject,
@@ -357,7 +348,7 @@ const updateLessonInDay = async (req: Request, res: Response) => {
 
     res.status(200).json({
       message: 'Lesson updated successfully',
-      lesson: weekData[day][targetTime],
+      lesson: weekData[dayIndex][targetTime],
     })
   } catch (error) {
     res.status(500).json({
@@ -368,12 +359,18 @@ const updateLessonInDay = async (req: Request, res: Response) => {
 
 const deleteLessonFromDay = async (req: Request, res: Response) => {
   try {
-    const { id, weekName, day, time } = req.params
+    const { id, weekName, dayIndex: day, time } = req.params
 
-    if (!id || !weekName || !day || !time) {
+    if (!id || !weekName || day === undefined || !time) {
       return res.status(400).json({
         message: 'ID, weekName, day, and time are required',
       })
+    }
+
+    const dayIndex = parseInt(day, 10)
+
+    if (isNaN(dayIndex)) {
+      return res.status(400).json({ message: 'Day must be a number (index)' })
     }
 
     const group = await Group.findById(id)
@@ -381,19 +378,19 @@ const deleteLessonFromDay = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Group not found' })
     }
 
-    if (!group.dates.has(weekName)) {
+    const weekData = group.dates.get(weekName)
+    if (!weekData) {
       return res.status(404).json({ message: 'Week not found' })
     }
 
-    const weekData = group.dates.get(weekName) || {}
-
-    if (!weekData[day] || !weekData[day][time]) {
+    if (!weekData[dayIndex] || !weekData[dayIndex][time]) {
       return res.status(404).json({ message: 'Lesson not found' })
     }
 
-    delete weekData[day][time]
+    delete weekData[dayIndex][time]
 
     group.dates.set(weekName, weekData)
+    group.markModified('dates')
     await group.save()
 
     res.status(200).json({ message: 'Lesson deleted successfully' })

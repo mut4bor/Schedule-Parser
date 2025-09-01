@@ -3,28 +3,7 @@ import { forwardRef } from 'react'
 import { SVG, Skeleton } from '@/shared/ui'
 import { useAppDispatch, useAppSelector, dayIndexChanged } from '@/shared/redux'
 import { DaysButton } from '@/entities/days'
-import { ISchedule, IWeek } from '@/shared/redux/types'
-
-function formatDate(dateStr: string): string {
-  const date = new Date(dateStr)
-
-  // Проверка на корректность даты
-  if (isNaN(date.getTime())) {
-    // throw new Error('Некорректная дата')
-    return dateStr
-  }
-
-  const weekdays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
-
-  // Получаем день и месяц с ведущим нулём
-  const day = String(date.getDate()).padStart(2, '0')
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-
-  // В JS getDay(): 0 = Вс, 1 = Пн, ..., 6 = Сб
-  const weekday = weekdays[(date.getDay() + 6) % 7]
-
-  return `${day}.${month} (${weekday})`
-}
+import { IWeek } from '@/shared/redux/types'
 
 const ListElement = ({ children }: { children: React.ReactNode }) => {
   return <li className={style.listElement}>{children}</li>
@@ -41,6 +20,8 @@ export const DaysList = forwardRef<HTMLDivElement, Props>(
     const dispatch = useAppDispatch()
 
     const pickedDayIndex = useAppSelector((store) => store.navigation.dayIndex)
+
+    console.log('scheduleData', scheduleData)
 
     return (
       <div
@@ -67,7 +48,7 @@ export const DaysList = forwardRef<HTMLDivElement, Props>(
                   <Skeleton className={style.skeleton} />
                 </ListElement>
               ))
-            : Object.keys(scheduleData).map((day, index) => (
+            : scheduleData.map((_, index) => (
                 <ListElement key={index}>
                   <DaysButton
                     onClick={() => {
@@ -75,7 +56,7 @@ export const DaysList = forwardRef<HTMLDivElement, Props>(
                     }}
                     isActive={pickedDayIndex === index}
                   >
-                    {formatDate(day)}
+                    {index}
                   </DaysButton>
                 </ListElement>
               ))}

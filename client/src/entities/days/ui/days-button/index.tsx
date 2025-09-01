@@ -1,11 +1,13 @@
+import React from 'react'
 import * as style from './style.module.scss'
-import { DaysButtonProps } from './types'
 
-export const DaysButton = ({
-  children,
-  onClick,
-  isActive,
-}: DaysButtonProps) => {
+type Props = {
+  children: React.ReactNode
+  onClick: () => void
+  isActive?: boolean
+}
+
+export const DaysButton = ({ children, onClick, isActive }: Props) => {
   return (
     <button
       onClick={onClick}

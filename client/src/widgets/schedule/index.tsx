@@ -22,19 +22,18 @@ export const Schedule = ({ scheduleData, groupID }: Props) => {
   const [deleteLesson] = useDeleteLessonFromDayMutation()
 
   const isScheduleData =
-    !!scheduleData &&
-    pickedDayIndex !== -1 &&
-    !!scheduleData[Object.keys(scheduleData)[pickedDayIndex]]
+    !!scheduleData && pickedDayIndex !== -1 && !!scheduleData[pickedDayIndex]
 
-  const dayName = Object.keys(scheduleData ?? {})[pickedDayIndex]
+  const dayName = scheduleData?.[pickedDayIndex]
 
   const handleUpdateLesson = async (
     time: string,
     newLesson: Partial<ILesson> & { newTime?: string },
   ) => {
-    if (!scheduleData || !dayName || !pickedWeek) return
+    if (!scheduleData || !dayName || !pickedWeek || pickedDayIndex === -1)
+      return
     try {
-      const oldLesson = scheduleData[dayName][time]
+      const oldLesson = scheduleData[pickedDayIndex][time]
       const updatedLesson: ILesson = {
         ...oldLesson,
         ...newLesson,
@@ -47,7 +46,7 @@ export const Schedule = ({ scheduleData, groupID }: Props) => {
       await updateLesson({
         id: groupID,
         weekName: pickedWeek,
-        day: dayName,
+        dayIndex: pickedDayIndex,
         time,
         newTime: newLesson.newTime,
         ...updatedLesson,
@@ -58,13 +57,13 @@ export const Schedule = ({ scheduleData, groupID }: Props) => {
   }
 
   const handleDeleteLesson = async (time: string) => {
-    if (!dayName || !pickedWeek) return
+    if (!dayName || !pickedWeek || pickedDayIndex === -1) return
     if (window.confirm(`Удалить урок в ${time}?`)) {
       try {
         await deleteLesson({
           id: groupID,
           weekName: pickedWeek,
-          day: dayName,
+          dayIndex: pickedDayIndex,
           time,
         }).unwrap()
       } catch (err) {
@@ -81,7 +80,7 @@ export const Schedule = ({ scheduleData, groupID }: Props) => {
               <Skeleton className={style.skeleton} />
             </li>
           ))
-        : Object.entries(scheduleData[dayName])
+        : Object.entries(scheduleData[pickedDayIndex])
             .sort(([timeA], [timeB]) => {
               const [hA, mA] = timeA.split(':').map(Number)
               const [hB, mB] = timeB.split(':').map(Number)
@@ -202,7 +201,7 @@ export const Schedule = ({ scheduleData, groupID }: Props) => {
 
                   <li>
                     <EditableItem
-                      value={lesson.teacher.middleName}
+                      value={lesson.teacher.middleName ?? ''}
                       crudHandlers={{
                         onUpdate: async (_, newValue) =>
                           handleUpdateLesson(time, {

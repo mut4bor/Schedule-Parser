@@ -22,6 +22,7 @@ const { day } = getDayToPick()
 
 function formatWeekRange(weekValue: string): string {
   // Ожидаем формат "YYYY-Www"
+
   const match = /^(\d{4})-W(\d{2})$/.exec(weekValue)
   if (!match) return weekValue
 

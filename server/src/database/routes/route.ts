@@ -40,7 +40,6 @@ import {
   getGroupsByEducationType,
 } from '@/database/controllers/educationTypes.controller.js'
 import { getGroupNames, getGroupNamesThatMatchWithReqParams } from '@/database/controllers/name.controller.js'
-import { refreshSchedule } from '@/database/controllers/refresh.controller.js'
 
 const router = Router()
 
@@ -60,7 +59,6 @@ const groupsPath = `/groups`
 const namesPath = `/names`
 const facultyPath = `/faculty`
 const coursePath = `/course`
-const refreshPath = `/refresh`
 const educationTypePath = `/education-types` // Новый путь
 
 // Middleware для всех маршрутов, кроме GET, использующих проверку пароля
@@ -70,7 +68,7 @@ router.use((req, res, next) => {
   //   return res.status(401).json({ message: 'Unauthorized: Incorrect domain' })
   // }
 
-  if (req.method !== 'GET' && req.path !== refreshPath) {
+  if (req.method !== 'GET') {
     // refreshPath уже имеет свою проверку
     return checkPassword(req, res, next)
   }
@@ -112,14 +110,11 @@ router.delete(`${groupsPath}/:id`, deleteGroupById)
 router.post(`${groupsPath}/:id/weeks`, addWeekNameToGroup)
 router.put(`${groupsPath}/:id/weeks`, updateWeekNameInGroup)
 router.delete(`${groupsPath}/:id/weeks/:weekName`, deleteWeekNameFromGroup)
-router.put(`${groupsPath}/:id/weeks/:weekName/days/:day/times/:time`, updateLessonInDay)
-router.delete(`${groupsPath}/:id/weeks/:weekName/days/:day/times/:time`, deleteLessonFromDay)
+router.put(`${groupsPath}/:id/weeks/:weekName/days/:dayIndex/times/:time`, updateLessonInDay)
+router.delete(`${groupsPath}/:id/weeks/:weekName/days/:dayIndex/times/:time`, deleteLessonFromDay)
 
 // --- Названия групп ---
 router.get(namesPath, getGroupNames)
 router.get(`${namesPath}/search`, getGroupNamesThatMatchWithReqParams)
-
-// --- Обновление данных из внешних источников (требует пароль через req.body) ---
-router.post(refreshPath, refreshSchedule)
 
 export { router }
