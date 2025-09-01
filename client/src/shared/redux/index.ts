@@ -1,7 +1,4 @@
 export {
-  // Refresh
-  useRefreshScheduleMutation,
-
   // Groups
   useGetAllGroupsQuery,
   useGetGroupByIDQuery,
@@ -42,8 +39,6 @@ export {
   useDeleteEducationTypeMutation,
   useGetGroupsByEducationTypeQuery,
 } from './slices/apiSlice'
-
-export { weekChanged, dayIndexChanged } from './slices/navigationSlice'
 
 export {
   isSearchInputFocusedChanged,

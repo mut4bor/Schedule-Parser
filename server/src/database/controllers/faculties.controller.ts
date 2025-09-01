@@ -115,7 +115,6 @@ const updateFaculty = async (req: Request, res: Response) => {
   }
 }
 
-// Удаление факультета
 const deleteFaculty = async (req: Request, res: Response) => {
   try {
     const { educationType, faculty } = req.params

@@ -1,6 +1,5 @@
-import { IDay, ISchedule } from '@/types/index.js'
+import { IDay, ILesson, ISchedule, IWeek } from '@/types/index.js'
 
-// Функция для получения номера недели (ISO-8601)
 function getWeekNumber(date: Date): { year: number; week: number } {
   const tmp = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
   const dayNum = tmp.getUTCDay() || 7
@@ -10,32 +9,16 @@ function getWeekNumber(date: Date): { year: number; week: number } {
   return { year: tmp.getUTCFullYear(), week: weekNo }
 }
 
-// Функция для получения массива дат текущей недели
-function getCurrentWeekDates(): string[] {
-  const today = new Date()
-  const day = today.getDay() // 0 - воскресенье, 1 - понедельник, ...
-  const diffToMonday = day === 0 ? -6 : 1 - day // смещение до понедельника
-
-  const monday = new Date(today)
-  monday.setDate(today.getDate() + diffToMonday)
-
-  const week: string[] = []
-  for (let i = 0; i < 7; i++) {
-    const d = new Date(monday)
-    d.setDate(monday.getDate() + i)
-    week.push(d.toISOString().split('T')[0]) // формат YYYY-MM-DD
-  }
-
-  return week
-}
-
-const weekDates = getCurrentWeekDates()
 const { year, week } = getWeekNumber(new Date())
 const weekKey: string = `${year}-W${String(week).padStart(2, '0')}`
 
-const lessonPlaceholder = {
+const lessonPlaceholder: Omit<ILesson, 'time'> = {
   classroom: '',
-  teacher: { firstName: '', lastName: '' },
+  teacher: {
+    firstName: '',
+    middleName: '',
+    lastName: '',
+  },
   subject: '',
   lessonType: '',
 }
@@ -43,17 +26,18 @@ const lessonPlaceholder = {
 const lessonTimes = ['09:45', '11:30', '13:30', '15:15', '17:00']
 
 function createDayPlaceholder(): IDay {
-  return lessonTimes.reduce((acc, time) => {
-    acc[time] = { ...lessonPlaceholder }
-    return acc
-  }, {} as IDay)
+  return lessonTimes.map(
+    (time): ILesson => ({
+      ...lessonPlaceholder,
+      time,
+    }),
+  )
 }
 
-const datesMap: ISchedule = new Map()
+function createWeekPlaceholder(): IWeek {
+  return Array.from({ length: 6 }, () => createDayPlaceholder())
+}
 
-datesMap.set(
-  weekKey,
-  weekDates.map(() => createDayPlaceholder()),
-)
+const datesMap: ISchedule = new Map([[weekKey, createWeekPlaceholder()]])
 
-export { datesMap, lessonTimes, lessonPlaceholder }
+export { datesMap, lessonTimes, lessonPlaceholder, createDayPlaceholder, createWeekPlaceholder }

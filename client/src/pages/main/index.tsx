@@ -134,11 +134,7 @@ export const MainPage = () => {
         </>
       )}
 
-      <AddItem
-        label="Добавить тип обучения"
-        onAdd={handleCreateEducationType}
-        className={style.addEducationTypeContainer}
-      />
+      <AddItem onAdd={handleCreateEducationType}>Добавить тип обучения</AddItem>
     </div>
   )
 }

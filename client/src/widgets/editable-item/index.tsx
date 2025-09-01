@@ -16,7 +16,6 @@ interface Props {
   inputClassName?: string
   saveButtonClassName?: string
   cancelButtonClassName?: string
-  isLight?: boolean
 }
 
 export const EditableItem = ({
@@ -28,7 +27,6 @@ export const EditableItem = ({
   inputClassName,
   saveButtonClassName,
   cancelButtonClassName,
-  isLight,
 }: Props) => {
   const [isEditing, setIsEditing] = useState(false)
 
@@ -43,7 +41,11 @@ export const EditableItem = ({
   }
 
   const handleDelete = async () => {
-    if (!crudHandlers?.onDelete) return
+    if (
+      !crudHandlers?.onDelete ||
+      !window.confirm(`Вы уверены, что хотите удалить ${value}?`)
+    )
+      return
     try {
       await crudHandlers.onDelete(value)
     } catch (err) {
@@ -51,29 +53,30 @@ export const EditableItem = ({
     }
   }
 
-  if (isEditing) {
-    return (
-      <InlineEdit
-        initialValue={value}
-        onSave={handleSave}
-        onCancel={() => setIsEditing(false)}
-        type={type}
-        inputClassName={inputClassName}
-        saveButtonClassName={saveButtonClassName}
-        cancelButtonClassName={cancelButtonClassName}
-        isLight={isLight}
-      />
-    )
-  }
-
   return (
     <div className={`${style.container} ${className ? className : ''}`}>
-      <div className={style.item}>{children}</div>
-      {crudHandlers && (
-        <EditDeleteActions
-          onEdit={() => setIsEditing(true)}
-          onDelete={!!crudHandlers?.onDelete ? handleDelete : null}
+      {isEditing ? (
+        <InlineEdit
+          initialValue={value}
+          onSave={handleSave}
+          onCancel={() => setIsEditing(false)}
+          type={type}
+          inputClassName={inputClassName}
+          saveButtonClassName={saveButtonClassName}
+          cancelButtonClassName={cancelButtonClassName}
         />
+      ) : (
+        <>
+          <div className={style.item}>{children}</div>
+          {crudHandlers && (
+            <EditDeleteActions
+              onEdit={
+                !!crudHandlers?.onUpdate ? () => setIsEditing(true) : null
+              }
+              onDelete={!!crudHandlers?.onDelete ? handleDelete : null}
+            />
+          )}
+        </>
       )}
     </div>
   )

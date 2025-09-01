@@ -9,7 +9,6 @@ type InlineEditProps = {
   inputClassName?: string
   saveButtonClassName?: string
   cancelButtonClassName?: string
-  isLight?: boolean
   type?: 'text' | 'date' | 'week'
 }
 
@@ -21,7 +20,6 @@ export const InlineEdit = ({
   inputClassName,
   saveButtonClassName,
   cancelButtonClassName,
-  isLight,
   type = 'text',
 }: InlineEditProps) => {
   const [value, setValue] = useState(initialValue)
@@ -41,23 +39,17 @@ export const InlineEdit = ({
         type={type}
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        className={`${style.editInput} ${isLight ? style.isLight : ''} ${
-          inputClassName || ''
-        }`}
+        className={`${style.editInput} ${inputClassName || ''}`}
       />
       <button
         onClick={handleSave}
-        className={`${style.saveButton} ${isLight ? style.isLight : ''} ${
-          saveButtonClassName || ''
-        }`}
+        className={`${style.saveButton} ${saveButtonClassName || ''}`}
       >
         ✓
       </button>
       <button
         onClick={handleCancel}
-        className={`${style.cancelButton} ${isLight ? style.isLight : ''} ${
-          cancelButtonClassName || ''
-        }`}
+        className={`${style.cancelButton} ${cancelButtonClassName || ''}`}
       >
         ✕
       </button>

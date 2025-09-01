@@ -13,6 +13,7 @@ import {
   getWeekScheduleByID,
   deleteLessonFromDay,
   updateLessonInDay,
+  createLessonInDay,
 } from '@/database/controllers/group.controller.js'
 
 import {
@@ -43,7 +44,6 @@ import { getGroupNames, getGroupNamesThatMatchWithReqParams } from '@/database/c
 
 const router = Router()
 
-// Middleware для проверки пароля
 const checkPassword = (req: Request, res: Response, next: NextFunction) => {
   const password = req.headers['x-admin-password']
 
@@ -54,22 +54,14 @@ const checkPassword = (req: Request, res: Response, next: NextFunction) => {
   }
 }
 
-// Префиксы путей
-const groupsPath = `/groups`
-const namesPath = `/names`
+const educationTypePath = `/education-types`
 const facultyPath = `/faculty`
 const coursePath = `/course`
-const educationTypePath = `/education-types` // Новый путь
+const groupsPath = `/groups`
+const namesPath = `/names`
 
-// Middleware для всех маршрутов, кроме GET, использующих проверку пароля
 router.use((req, res, next) => {
-  // const requestOrigin = req.get('origin')
-  // if (NODE_ENV === 'production' && (!requestOrigin || requestOrigin !== PRODUCTION_DOMAIN)) {
-  //   return res.status(401).json({ message: 'Unauthorized: Incorrect domain' })
-  // }
-
   if (req.method !== 'GET') {
-    // refreshPath уже имеет свою проверку
     return checkPassword(req, res, next)
   }
   next()
@@ -77,25 +69,25 @@ router.use((req, res, next) => {
 
 // --- Типы образования ---
 router.get(educationTypePath, getEducationTypes)
-router.post(educationTypePath, createEducationType) // Создать новый тип образования (по сути, новую группу)
-router.put(educationTypePath, updateEducationType) // Обновить название типа образования
-router.delete(`${educationTypePath}/:educationType`, deleteEducationType) // Удалить тип образования
-router.get(`${educationTypePath}/:educationType/groups`, getGroupsByEducationType) // Получить группы по типу образования
+router.post(educationTypePath, createEducationType)
+router.put(educationTypePath, updateEducationType)
+router.delete(`${educationTypePath}/:educationType`, deleteEducationType)
+router.get(`${educationTypePath}/:educationType/groups`, getGroupsByEducationType)
 
 // --- Факультеты ---
-router.get(facultyPath, getFaculties) // Ваш существующий метод с разделением по educationType
-router.get(`${facultyPath}/all`, getAllFaculties) // Новый метод, чтобы получить список всех уникальных факультетов
-router.post(facultyPath, createFaculty) // Создать новый факультет (по сути, новую группу с указанным факультетом)
-router.put(facultyPath, updateFaculty) // Обновить название факультета
-router.delete(`${facultyPath}/:educationType/:faculty`, deleteFaculty) // Удалить факультет (все группы с этим факультетом)
-router.get(`${facultyPath}/:faculty/groups`, getGroupsByFaculty) // Получить группы по факультету
+router.get(facultyPath, getFaculties)
+router.get(`${facultyPath}/all`, getAllFaculties)
+router.post(facultyPath, createFaculty)
+router.put(facultyPath, updateFaculty)
+router.delete(`${facultyPath}/:educationType/:faculty`, deleteFaculty)
+router.get(`${facultyPath}/:faculty/groups`, getGroupsByFaculty)
 
 // --- Курсы ---
 router.get(coursePath, getCourses)
-router.post(coursePath, createCourse) // Создать новый курс (по сути, новую группу с указанным курсом)
-router.put(coursePath, updateCourse) // Обновить номер курса
-router.delete(`${coursePath}/:educationType/:faculty/:course`, deleteCourse) // Удалить курс (все группы с этим курсом)
-router.get(`${coursePath}/:course/groups`, getGroupsByCourse) // Получить группы по курсу
+router.post(coursePath, createCourse)
+router.put(coursePath, updateCourse)
+router.delete(`${coursePath}/:educationType/:faculty/:course`, deleteCourse)
+router.get(`${coursePath}/:course/groups`, getGroupsByCourse)
 
 // --- Группы ---
 router.get(groupsPath, getAllGroups)
@@ -106,12 +98,14 @@ router.post(groupsPath, createGroup)
 router.put(`${groupsPath}/:id`, updateGroupById)
 router.delete(`${groupsPath}/:id`, deleteGroupById)
 
-// --- Управление расписанием для групп (требует пароль) ---
+// --- Управление расписанием для групп ---
 router.post(`${groupsPath}/:id/weeks`, addWeekNameToGroup)
 router.put(`${groupsPath}/:id/weeks`, updateWeekNameInGroup)
 router.delete(`${groupsPath}/:id/weeks/:weekName`, deleteWeekNameFromGroup)
-router.put(`${groupsPath}/:id/weeks/:weekName/days/:dayIndex/times/:time`, updateLessonInDay)
-router.delete(`${groupsPath}/:id/weeks/:weekName/days/:dayIndex/times/:time`, deleteLessonFromDay)
+
+router.post(`${groupsPath}/:id/weeks/:weekName/days/:dayIndex/lessons`, createLessonInDay)
+router.put(`${groupsPath}/:id/weeks/:weekName/days/:dayIndex/lessons/:lessonId`, updateLessonInDay)
+router.delete(`${groupsPath}/:id/weeks/:weekName/days/:dayIndex/lessons/:lessonId`, deleteLessonFromDay)
 
 // --- Названия групп ---
 router.get(namesPath, getGroupNames)

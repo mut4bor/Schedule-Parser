@@ -4,7 +4,6 @@ import {
   IGroup,
   IName,
   IFaculties,
-  IRefreshSchedule,
   CreateGroupDTO,
   UpdateGroupDTO,
   UpdateFacultyDTO,
@@ -21,6 +20,7 @@ import {
   DeleteLessonDTO,
   UpdateLessonDTO,
   IWeek,
+  CreateLessonDTO,
 } from '../types'
 
 const groupsPath = `groups`
@@ -28,7 +28,6 @@ const namesPath = `names`
 const facultyPath = `faculty`
 const coursePath = `course`
 const educationTypePath = `education-types`
-const refreshPath = `refresh`
 
 const getParams = (params: string | void) => {
   return params ? `?${params}` : ''
@@ -54,18 +53,6 @@ const apiSlice = createApi({
   ],
 
   endpoints: (builder) => ({
-    // --- Refresh ---
-    refreshSchedule: builder.mutation<IRefreshSchedule, string>({
-      query: (password) => ({
-        url: `/${refreshPath}`,
-        method: 'POST',
-        headers: {
-          'x-admin-password': X_ADMIN_PASSWORD,
-        },
-        body: { password },
-      }),
-    }),
-
     // --- Education Types ---
     getEducationTypes: builder.query<string[], void>({
       query: () => `/${educationTypePath}`,
@@ -265,6 +252,7 @@ const apiSlice = createApi({
       query: ({ groupID, week }) => `/${groupsPath}/${groupID}/weeks/${week}`,
       providesTags: ['Schedule'],
     }),
+
     addWeekToGroup: builder.mutation<{ message: string }, AddWeekDTO>({
       query: ({ id, weekName }) => ({
         url: `/${groupsPath}/${id}/weeks`,
@@ -292,9 +280,19 @@ const apiSlice = createApi({
       invalidatesTags: ['Weeks'],
     }),
 
+    createLessonInDay: builder.mutation<{ message: string }, CreateLessonDTO>({
+      query: ({ id, weekName, dayIndex, ...body }) => ({
+        url: `/${groupsPath}/${id}/weeks/${weekName}/days/${dayIndex}/lessons`,
+        method: 'POST',
+        headers: { 'x-admin-password': X_ADMIN_PASSWORD },
+        body,
+      }),
+      invalidatesTags: ['Schedule'],
+    }),
+
     updateLessonInDay: builder.mutation<{ message: string }, UpdateLessonDTO>({
-      query: ({ id, weekName, dayIndex, time, ...body }) => ({
-        url: `/${groupsPath}/${id}/weeks/${weekName}/days/${dayIndex}/times/${time}`,
+      query: ({ id, weekName, dayIndex, lessonId, ...body }) => ({
+        url: `/${groupsPath}/${id}/weeks/${weekName}/days/${dayIndex}/lessons/${lessonId}`,
         method: 'PUT',
         headers: { 'x-admin-password': X_ADMIN_PASSWORD },
         body,
@@ -304,8 +302,8 @@ const apiSlice = createApi({
 
     deleteLessonFromDay: builder.mutation<{ message: string }, DeleteLessonDTO>(
       {
-        query: ({ id, weekName, dayIndex, time }) => ({
-          url: `/${groupsPath}/${id}/weeks/${weekName}/days/${dayIndex}/times/${time}`,
+        query: ({ id, weekName, dayIndex, lessonId }) => ({
+          url: `/${groupsPath}/${id}/weeks/${weekName}/days/${dayIndex}/lessons/${lessonId}`,
           method: 'DELETE',
           headers: { 'x-admin-password': X_ADMIN_PASSWORD },
         }),
@@ -326,26 +324,12 @@ const apiSlice = createApi({
 })
 
 export const {
-  // Refresh
-  useRefreshScheduleMutation,
-
-  // Groups
-  useGetAllGroupsQuery,
-  useGetGroupByIDQuery,
-  useCreateGroupMutation,
-  useUpdateGroupByIDMutation,
-  useDeleteGroupByIDMutation,
-  useGetWeeksByIDQuery,
-  useGetWeekScheduleByIDQuery,
-  useAddWeekToGroupMutation,
-  useUpdateWeekInGroupMutation,
-  useDeleteWeekFromGroupMutation,
-  useUpdateLessonInDayMutation,
-  useDeleteLessonFromDayMutation,
-
-  // Names
-  useGetGroupNamesQuery,
-  useGetGroupNamesThatMatchWithReqParamsQuery,
+  // Education Types
+  useGetEducationTypesQuery,
+  useCreateEducationTypeMutation,
+  useUpdateEducationTypeMutation,
+  useDeleteEducationTypeMutation,
+  useGetGroupsByEducationTypeQuery,
 
   // Faculties
   useGetFacultiesQuery,
@@ -362,12 +346,24 @@ export const {
   useDeleteCourseMutation,
   useGetGroupsByCourseQuery,
 
-  // Education Types
-  useGetEducationTypesQuery,
-  useCreateEducationTypeMutation,
-  useUpdateEducationTypeMutation,
-  useDeleteEducationTypeMutation,
-  useGetGroupsByEducationTypeQuery,
+  // Groups
+  useGetAllGroupsQuery,
+  useGetGroupByIDQuery,
+  useCreateGroupMutation,
+  useUpdateGroupByIDMutation,
+  useDeleteGroupByIDMutation,
+  useGetWeeksByIDQuery,
+  useGetWeekScheduleByIDQuery,
+  useAddWeekToGroupMutation,
+  useUpdateWeekInGroupMutation,
+  useDeleteWeekFromGroupMutation,
+  useCreateLessonInDayMutation,
+  useUpdateLessonInDayMutation,
+  useDeleteLessonFromDayMutation,
+
+  // Names
+  useGetGroupNamesQuery,
+  useGetGroupNamesThatMatchWithReqParamsQuery,
 } = apiSlice
 
 export default apiSlice

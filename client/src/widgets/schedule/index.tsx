@@ -1,39 +1,62 @@
 import * as style from './style.module.scss'
 import { Skeleton } from '@/shared/ui'
-import { useAppSelector } from '@/shared/redux'
 import { IWeek, ILesson } from '@/shared/redux/types'
 import { EditableItem } from '@/widgets/editable-item'
 import {
   useUpdateLessonInDayMutation,
   useDeleteLessonFromDayMutation,
 } from '@/shared/redux'
+import { AddItem } from '../add-item'
+import { useCreateLessonInDayMutation } from '@/shared/redux/slices/apiSlice'
 
 type Props = {
   scheduleData: IWeek | undefined
   groupID: string
+  pickedDayIndex: number
+  pickedWeek: string | null
 }
 
-export const Schedule = ({ scheduleData, groupID }: Props) => {
-  const { dayIndex: pickedDayIndex, week: pickedWeek } = useAppSelector(
-    (store) => store.navigation,
-  )
-
+export const Schedule = ({
+  scheduleData,
+  groupID,
+  pickedDayIndex,
+  pickedWeek,
+}: Props) => {
+  const [createLesson] = useCreateLessonInDayMutation()
   const [updateLesson] = useUpdateLessonInDayMutation()
   const [deleteLesson] = useDeleteLessonFromDayMutation()
+
+  console.log('scheduleData', scheduleData)
 
   const isScheduleData =
     !!scheduleData && pickedDayIndex !== -1 && !!scheduleData[pickedDayIndex]
 
-  const dayName = scheduleData?.[pickedDayIndex]
+  const handleCreateLesson = async (time: string) => {
+    if (!groupID || !pickedWeek || pickedDayIndex === -1) return
+    try {
+      await createLesson({
+        id: groupID,
+        weekName: pickedWeek,
+        dayIndex: pickedDayIndex,
+        time,
+      }).unwrap()
+    } catch (err) {
+      console.error('Ошибка при создании урока:', err)
+    }
+  }
 
   const handleUpdateLesson = async (
-    time: string,
-    newLesson: Partial<ILesson> & { newTime?: string },
+    lessonId: string,
+    newLesson: Partial<ILesson>,
   ) => {
-    if (!scheduleData || !dayName || !pickedWeek || pickedDayIndex === -1)
-      return
+    if (!scheduleData || !pickedWeek || pickedDayIndex === -1) return
     try {
-      const oldLesson = scheduleData[pickedDayIndex][time]
+      const oldLesson = scheduleData[pickedDayIndex].find(
+        (lesson) => lesson._id === lessonId,
+      )
+
+      if (!oldLesson) return
+
       const updatedLesson: ILesson = {
         ...oldLesson,
         ...newLesson,
@@ -47,8 +70,7 @@ export const Schedule = ({ scheduleData, groupID }: Props) => {
         id: groupID,
         weekName: pickedWeek,
         dayIndex: pickedDayIndex,
-        time,
-        newTime: newLesson.newTime,
+        lessonId,
         ...updatedLesson,
       }).unwrap()
     } catch (err) {
@@ -56,183 +78,174 @@ export const Schedule = ({ scheduleData, groupID }: Props) => {
     }
   }
 
-  const handleDeleteLesson = async (time: string) => {
-    if (!dayName || !pickedWeek || pickedDayIndex === -1) return
-    if (window.confirm(`Удалить урок в ${time}?`)) {
-      try {
-        await deleteLesson({
-          id: groupID,
-          weekName: pickedWeek,
-          dayIndex: pickedDayIndex,
-          time,
-        }).unwrap()
-      } catch (err) {
-        console.error('Ошибка при удалении урока:', err)
-      }
+  const handleDeleteLesson = async (lessonId: string) => {
+    if (!groupID || !pickedWeek || pickedDayIndex === -1) return
+    try {
+      await deleteLesson({
+        id: groupID,
+        weekName: pickedWeek,
+        dayIndex: pickedDayIndex,
+        lessonId,
+      }).unwrap()
+    } catch (err) {
+      console.error('Ошибка при удалении урока:', err)
     }
   }
 
   return (
-    <ul className={style.list}>
+    <ul className={style.lessonList}>
+      <AddItem onAdd={handleCreateLesson}>Добавить пару</AddItem>
+
       {!isScheduleData || !pickedWeek
         ? Array.from({ length: 5 }).map((_, index) => (
             <li key={index}>
               <Skeleton className={style.skeleton} />
             </li>
           ))
-        : Object.entries(scheduleData[pickedDayIndex])
-            .sort(([timeA], [timeB]) => {
-              const [hA, mA] = timeA.split(':').map(Number)
-              const [hB, mB] = timeB.split(':').map(Number)
+        : [...scheduleData[pickedDayIndex]]
+            .sort((lessonA, lessonB) => {
+              const [hA, mA] = lessonA.time.split(':').map(Number)
+              const [hB, mB] = lessonB.time.split(':').map(Number)
               return hA - hB || mA - mB
             })
-            .map(([time, lesson], index) => (
-              <li key={index} className={style.lessonBlock}>
-                <p className={style.text}>
-                  {time} - {lesson.subject}
-                  {lesson.lessonType && ` (${lesson.lessonType})`}
-                  {(lesson.teacher.title ||
-                    lesson.teacher.lastName ||
-                    lesson.teacher.firstName ||
-                    lesson.teacher.middleName) && (
-                    <>
-                      {lesson.teacher.title && `, ${lesson.teacher.title}`}
-                      {lesson.teacher.lastName && ` ${lesson.teacher.lastName}`}
-                      {lesson.teacher.firstName &&
-                        ` ${lesson.teacher.firstName.charAt(0).toUpperCase()}.`}
-                      {lesson.teacher.middleName &&
-                        ` ${lesson.teacher.middleName.charAt(0).toUpperCase()}.`}
-                    </>
-                  )}
-                  {lesson.classroom && `, ${lesson.classroom}`}
-                </p>
+            .map((lesson, index) => (
+              <li key={index} className={style.lessonListItem}>
+                <EditableItem
+                  value={lesson.time}
+                  crudHandlers={{
+                    onDelete: async () => handleDeleteLesson(lesson._id),
+                  }}
+                >
+                  <p className={style.text}>
+                    {lesson.time} - {lesson.subject}
+                    {lesson.lessonType && ` (${lesson.lessonType})`}
+                    {(lesson.teacher.title ||
+                      lesson.teacher.lastName ||
+                      lesson.teacher.firstName ||
+                      lesson.teacher.middleName) && (
+                      <>
+                        {lesson.teacher.title && `, ${lesson.teacher.title}`}
+                        {lesson.teacher.lastName &&
+                          ` ${lesson.teacher.lastName}`}
+                        {lesson.teacher.firstName &&
+                          ` ${lesson.teacher.firstName.charAt(0).toUpperCase()}.`}
+                        {lesson.teacher.middleName &&
+                          ` ${lesson.teacher.middleName.charAt(0).toUpperCase()}.`}
+                      </>
+                    )}
+                    {lesson.classroom && `, ${lesson.classroom}`}
+                  </p>
+                </EditableItem>
 
                 <ul className={style.editList}>
-                  <li>
-                    <EditableItem
-                      value={time}
-                      crudHandlers={{
-                        onUpdate: async (_, newValue) =>
-                          handleUpdateLesson(time, { newTime: newValue }),
-                        // onDelete: async () => handleDeleteLesson(time),
-                      }}
-                      className={style.lessonItem}
-                    >
-                      <p className={style.text}>Время: {time}</p>
-                    </EditableItem>
-                  </li>
-
-                  <li>
-                    <EditableItem
-                      value={lesson.subject}
-                      crudHandlers={{
-                        onUpdate: async (_, newValue) =>
-                          handleUpdateLesson(time, { subject: newValue }),
-                      }}
-                      className={style.lessonItem}
-                    >
-                      <p className={style.text}>Предмет: {lesson.subject}</p>
-                    </EditableItem>
-                  </li>
-
-                  <li>
-                    <EditableItem
-                      value={lesson.lessonType}
-                      crudHandlers={{
-                        onUpdate: async (_, newValue) =>
-                          handleUpdateLesson(time, { lessonType: newValue }),
-                      }}
-                      className={style.lessonItem}
-                    >
-                      <p className={style.text}>Тип: {lesson.lessonType}</p>
-                    </EditableItem>
-                  </li>
-
-                  <li>
-                    <EditableItem
-                      value={lesson.teacher.title ?? ''}
-                      crudHandlers={{
-                        onUpdate: async (_, newValue) =>
-                          handleUpdateLesson(time, {
-                            teacher: { ...lesson.teacher, title: newValue },
-                          }),
-                      }}
-                      className={style.lessonItem}
-                    >
-                      <p className={style.text}>
-                        Титул преподавателя: {lesson.teacher.title ?? '-'}
+                  {[
+                    {
+                      label: 'Время',
+                      value: lesson.time,
+                      update: (newValue: string) =>
+                        handleUpdateLesson(lesson._id, { time: newValue }),
+                      delete: () =>
+                        handleUpdateLesson(lesson._id, { time: '' }),
+                    },
+                    {
+                      label: 'Предмет',
+                      value: lesson.subject,
+                      update: (newValue: string) =>
+                        handleUpdateLesson(lesson._id, { subject: newValue }),
+                      delete: () =>
+                        handleUpdateLesson(lesson._id, { subject: '' }),
+                    },
+                    {
+                      label: 'Тип',
+                      value: lesson.lessonType,
+                      update: (newValue: string) =>
+                        handleUpdateLesson(lesson._id, {
+                          lessonType: newValue,
+                        }),
+                      delete: () =>
+                        handleUpdateLesson(lesson._id, { lessonType: '' }),
+                    },
+                    {
+                      label: 'Титул преподавателя',
+                      value: lesson.teacher.title ?? '',
+                      update: (newValue: string) =>
+                        handleUpdateLesson(lesson._id, {
+                          teacher: { ...lesson.teacher, title: newValue },
+                        }),
+                      delete: () =>
+                        handleUpdateLesson(lesson._id, {
+                          teacher: { ...lesson.teacher, title: '' },
+                        }),
+                    },
+                    {
+                      label: 'Фамилия преподавателя',
+                      value: lesson.teacher.lastName,
+                      update: (newValue: string) =>
+                        handleUpdateLesson(lesson._id, {
+                          teacher: { ...lesson.teacher, lastName: newValue },
+                        }),
+                      delete: () =>
+                        handleUpdateLesson(lesson._id, {
+                          teacher: { ...lesson.teacher, lastName: '' },
+                        }),
+                    },
+                    {
+                      label: 'Имя преподавателя',
+                      value: lesson.teacher.firstName,
+                      update: (newValue: string) =>
+                        handleUpdateLesson(lesson._id, {
+                          teacher: { ...lesson.teacher, firstName: newValue },
+                        }),
+                      delete: () =>
+                        handleUpdateLesson(lesson._id, {
+                          teacher: { ...lesson.teacher, firstName: '' },
+                        }),
+                    },
+                    {
+                      label: 'Отчество преподавателя',
+                      value: lesson.teacher.middleName,
+                      update: (newValue: string) =>
+                        handleUpdateLesson(lesson._id, {
+                          teacher: { ...lesson.teacher, middleName: newValue },
+                        }),
+                      delete: () =>
+                        handleUpdateLesson(lesson._id, {
+                          teacher: { ...lesson.teacher, middleName: '' },
+                        }),
+                    },
+                    {
+                      label: 'Аудитория',
+                      value: lesson.classroom,
+                      update: (newValue: string) =>
+                        handleUpdateLesson(lesson._id, { classroom: newValue }),
+                      delete: () =>
+                        handleUpdateLesson(lesson._id, { classroom: '' }),
+                    },
+                  ].map((field, index) => (
+                    <li className={style.editListItem} key={index}>
+                      <p
+                        className={`${style.editLabel} ${!field.value ? style.empty : ''}`}
+                      >
+                        {field.label}:
                       </p>
-                    </EditableItem>
-                  </li>
-
-                  <li>
-                    <EditableItem
-                      value={lesson.teacher.lastName}
-                      crudHandlers={{
-                        onUpdate: async (_, newValue) =>
-                          handleUpdateLesson(time, {
-                            teacher: { ...lesson.teacher, lastName: newValue },
-                          }),
-                      }}
-                      className={style.lessonItem}
-                    >
-                      <p className={style.text}>
-                        Фамилия преподавателя: {lesson.teacher.lastName}
-                      </p>
-                    </EditableItem>
-                  </li>
-
-                  <li>
-                    <EditableItem
-                      value={lesson.teacher.firstName}
-                      crudHandlers={{
-                        onUpdate: async (_, newValue) =>
-                          handleUpdateLesson(time, {
-                            teacher: { ...lesson.teacher, firstName: newValue },
-                          }),
-                      }}
-                      className={style.lessonItem}
-                    >
-                      <p className={style.text}>
-                        Имя преподавателя: {lesson.teacher.firstName}
-                      </p>
-                    </EditableItem>
-                  </li>
-
-                  <li>
-                    <EditableItem
-                      value={lesson.teacher.middleName ?? ''}
-                      crudHandlers={{
-                        onUpdate: async (_, newValue) =>
-                          handleUpdateLesson(time, {
-                            teacher: {
-                              ...lesson.teacher,
-                              middleName: newValue,
-                            },
-                          }),
-                      }}
-                      className={style.lessonItem}
-                    >
-                      <p className={style.text}>
-                        Отчество преподавателя: {lesson.teacher.middleName}
-                      </p>
-                    </EditableItem>
-                  </li>
-
-                  <li>
-                    <EditableItem
-                      value={lesson.classroom}
-                      crudHandlers={{
-                        onUpdate: async (_, newValue) =>
-                          handleUpdateLesson(time, { classroom: newValue }),
-                      }}
-                      className={style.lessonItem}
-                    >
-                      <p className={style.text}>
-                        Аудитория: {lesson.classroom}
-                      </p>
-                    </EditableItem>
-                  </li>
+                      <div className={style.editContainer}>
+                        <EditableItem
+                          value={field.value}
+                          crudHandlers={{
+                            onUpdate: async (_, newValue) =>
+                              field.update(newValue),
+                            onDelete: async () => field.delete(),
+                          }}
+                        >
+                          <p
+                            className={`${style.editValue} ${!field.value ? style.empty : ''}`}
+                          >
+                            {field.value}
+                          </p>
+                        </EditableItem>
+                      </div>
+                    </li>
+                  ))}
                 </ul>
               </li>
             ))}

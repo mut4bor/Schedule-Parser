@@ -1,11 +1,14 @@
 import * as style from './style.module.scss'
-import { GroupHeadingProps } from './types'
 import { Skeleton } from '@/shared/ui'
 
-export const GroupHeading = ({ text }: GroupHeadingProps) => {
-  if (!text) {
+type Props = {
+  children?: React.ReactNode | undefined
+}
+
+export const GroupHeading = ({ children }: Props) => {
+  if (!children) {
     return <Skeleton className={style.skeleton} />
   }
 
-  return <p className={style.heading}>{text}</p>
+  return <p className={style.heading}>{children}</p>
 }

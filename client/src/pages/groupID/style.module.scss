@@ -6,7 +6,7 @@
     flex-direction: column;
     gap: 0.5rem;
     margin: 0 auto;
-    padding: $containerPaddingTopMobile $containerPaddingX
+    padding: $containerPaddingTopMobile - 0.5rem $containerPaddingX
       $containerPaddingBottomMobile;
     max-width: $containerWidth;
     min-height: 100svh;
@@ -46,7 +46,8 @@
 }
 @media (min-width: $pageWidth768) {
   .container {
-    padding: $containerPaddingTop $containerPaddingX $containerPaddingBottom;
+    padding: $containerPaddingTop - 0.5rem $containerPaddingX
+      $containerPaddingBottom;
   }
   .schedule {
     padding: 2rem 2rem 1rem;

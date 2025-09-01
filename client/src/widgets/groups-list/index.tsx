@@ -56,12 +56,10 @@ export const GroupsList = () => {
   }
 
   const handleDeleteGroup = async (id: string) => {
-    if (window.confirm('Удалить эту группу?')) {
-      try {
-        await deleteGroupByID(id).unwrap()
-      } catch (err) {
-        console.error('Ошибка при удалении группы:', err)
-      }
+    try {
+      await deleteGroupByID(id).unwrap()
+    } catch (err) {
+      console.error('Ошибка при удалении группы:', err)
     }
   }
 
@@ -95,11 +93,7 @@ export const GroupsList = () => {
             ))}
       </div>
 
-      <AddItem
-        label="Добавить группу"
-        onAdd={handleCreateGroup}
-        className={style.addGroupContainer}
-      />
+      <AddItem onAdd={handleCreateGroup}>Добавить группу</AddItem>
     </div>
   )
 }

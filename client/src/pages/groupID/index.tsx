@@ -4,12 +4,8 @@ import { WeeksList } from '@/widgets/weeks-list'
 import { DaysList } from '@/widgets/days-list'
 import { Schedule } from '@/widgets/schedule'
 import {
-  useAppDispatch,
   useGetGroupByIDQuery,
-  useAppSelector,
   useGetWeekScheduleByIDQuery,
-  dayIndexChanged,
-  weekChanged,
   useUpdateGroupByIDMutation,
 } from '@/shared/redux'
 import { useState, useEffect } from 'react'
@@ -18,18 +14,28 @@ import { RefreshDate } from '@/widgets/refresh-date'
 import { GroupHeading } from '@/entities/group'
 import { ErrorComponent } from '@/widgets/error'
 import { Options } from '@/widgets/options'
-import { createTapStopPropagationHandler, getDayToPick } from '@/shared/hooks'
-import { DayIndex } from '@/shared/redux/slices/navigationSlice'
+import { createTapStopPropagationHandler, getTodayIndex } from '@/shared/hooks'
 import { EditableItem } from '@/widgets/editable-item'
 
-const { dayWeekIndex } = getDayToPick()
+const { dayWeekIndex } = getTodayIndex()
+
+enum DayIndex {
+  None = -1,
+  Monday = 0,
+  Tuesday = 1,
+  Wednesday = 2,
+  Thursday = 3,
+  Friday = 4,
+  Saturday = 5,
+  Sunday = 6,
+}
 
 export const GroupIDPage = () => {
-  const dispatch = useAppDispatch()
   const { groupID: paramsGroupID } = useParams()
   const groupID = paramsGroupID ?? ''
 
-  const pickedWeek = useAppSelector((store) => store.navigation.week)
+  const [pickedWeek, setPickedWeek] = useState<string | null>(null)
+  const [pickedDayIndex, setPickedDayIndex] = useState<DayIndex>(DayIndex.None)
 
   const [isGroupDaysVisible, setIsGroupDaysVisible] = useState(false)
   const [isOptionsListVisible, setIsOptionsListVisible] = useState(false)
@@ -54,28 +60,28 @@ export const GroupIDPage = () => {
   const daysListStopPropagationHandler = createTapStopPropagationHandler()
   const optionsStopPropagationHandler = createTapStopPropagationHandler()
 
-  const { data: groupData, error: groupError } = useGetGroupByIDQuery(groupID, {
+  const { data: groupData } = useGetGroupByIDQuery(groupID, {
     skip: !groupID,
   })
 
-  const { data: scheduleData, error: scheduleError } =
-    useGetWeekScheduleByIDQuery(
-      {
-        groupID: groupID,
-        week: pickedWeek ?? '',
-      },
-      {
-        skip: !groupID || !pickedWeek,
-      },
-    )
+  const { data: scheduleData } = useGetWeekScheduleByIDQuery(
+    {
+      groupID: groupID,
+      week: pickedWeek ?? '',
+    },
+    {
+      skip: !groupID || !pickedWeek,
+    },
+  )
 
   const [updateGroup] = useUpdateGroupByIDMutation()
 
   useEffect(() => {
-    dispatch(dayIndexChanged(dayWeekIndex))
+    setPickedDayIndex(dayWeekIndex)
+
     return () => {
-      dispatch(dayIndexChanged(DayIndex.None))
-      dispatch(weekChanged(null))
+      setPickedDayIndex(DayIndex.None)
+      setPickedWeek(null)
     }
   }, [groupID])
 
@@ -90,15 +96,15 @@ export const GroupIDPage = () => {
     )
   }
 
-  if (groupError) return <ErrorComponent error={groupError} />
-  if (scheduleError) return <ErrorComponent error={scheduleError} />
-
   return (
     <div className={style.container}>
-      <WeeksList />
+      <WeeksList pickedWeek={pickedWeek} setPickedWeek={setPickedWeek} />
       <div className={style.content} {...contentSwipeHandler}>
         <div className={style.wrapper}>
           <DaysList
+            pickedDayIndex={pickedDayIndex}
+            pickedWeek={pickedWeek}
+            setPickedDayIndex={setPickedDayIndex}
             scheduleData={scheduleData}
             toggleIsGroupDaysVisible={toggleGroupDays}
             isGroupDaysVisible={isGroupDaysVisible}
@@ -119,7 +125,7 @@ export const GroupIDPage = () => {
                     },
                   }}
                 >
-                  <GroupHeading text={groupData?.group} />
+                  <GroupHeading>{groupData?.group}</GroupHeading>
                 </EditableItem>
               </div>
 
@@ -130,7 +136,12 @@ export const GroupIDPage = () => {
                 {...optionsStopPropagationHandler}
               />
             </div>
-            <Schedule scheduleData={scheduleData} groupID={groupID} />
+            <Schedule
+              scheduleData={scheduleData}
+              groupID={groupID}
+              pickedDayIndex={pickedDayIndex}
+              pickedWeek={pickedWeek}
+            />
             <RefreshDate date={groupData?.updatedAt} />
           </div>
         </div>

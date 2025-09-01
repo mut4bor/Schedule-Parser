@@ -1,19 +1,19 @@
 import * as style from './style.module.scss'
 
 interface Props {
-  text: string
+  children: React.ReactNode
   onClick: () => void
   isActive?: boolean
 }
 
-export const WeeksButton = ({ text, onClick, isActive }: Props) => {
+export const WeeksButton = ({ children, onClick, isActive }: Props) => {
   return (
     <button
       onClick={onClick}
       className={`${style.button} ${isActive ? style.active : ''}`}
       type="button"
     >
-      {text}
+      {children}
     </button>
   )
 }

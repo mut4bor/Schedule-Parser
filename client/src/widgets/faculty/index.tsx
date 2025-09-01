@@ -122,13 +122,13 @@ export const Faculty = ({ data, columnsAmount, crudHandlers }: Props) => {
               <Fragment>
                 {faculties.length > 0 && <Pipe />}
                 <AddItem
-                  label="Добавить факультет"
                   onAdd={async (newValue) => {
                     if (!educationType) return
                     await crudHandlers.onCreateFaculty(educationType, newValue)
                   }}
-                  className={style.addFacultyContainer}
-                />
+                >
+                  Добавить факультет
+                </AddItem>
               </Fragment>
             )}
           </>

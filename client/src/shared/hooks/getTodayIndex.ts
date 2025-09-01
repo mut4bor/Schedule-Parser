@@ -1,6 +1,6 @@
 import { getISODay, addDays, format } from 'date-fns'
 
-export const getDayToPick = (): { day: string; dayWeekIndex: number } => {
+export const getTodayIndex = (): { day: string; dayWeekIndex: number } => {
   const today = new Date()
   const todayWeekIndex = getISODay(today)
 

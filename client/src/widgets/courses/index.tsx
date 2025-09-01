@@ -64,16 +64,14 @@ export const Courses = () => {
   const handleDeleteCourse = async (course: string) => {
     if (!educationType || !faculty) return
 
-    if (window.confirm(`Удалить курс "${course}"?`)) {
-      try {
-        await deleteCourse({
-          educationType,
-          faculty,
-          course,
-        }).unwrap()
-      } catch (err) {
-        console.error('Ошибка при удалении курса:', err)
-      }
+    try {
+      await deleteCourse({
+        educationType,
+        faculty,
+        course,
+      }).unwrap()
+    } catch (err) {
+      console.error('Ошибка при удалении курса:', err)
     }
   }
 
@@ -120,11 +118,7 @@ export const Courses = () => {
           ))}
 
       <li className={style.listElement}>
-        <AddItem
-          label="Добавить курс"
-          onAdd={handleCreateCourse}
-          className={style.addCourseContainer}
-        />
+        <AddItem onAdd={handleCreateCourse}>Добавить курс</AddItem>
       </li>
     </ul>
   )

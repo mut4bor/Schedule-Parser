@@ -1,60 +1,41 @@
-export interface IRefreshSchedule {
-  message: string
-}
-
 export interface IName {
   group: string
   _id: string
-}
-
-export interface IGroup extends IName {
-  educationType: string
-  faculty: string
-  course: string
-  createdAt: string
-  updatedAt: string
-  __v: number
 }
 
 export interface IFaculties {
   [educationType: string]: string[]
 }
 
-export interface ILesson {
-  classroom: string
-  teacher: ITeacher
-  subject: string
-  lessonType: string
-}
-
 export interface ITeacher {
   firstName: string
-  middleName?: string
+  middleName: string
   lastName: string
   title?: string
 }
 
 export interface ILesson {
+  time: string
   classroom: string
   teacher: ITeacher
   subject: string
   lessonType: string
+  _id: string
 }
 
-export interface IDay {
-  [time: string]: ILesson
-}
-
+export type IDay = ILesson[]
 export type IWeek = IDay[]
+export type ISchedule = Map<string, IWeek>
 
-export type ISchedule = Record<string, IWeek>
-
-export interface IGroup extends Document {
+export interface IGroup {
   educationType: string
   faculty: string
   course: string
   group: string
   dates: ISchedule
+  createdAt: string
+  updatedAt: string
+  __v: number
 }
 
 // --- Education Types ---
@@ -134,23 +115,28 @@ export interface DeleteWeekDTO {
   weekName: string
 }
 
-// DTO для обновления/добавления урока
-export interface UpdateLessonDTO {
+export interface CreateLessonDTO {
   id: string
   weekName: string
   dayIndex: number
   time: string
-  newTime?: string
+}
+
+export interface UpdateLessonDTO {
+  id: string
+  weekName: string
+  dayIndex: number
+  lessonId: string
+  time?: string
   classroom?: string
   teacher?: ITeacher
   subject?: string
   lessonType?: string
 }
 
-// DTO для удаления урока
 export interface DeleteLessonDTO {
   id: string
   weekName: string
   dayIndex: number
-  time: string
+  lessonId: string
 }

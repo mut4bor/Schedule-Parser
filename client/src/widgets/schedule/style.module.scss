@@ -1,7 +1,13 @@
 @import '@/shared/vars/vars';
 
 @media (min-width: $pageWidth320) {
-  .list {
+  .lessonList {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .lessonListItem {
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -11,27 +17,57 @@
     min-height: 3.6rem;
   }
 
-  .text {
-    display: flex;
-    align-items: center;
-    border-radius: 0.5rem;
-    background: $white10Alpha;
-    padding: 0.5rem 1.5rem;
-    min-height: 3.6rem;
-    color: $white;
-    font-size: 2rem;
-  }
-
-  .lessonBlock {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-
   .editList {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
     padding-left: 1rem;
+  }
+
+  .editListItem {
+    display: flex;
+    flex-direction: row;
+    width: fit-content;
+  }
+
+  .editContainer {
+    display: flex;
+  }
+
+  .text,
+  .editLabel,
+  .editValue {
+    display: flex;
+    align-items: center;
+    border-radius: 0.5rem;
+    background: $white10Alpha;
+    width: 100%;
+    color: $white;
+  }
+
+  .text {
+    padding: 0.8rem 1.5rem;
+    font-size: 2rem;
+  }
+
+  .editLabel,
+  .editValue {
+    padding: 0.6rem 1.125rem;
+    font-size: 1.6rem;
+    white-space: nowrap;
+  }
+
+  .editLabel {
+    background: none;
+  }
+
+  .editValue {
+    background: hsla(238, 17%, 39%, 0.5);
+
+    &.empty {
+      background: $white10Alpha;
+
+      min-width: 7rem;
+    }
   }
 }

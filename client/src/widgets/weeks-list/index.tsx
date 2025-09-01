@@ -3,22 +3,27 @@ import { BackToPreviousLink } from '@/entities/navigation'
 import { WeeksButton } from '@/entities/weeks'
 import { useEffect } from 'react'
 import {
-  useAppDispatch,
-  useAppSelector,
   useGetWeeksByIDQuery,
   useAddWeekToGroupMutation,
   useUpdateWeekInGroupMutation,
   useDeleteWeekFromGroupMutation,
-  weekChanged,
 } from '@/shared/redux'
-import { getDaysInRange, getDayToPick } from '@/shared/hooks'
 import { Skeleton } from '@/shared/ui'
 import { ErrorComponent } from '@/widgets/error'
 import { useParams } from 'react-router-dom'
 import { EditableItem } from '../editable-item'
 import { AddItem } from '../add-item'
 
-const { day } = getDayToPick()
+function getWeekNumber(date: Date): { year: number; week: number } {
+  const tmp = new Date(
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()),
+  )
+  const dayNum = tmp.getUTCDay() || 7
+  tmp.setUTCDate(tmp.getUTCDate() + 4 - dayNum)
+  const yearStart = new Date(Date.UTC(tmp.getUTCFullYear(), 0, 1))
+  const weekNo = Math.ceil(((+tmp - +yearStart) / 86400000 + 1) / 7)
+  return { year: tmp.getUTCFullYear(), week: weekNo }
+}
 
 function formatWeekRange(weekValue: string): string {
   // Ожидаем формат "YYYY-Www"
@@ -51,18 +56,17 @@ function formatWeekRange(weekValue: string): string {
   return `${formatDate(ISOweekStart)} - ${formatDate(ISOweekEnd)}`
 }
 
-export const WeeksList = () => {
+interface Props {
+  pickedWeek: string | null
+  setPickedWeek: (week: string | null) => void
+}
+
+export const WeeksList = ({ pickedWeek, setPickedWeek }: Props) => {
   const { educationType, faculty, course, groupID } = useParams()
 
-  const { data: weeksData, error: weeksError } = useGetWeeksByIDQuery(
-    groupID ?? '',
-    {
-      skip: !groupID,
-    },
-  )
-
-  const dispatch = useAppDispatch()
-  const pickedWeek = useAppSelector((store) => store.navigation.week)
+  const { data: weeksData } = useGetWeeksByIDQuery(groupID ?? '', {
+    skip: !groupID,
+  })
 
   const [addWeek] = useAddWeekToGroupMutation()
   const [updateWeek] = useUpdateWeekInGroupMutation()
@@ -89,6 +93,7 @@ export const WeeksList = () => {
         oldWeekName: oldWeek,
         newWeekName: newWeek,
       }).unwrap()
+      setPickedWeek(newWeek)
     } catch (err) {
       console.error('Ошибка при обновлении недели:', err)
     }
@@ -96,40 +101,35 @@ export const WeeksList = () => {
 
   const handleDeleteWeek = async (week: string) => {
     if (!groupID) return
-    if (window.confirm(`Удалить неделю "${week}"?`)) {
-      try {
-        await deleteWeek({ id: groupID, weekName: week }).unwrap()
-      } catch (err) {
-        console.error('Ошибка при удалении недели:', err)
-      }
+    try {
+      await deleteWeek({ id: groupID, weekName: week }).unwrap()
+    } catch (err) {
+      console.error('Ошибка при удалении недели:', err)
     }
   }
 
   // --- Автовыбор текущей недели ---
   useEffect(() => {
     if (!!weeksData) {
-      const daysRange = weeksData.map((item) => getDaysInRange(item))
-      const currentWeekIndex = daysRange.findIndex((subArray) =>
-        subArray.includes(day),
-      )
-      const currentWeek = weeksData[currentWeekIndex]
+      const currentWeek = getWeekNumber(new Date())
+      const formattedCurrentWeek = `${currentWeek.year}-W${currentWeek.week}`
 
-      if (currentWeek) {
-        dispatch(weekChanged(currentWeek))
+      const currentWeekData = weeksData.find(
+        (week) => week === formattedCurrentWeek,
+      )
+
+      if (!!currentWeekData) {
+        setPickedWeek(`${currentWeek.year}-W${currentWeek.week}`)
         return
       }
 
-      dispatch(weekChanged(weeksData[0]))
+      setPickedWeek(weeksData[0])
     }
 
     return () => {
-      dispatch(weekChanged(null))
+      setPickedWeek(null)
     }
-  }, [dispatch, weeksData])
-
-  if (weeksError) {
-    return <ErrorComponent error={weeksError} />
-  }
+  }, [weeksData])
 
   return (
     <div className={style.container}>
@@ -155,21 +155,20 @@ export const WeeksList = () => {
                   type="week"
                 >
                   <WeeksButton
-                    text={formatWeekRange(week)}
                     onClick={() => {
-                      dispatch(weekChanged(week))
+                      setPickedWeek(week)
                     }}
                     isActive={pickedWeek === week}
-                  />
+                  >
+                    {formatWeekRange(week)}
+                  </WeeksButton>
                 </EditableItem>
               </li>
             ))}
         <li>
-          <AddItem
-            label="Добавить неделю"
-            onAdd={handleCreateWeek}
-            type="week"
-          />
+          <AddItem onAdd={handleCreateWeek} type="week">
+            Добавить неделю
+          </AddItem>
         </li>
       </ul>
     </div>
