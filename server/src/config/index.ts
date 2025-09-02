@@ -13,10 +13,7 @@ const getEnvVar = (key: string) => {
 }
 
 export const NODE_ENV = getEnvVar('NODE_ENV')
-export const MONGODB_URL = getEnvVar('MONGODB_URL')
+export const PRODUCTION_DOMAIN = getEnvVar('PRODUCTION_DOMAIN')
 export const PORT = getEnvVar('PORT')
 export const X_ADMIN_PASSWORD = getEnvVar('X_ADMIN_PASSWORD')
-export const FETCH_URL = getEnvVar('FETCH_URL')
-export const PRODUCTION_DOMAIN = getEnvVar('PRODUCTION_DOMAIN')
-export const UNIVERSITY_URL = getEnvVar('UNIVERSITY_URL')
-export const REFRESH_PASSWORD = getEnvVar('REFRESH_PASSWORD')
+export const MONGODB_URL = getEnvVar('MONGODB_URL')
