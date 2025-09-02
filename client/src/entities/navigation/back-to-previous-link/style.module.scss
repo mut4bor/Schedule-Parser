@@ -1,4 +1,4 @@
-@import '@/shared/vars/vars';
+@use '@/shared/vars/vars' as *;
 
 .link {
   transition: 0.15s ease-in-out;

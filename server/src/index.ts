@@ -28,42 +28,12 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api', router)
 
-function listRoutes(app: express.Express) {
-  const routes: { method: string; path: string }[] = []
-
-  app._router.stack.forEach((middleware: any) => {
-    if (middleware.route) {
-      const methods = Object.keys(middleware.route.methods)
-      methods.forEach((method) => {
-        routes.push({ method: method.toUpperCase(), path: middleware.route.path })
-      })
-    } else if (middleware.name === 'router') {
-      middleware.handle.stack.forEach((handler: any) => {
-        if (handler.route) {
-          const methods = Object.keys(handler.route.methods)
-          methods.forEach((method) => {
-            routes.push({
-              method: method.toUpperCase(),
-              path: '/api' + handler.route.path,
-            })
-          })
-        }
-      })
-    }
-  })
-
-  console.log('\n📌 Available routes:')
-  routes.forEach((r) => console.log(`- [${r.method}] ${r.path}`))
-  console.log('')
-}
-
 mongoose
   .connect(MONGODB_URL)
   .then(() => {
     console.log('✅ Connected to database!')
     app.listen(HOST_PORT, () => {
       console.log(`🚀 Server running on port ${HOST_PORT}...`)
-      listRoutes(app)
     })
   })
   .catch(() => {
