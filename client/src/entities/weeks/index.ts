@@ -1,1 +1,1 @@
-export * from './ui'
+export { WeeksButton } from './weeks-button'

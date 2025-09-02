@@ -1,59 +1,15 @@
 import * as style from './style.module.scss'
+import { getWeekDates } from './utils'
 import { forwardRef } from 'react'
-import { SVG, Skeleton } from '@/shared/ui'
+import { Skeleton } from '@/shared/ui'
 import { DaysButton } from '@/entities/days'
 import { IWeek } from '@/shared/redux/types'
-
-function getWeekDates(weekStr: string | undefined | null) {
-  if (!weekStr) return []
-
-  if (typeof weekStr !== 'string' || weekStr.trim() === '') {
-    return []
-  }
-
-  const match = /^(\d{4})-W(\d{2})$/.exec(weekStr)
-  if (!match) {
-    console.error('Неверный формат. Используйте YYYY-Www (например, 2025-W33)')
-
-    return []
-  }
-
-  const year = parseInt(match[1], 10)
-  const week = parseInt(match[2], 10)
-
-  // Находим первый четверг года (ISO 8601)
-  const jan4 = new Date(Date.UTC(year, 0, 4))
-  const dayOfWeek = jan4.getUTCDay() || 7
-  const firstThursday = new Date(Date.UTC(year, 0, 4 + (4 - dayOfWeek)))
-
-  // Первая неделя ISO начинается с понедельника
-  const weekStart = new Date(
-    firstThursday.getTime() + (week - 1) * 7 * 24 * 60 * 60 * 1000,
-  )
-  weekStart.setUTCDate(weekStart.getUTCDate() - 3)
-
-  const daysOfWeek = ['Вс.', 'Пн.', 'Вт.', 'Ср.', 'Чт.', 'Пт.', 'Сб.']
-
-  const days: string[] = []
-  for (let i = 0; i < 7; i++) {
-    const d = new Date(weekStart)
-    d.setUTCDate(weekStart.getUTCDate() + i)
-
-    const day = String(d.getUTCDate()).padStart(2, '0')
-    const month = String(d.getUTCMonth() + 1).padStart(2, '0')
-    const weekday = daysOfWeek[d.getUTCDay()]
-
-    days.push(`${day}.${month} (${weekday})`)
-  }
-
-  return days
-}
 
 const ListElement = ({ children }: { children: React.ReactNode }) => {
   return <li className={style.listElement}>{children}</li>
 }
 
-type Props = {
+interface Props {
   scheduleData: IWeek | undefined
   toggleIsGroupDaysVisible: () => void
   isGroupDaysVisible: boolean
@@ -87,15 +43,19 @@ export const DaysList = forwardRef<HTMLDivElement, Props>(
           type="button"
           title={`${isGroupDaysVisible ? 'Скрыть' : 'Показать'} дни недели`}
         >
-          <SVG
-            href="#arrow"
-            svgClassName={`${style.arrowButtonSvg} ${isGroupDaysVisible ? style.rotated : null}`}
-            useClassName={style.arrowButtonSvgUse}
-          ></SVG>
+          <svg
+            className={`${style.arrowButtonSvg} ${isGroupDaysVisible ? style.rotated : null}`}
+            viewBox="0 0 96 96"
+          >
+            <path
+              className={style.arrowButtonSvgUse}
+              d="M69.8437,43.3876,33.8422,13.3863a6.0035,6.0035,0,0,0-7.6878,9.223l30.47,25.39-30.47,25.39a6.0035,6.0035,0,0,0,7.6878,9.2231L69.8437,52.6106a6.0091,6.0091,0,0,0,0-9.223Z"
+            />
+          </svg>
         </button>
 
         <ul className={style.list}>
-          {!scheduleData
+          {!scheduleData || !week.length
             ? Array.from({ length: 6 }).map((_, index) => (
                 <ListElement key={index}>
                   <Skeleton className={style.skeleton} />

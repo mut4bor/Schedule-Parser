@@ -12,6 +12,14 @@
     min-height: 100svh;
   }
 
+  .weeksContainer {
+    display: flex;
+    position: relative;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+  }
+
   .content {
     flex: 1;
   }

@@ -1,11 +1,16 @@
 import * as style from './style.module.scss'
-import { OptionsProps } from './types'
 import { OptionsList } from '@/widgets/options-list'
 import { OptionsButton } from '@/entities/options'
 import { forwardRef } from 'react'
 
-export const Options = forwardRef<HTMLDivElement, OptionsProps>(
-  ({ groupID, isOptionsListVisible, toggleOptionsList }: OptionsProps, ref) => {
+interface Props {
+  groupID: string
+  isOptionsListVisible: boolean
+  toggleOptionsList: () => void
+}
+
+export const Options = forwardRef<HTMLDivElement, Props>(
+  ({ groupID, isOptionsListVisible, toggleOptionsList }, ref) => {
     return (
       <div className={style.options} ref={ref}>
         <OptionsList

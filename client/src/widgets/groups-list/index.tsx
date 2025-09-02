@@ -20,8 +20,7 @@ export const GroupsList = () => {
     course: course ?? '',
   }).toString()
 
-  const { data: namesData, error: namesError } =
-    useGetGroupNamesQuery(namesSearchParams)
+  const { data: namesData } = useGetGroupNamesQuery(namesSearchParams)
 
   const [createGroup] = useCreateGroupMutation()
   const [updateGroupByID] = useUpdateGroupByIDMutation()

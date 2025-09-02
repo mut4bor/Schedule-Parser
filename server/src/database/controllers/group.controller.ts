@@ -235,16 +235,29 @@ const updateWeekNameInGroup = async (req: Request, res: Response) => {
       })
     }
 
+    if (oldWeekName === newWeekName) {
+      return res.status(400).json({
+        message: 'oldWeekName and newWeekName cannot be the same',
+      })
+    }
+
+    const group = await Group.findById(id).lean()
+    if (!group) {
+      return res.status(404).json({ message: 'Group not found' })
+    }
+
+    if (group.dates && group.dates[newWeekName]) {
+      return res.status(400).json({
+        message: `Week name "${newWeekName}" already exists`,
+      })
+    }
+
     const updateResult = await Group.updateOne(
       { _id: id, [`dates.${oldWeekName}`]: { $exists: true } },
       { $rename: { [`dates.${oldWeekName}`]: `dates.${newWeekName}` } },
     )
 
     if (updateResult.matchedCount === 0) {
-      const groupExists = await Group.exists({ _id: id })
-      if (!groupExists) {
-        return res.status(404).json({ message: 'Group not found' })
-      }
       return res.status(404).json({ message: 'Old week name not found' })
     }
 

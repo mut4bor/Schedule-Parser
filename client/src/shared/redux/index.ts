@@ -40,11 +40,6 @@ export {
   useGetGroupsByEducationTypeQuery,
 } from './slices/apiSlice'
 
-export {
-  isSearchInputFocusedChanged,
-  searchValueChanged,
-} from './slices/searchSlice'
-
 export type { IName } from './types'
 
 export { useAppSelector, useAppDispatch } from './hooks'

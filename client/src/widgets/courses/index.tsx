@@ -22,7 +22,7 @@ export const Courses = () => {
     if (!educationType || !faculty) {
       navigate(routes.BASE_URL)
     }
-  }, [educationType, faculty])
+  }, [educationType, faculty, navigate])
 
   const searchParams = new URLSearchParams({
     educationType: educationType ?? '',
@@ -88,7 +88,7 @@ export const Courses = () => {
         }`,
       )
     }
-  }, [coursesData])
+  }, [course, coursesData, educationType, faculty, navigate])
 
   if (coursesError) {
     return <ErrorComponent error={coursesError} />

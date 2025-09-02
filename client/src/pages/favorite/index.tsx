@@ -10,7 +10,7 @@ export const FavoritePage = () => {
     if (!!favoriteGroup) {
       navigate(`/groups/${favoriteGroup}`)
     }
-  }, [favoriteGroup])
+  }, [favoriteGroup, navigate])
 
   return (
     !favoriteGroup && (

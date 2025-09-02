@@ -1,1 +1,1 @@
-export * from './ui'
+export { FacultyLink } from './faculty-link'

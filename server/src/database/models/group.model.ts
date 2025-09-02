@@ -26,18 +26,22 @@ const groupSchema = new Schema<IGroup>(
   {
     educationType: {
       type: String,
+      default: '',
       required: [true, 'Please enter educationType'],
     },
     faculty: {
       type: String,
+      default: '',
       required: [true, 'Please enter faculty'],
     },
     course: {
       type: String,
+      default: '',
       required: [true, 'Please enter course'],
     },
     group: {
       type: String,
+      default: '',
       required: [true, 'Please enter group number'],
     },
     dates: {

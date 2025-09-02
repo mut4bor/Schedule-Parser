@@ -1,36 +1,52 @@
-import { FlatCompat } from '@eslint/eslintrc'
-import path from 'path'
-import { fileURLToPath } from 'url'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-})
+import parser from '@typescript-eslint/parser'
+import tsPlugin from '@typescript-eslint/eslint-plugin'
+import reactPlugin from 'eslint-plugin-react'
+import reactHooks from 'eslint-plugin-react-hooks'
 
 export default [
-  ...compat.env({
-    browser: true,
-    es2020: true,
-    node: true,
-  }),
+  {
+    files: ['src/**/*.{js,jsx,ts,tsx}'],
+    ignores: ['dist/**', 'node_modules/**'],
 
-  ...compat.plugins('react', 'react-hooks'),
-
-  ...compat.config({
-    plugins: ['@typescript-eslint', 'react', 'react-hooks'],
-    env: {
-      browser: true,
-      es2020: true,
-      node: true,
+    languageOptions: {
+      parser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        project: './tsconfig.json', // если нужен строгий парсинг TS
+      },
+      globals: {
+        browser: true,
+        node: true,
+      },
     },
+
+    plugins: {
+      '@typescript-eslint': tsPlugin,
+      react: reactPlugin,
+      'react-hooks': reactHooks,
+    },
+
     rules: {
-      semi: 'error',
+      // Общие правила
+      semi: ['error', 'never'],
+
+      // React
       'react/react-in-jsx-scope': 'off',
       'react/jsx-uses-react': 'off',
-      'react-hooks/rules-of-hooks': 'error', // Проверка правил хуков
-      'react-hooks/exhaustive-deps': 'warn', // Проверка зависимостей useEffect
+
+      // React Hooks
+      'react-hooks/rules-of-hooks': 'error',
+      'react-hooks/exhaustive-deps': 'warn',
+
+      // TypeScript
+      '@typescript-eslint/no-unused-vars': 'warn',
     },
-  }),
+
+    settings: {
+      react: {
+        version: 'detect',
+      },
+    },
+  },
 ]

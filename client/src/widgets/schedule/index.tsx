@@ -9,7 +9,7 @@ import {
 import { AddItem } from '../add-item'
 import { useCreateLessonInDayMutation } from '@/shared/redux/slices/apiSlice'
 
-type Props = {
+interface Props {
   scheduleData: IWeek | undefined
   groupID: string
   pickedDayIndex: number
@@ -94,7 +94,9 @@ export const Schedule = ({
 
   return (
     <ul className={style.lessonList}>
-      <AddItem onAdd={handleCreateLesson}>Добавить пару</AddItem>
+      {isScheduleData && pickedWeek && (
+        <AddItem onAdd={handleCreateLesson}>Добавить пару</AddItem>
+      )}
 
       {!isScheduleData || !pickedWeek
         ? Array.from({ length: 5 }).map((_, index) => (

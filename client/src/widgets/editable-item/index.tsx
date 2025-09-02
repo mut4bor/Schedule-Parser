@@ -33,6 +33,10 @@ export const EditableItem = ({
   const handleSave = async (newValue: string) => {
     if (!crudHandlers?.onUpdate) return
     try {
+      if (value === newValue) {
+        // setIsEditing(false)
+        // return
+      }
       await crudHandlers.onUpdate(value, newValue)
       setIsEditing(false)
     } catch (err) {

@@ -9,7 +9,6 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import routes from '@/shared/routes'
 import { store } from '@/shared/redux'
-import { Icons } from '@/shared/icons'
 
 const routesArray = [
   { path: routes.BASE_URL, Component: MainPage },
@@ -53,7 +52,6 @@ export const Routing = () => {
   return (
     <Provider store={store}>
       <RouterProvider router={router} />
-      <Icons />
     </Provider>
   )
 }

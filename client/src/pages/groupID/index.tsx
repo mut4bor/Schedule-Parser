@@ -1,5 +1,5 @@
 import * as style from './style.module.scss'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { WeeksList } from '@/widgets/weeks-list'
 import { DaysList } from '@/widgets/days-list'
 import { Schedule } from '@/widgets/schedule'
@@ -14,8 +14,9 @@ import { RefreshDate } from '@/widgets/refresh-date'
 import { GroupHeading } from '@/entities/group'
 import { ErrorComponent } from '@/widgets/error'
 import { Options } from '@/widgets/options'
-import { createTapStopPropagationHandler, getTodayIndex } from '@/shared/hooks'
+import { getTodayIndex } from './utils'
 import { EditableItem } from '@/widgets/editable-item'
+import { BackToPreviousLink } from '@/entities/navigation'
 
 const { dayWeekIndex } = getTodayIndex()
 
@@ -30,11 +31,18 @@ enum DayIndex {
   Sunday = 6,
 }
 
-export const GroupIDPage = () => {
-  const { groupID: paramsGroupID } = useParams()
-  const groupID = paramsGroupID ?? ''
+const CreateTapStopPropagationHandler = () =>
+  useSwipeable({
+    onTap: (event) => {
+      event.event.stopPropagation()
+    },
+  })
 
-  const [pickedWeek, setPickedWeek] = useState<string | null>(null)
+export const GroupIDPage = () => {
+  const { educationType, faculty, course, groupID = '' } = useParams()
+  const navigate = useNavigate()
+
+  const [pickedWeek, setPickedWeek] = useState<string>('')
   const [pickedDayIndex, setPickedDayIndex] = useState<DayIndex>(DayIndex.None)
 
   const [isGroupDaysVisible, setIsGroupDaysVisible] = useState(false)
@@ -57,12 +65,34 @@ export const GroupIDPage = () => {
     preventScrollOnSwipe: true,
   })
 
-  const daysListStopPropagationHandler = createTapStopPropagationHandler()
-  const optionsStopPropagationHandler = createTapStopPropagationHandler()
+  const daysListStopPropagationHandler = CreateTapStopPropagationHandler()
+  const optionsStopPropagationHandler = CreateTapStopPropagationHandler()
 
   const { data: groupData } = useGetGroupByIDQuery(groupID, {
     skip: !groupID,
   })
+
+  useEffect(() => {
+    if (
+      (!educationType && !groupData?.educationType) ||
+      (!faculty && !groupData?.faculty) ||
+      (!course && !groupData?.course)
+    ) {
+      return
+    }
+    navigate(
+      `/educationTypes/${educationType ?? groupData?.educationType}/faculties/${faculty ?? groupData?.faculty}/courses/${course ?? groupData?.course}/groups/${groupID}`,
+    )
+  }, [
+    course,
+    educationType,
+    faculty,
+    groupData?.course,
+    groupData?.educationType,
+    groupData?.faculty,
+    groupID,
+    navigate,
+  ])
 
   const { data: scheduleData } = useGetWeekScheduleByIDQuery(
     {
@@ -81,7 +111,7 @@ export const GroupIDPage = () => {
 
     return () => {
       setPickedDayIndex(DayIndex.None)
-      setPickedWeek(null)
+      setPickedWeek('')
     }
   }, [groupID])
 
@@ -98,7 +128,14 @@ export const GroupIDPage = () => {
 
   return (
     <div className={style.container}>
-      <WeeksList pickedWeek={pickedWeek} setPickedWeek={setPickedWeek} />
+      <div className={style.weeksContainer}>
+        <BackToPreviousLink
+          href={`/educationTypes/${educationType ?? groupData?.educationType}/faculties/${faculty ?? groupData?.faculty}/courses/${course ?? groupData?.course}`}
+        />
+
+        <WeeksList pickedWeek={pickedWeek} setPickedWeek={setPickedWeek} />
+      </div>
+
       <div className={style.content} {...contentSwipeHandler}>
         <div className={style.wrapper}>
           <DaysList

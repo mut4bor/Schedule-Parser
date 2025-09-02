@@ -1,7 +1,7 @@
 import * as style from './style.module.scss'
 import { Skeleton } from '@/shared/ui'
 import { FacultyLink } from '@/entities/faculty'
-import { Fragment, useState } from 'react'
+import { Fragment } from 'react'
 import { EditableItem } from '@/widgets/editable-item'
 import { AddItem } from '../add-item'
 
@@ -21,7 +21,7 @@ type CrudHandlers = {
   onDeleteFaculty: (educationType: string, faculty: string) => Promise<void>
 }
 
-type Props = {
+interface Props {
   data?: {
     educationType: string
     faculties: string[]

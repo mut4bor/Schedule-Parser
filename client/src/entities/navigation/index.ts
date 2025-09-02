@@ -1,1 +1,1 @@
-export * from './ui'
+export { BackToPreviousLink } from './back-to-previous-link'

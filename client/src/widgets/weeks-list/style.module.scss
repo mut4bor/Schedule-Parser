@@ -1,14 +1,6 @@
 @import '@/shared/vars/vars';
 
 @media (min-width: $pageWidth320) {
-  .container {
-    display: flex;
-    position: relative;
-    flex-direction: row;
-    align-items: center;
-    gap: 1rem;
-  }
-
   .list {
     display: flex;
     position: relative;

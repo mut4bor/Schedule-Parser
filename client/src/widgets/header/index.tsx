@@ -1,50 +1,49 @@
 import * as style from './style.module.scss'
 import {
-  HeaderGithubLink,
   HeaderHeading,
   HeaderInput,
   HeaderSearchResult,
-  HeaderTelegramLink,
 } from '@/entities/header'
 import { useState, useEffect } from 'react'
-import {
-  useGetGroupNamesThatMatchWithReqParamsQuery,
-  useAppSelector,
-} from '@/shared/redux'
-import { HeaderFavoriteLink } from '@/entities/header/ui/header-favorite-link'
+import { useGetGroupNamesThatMatchWithReqParamsQuery } from '@/shared/redux'
+import { HeaderFavoriteLink } from '@/entities/header/header-favorite-link'
 
 export const Header = () => {
-  const searchValue = useAppSelector((store) => store.search.searchValue)
+  const [searchValue, setSearchValue] = useState<string>('')
+  const [isSearchInputFocused, setIsSearchInputFocused] =
+    useState<boolean>(false)
 
   const namesSearchParams = new URLSearchParams({
     searchValue: searchValue,
   }).toString()
 
-  const { data: namesData, error: namesError } =
-    useGetGroupNamesThatMatchWithReqParamsQuery(namesSearchParams, {
+  const { data: namesData } = useGetGroupNamesThatMatchWithReqParamsQuery(
+    namesSearchParams,
+    {
       skip: !searchValue,
-    })
+    },
+  )
 
   const [isVisible, setIsVisible] = useState(true)
   const [lastScrollY, setLastScrollY] = useState(0)
 
-  const controlHeader = () => {
-    if (typeof window !== 'undefined') {
-      if (window.scrollY > 120) {
-        if (window.scrollY > lastScrollY) {
-          setIsVisible(false)
-        } else {
-          setIsVisible(true)
-        }
-      } else {
-        setIsVisible(true)
-      }
-      setLastScrollY(window.scrollY)
-    }
-  }
-
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      const controlHeader = () => {
+        if (typeof window !== 'undefined') {
+          if (window.scrollY > 120) {
+            if (window.scrollY > lastScrollY) {
+              setIsVisible(false)
+            } else {
+              setIsVisible(true)
+            }
+          } else {
+            setIsVisible(true)
+          }
+          setLastScrollY(window.scrollY)
+        }
+      }
+
       window.addEventListener('scroll', controlHeader)
 
       return () => {
@@ -63,12 +62,16 @@ export const Header = () => {
 
           <div className={style.content}>
             <div className={style.inputGroup}>
-              <HeaderInput />
-              <HeaderSearchResult namesData={namesData} />
+              <HeaderInput
+                setSearchValue={setSearchValue}
+                setIsSearchInputFocused={setIsSearchInputFocused}
+              />
+              <HeaderSearchResult
+                namesData={namesData}
+                isSearchInputFocused={isSearchInputFocused}
+              />
             </div>
 
-            <HeaderGithubLink />
-            <HeaderTelegramLink />
             <HeaderFavoriteLink />
           </div>
         </div>
