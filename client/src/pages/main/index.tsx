@@ -117,7 +117,7 @@ export const MainPage = () => {
   return (
     <div className={style.container}>
       {!facultiesError && (
-        <>
+        <ul className={style.list}>
           {!facultiesData || isFacultiesLoading
             ? Array.from({ length: 3 }).map((_, index) => (
                 <Faculty columnsAmount={4 - index} key={index} />
@@ -131,7 +131,7 @@ export const MainPage = () => {
                   />
                 ),
               )}
-        </>
+        </ul>
       )}
 
       <AddItem onAdd={handleCreateEducationType}>Добавить тип обучения</AddItem>

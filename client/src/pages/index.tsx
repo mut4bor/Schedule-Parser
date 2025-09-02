@@ -1,4 +1,5 @@
 import { Header } from '@/widgets/header'
+import { Footer } from '@/widgets/footer'
 import { TabBar } from '@/widgets/tab-bar'
 import { ErrorPage } from './error'
 import { MainPage } from './main'
@@ -13,11 +14,7 @@ import { store } from '@/shared/redux'
 const routesArray = [
   { path: routes.BASE_URL, Component: MainPage },
   {
-    path: routes.COURSES_PATH,
-    Component: CoursesPage,
-  },
-  {
-    path: `${routes.COURSES_PATH}/:course`,
+    path: `${routes.COURSES_PATH}/:course?`,
     Component: CoursesPage,
   },
   {
@@ -37,6 +34,7 @@ export const Routing = () => {
           <Header />
           <Component />
           <TabBar />
+          <Footer />
         </>
       ),
       errorElement: (
@@ -44,6 +42,7 @@ export const Routing = () => {
           <Header />
           <ErrorPage />
           <TabBar />
+          <Footer />
         </>
       ),
     })),

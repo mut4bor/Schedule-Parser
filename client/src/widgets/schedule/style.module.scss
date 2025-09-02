@@ -27,7 +27,7 @@
   .editListItem {
     display: flex;
     flex-direction: row;
-    width: fit-content;
+    width: 100%;
   }
 
   .editContainer {
@@ -53,21 +53,34 @@
   .editLabel,
   .editValue {
     padding: 0.6rem 1.125rem;
-    font-size: 1.6rem;
+    font-size: 1.4rem;
     white-space: nowrap;
   }
 
   .editLabel {
+    display: block;
+    flex: 0 1 auto; // позволяет сжиматься
     background: none;
+    width: fit-content;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .editValue {
-    background: hsla(238, 17%, 39%, 0.5);
+    background: $accentColor;
 
     &.empty {
       background: $white10Alpha;
-
       min-width: 7rem;
     }
+  }
+}
+
+@media (min-width: $pageWidth425) {
+  .editLabel,
+  .editValue {
+    font-size: 1.6rem;
   }
 }

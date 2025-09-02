@@ -10,7 +10,6 @@ import {
   useDeleteCourseMutation,
 } from '@/shared/redux'
 import routes from '@/shared/routes'
-import { ErrorComponent } from '@/widgets/error'
 import { AddItem } from '@/widgets/add-item'
 import { EditableItem } from '../editable-item'
 
@@ -19,7 +18,12 @@ export const Courses = () => {
   const { educationType, faculty, course } = useParams()
 
   useEffect(() => {
-    if (!educationType || !faculty) {
+    if (
+      !educationType ||
+      educationType === 'undefined' ||
+      !faculty ||
+      faculty === 'undefined'
+    ) {
       navigate(routes.BASE_URL)
     }
   }, [educationType, faculty, navigate])
@@ -29,12 +33,9 @@ export const Courses = () => {
     faculty: faculty ?? '',
   }).toString()
 
-  const { data: coursesData, error: coursesError } = useGetCoursesQuery(
-    searchParams,
-    {
-      skip: !educationType || !faculty,
-    },
-  )
+  const { data: coursesData } = useGetCoursesQuery(searchParams, {
+    skip: !educationType || !faculty,
+  })
 
   const [createCourse] = useCreateCourseMutation()
   const [updateCourse] = useUpdateCourseMutation()
@@ -86,13 +87,10 @@ export const Courses = () => {
         `/educationTypes/${educationType}/faculties/${faculty}/courses/${
           !!course ? course : coursesData[0]
         }`,
+        { replace: true },
       )
     }
   }, [course, coursesData, educationType, faculty, navigate])
-
-  if (coursesError) {
-    return <ErrorComponent error={coursesError} />
-  }
 
   return (
     <ul className={style.list}>
@@ -106,6 +104,9 @@ export const Courses = () => {
             <li className={style.listElement} key={index}>
               <EditableItem
                 value={course}
+                type="number"
+                min={1}
+                max={6}
                 crudHandlers={{
                   onUpdate: (_, newValue) =>
                     crudHandlers.onUpdateCourse(course, newValue),
@@ -117,9 +118,9 @@ export const Courses = () => {
             </li>
           ))}
 
-      <li className={style.listElement}>
-        <AddItem onAdd={handleCreateCourse}>Добавить курс</AddItem>
-      </li>
+      <AddItem type="number" min={1} max={6} onAdd={handleCreateCourse}>
+        Добавить курс
+      </AddItem>
     </ul>
   )
 }

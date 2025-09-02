@@ -64,33 +64,33 @@ export const GroupsList = () => {
 
   return (
     <div className={style.container}>
-      <div className={style.main}>
+      <ul className={style.list}>
         {!namesData
           ? Array.from({ length: 16 }).map((_, index) => (
               <Skeleton className={style.skeleton} key={index} />
             ))
           : namesData.map((item) => (
-              <EditableItem
-                key={item._id}
-                value={item.group}
-                crudHandlers={{
-                  onUpdate: async (_, newValue) =>
-                    handleUpdateGroup(item._id, newValue),
-                  onDelete: async () => handleDeleteGroup(item._id),
-                }}
-                className={style.facultyWithActions}
-              >
-                <Link
-                  to={`groups/${item._id}`}
-                  className={`${style.link} ${
-                    favoriteGroup === item._id ? style.active : ''
-                  }`}
+              <li key={item._id}>
+                <EditableItem
+                  value={item.group}
+                  crudHandlers={{
+                    onUpdate: async (_, newValue) =>
+                      handleUpdateGroup(item._id, newValue),
+                    onDelete: async () => handleDeleteGroup(item._id),
+                  }}
                 >
-                  <p className={style.text}>{item.group}</p>
-                </Link>
-              </EditableItem>
+                  <Link
+                    to={`groups/${item._id}`}
+                    className={`${style.link} ${
+                      favoriteGroup === item._id ? style.active : ''
+                    }`}
+                  >
+                    {item.group}
+                  </Link>
+                </EditableItem>
+              </li>
             ))}
-      </div>
+      </ul>
 
       <AddItem onAdd={handleCreateGroup}>Добавить группу</AddItem>
     </div>

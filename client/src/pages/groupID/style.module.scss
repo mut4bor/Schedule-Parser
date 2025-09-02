@@ -9,7 +9,7 @@
     padding: $containerPaddingTopMobile - 0.5rem $containerPaddingX
       $containerPaddingBottomMobile;
     max-width: $containerWidth;
-    min-height: 100svh;
+    min-height: calc(100svh - $headerHeight);
   }
 
   .weeksContainer {
@@ -38,6 +38,7 @@
     flex-direction: column;
     gap: 1rem;
     padding: 1rem;
+    width: 100%;
   }
 
   .headingContainer {

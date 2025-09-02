@@ -40,7 +40,7 @@ export const Faculty = ({ data, columnsAmount, crudHandlers }: Props) => {
     : 4
 
   return (
-    <div className={style.container}>
+    <li className={style.container}>
       <div className={style.heading}>
         {!educationType || !faculties ? (
           <Skeleton />
@@ -66,7 +66,7 @@ export const Faculty = ({ data, columnsAmount, crudHandlers }: Props) => {
         )}
       </div>
 
-      <div className={style.content}>
+      <ul className={style.content}>
         {!data || !educationType || !faculties ? (
           Array.from({ length: skeletonLength }).map((_, index, array) => (
             <Fragment key={`skeleton-${index}`}>
@@ -86,7 +86,7 @@ export const Faculty = ({ data, columnsAmount, crudHandlers }: Props) => {
           <>
             {faculties.map((faculty, index, array) => (
               <Fragment key={`faculty-${index}`}>
-                <div className={style.facultyItem}>
+                <li className={style.facultyItem}>
                   <EditableItem
                     value={faculty}
                     crudHandlers={
@@ -110,10 +110,10 @@ export const Faculty = ({ data, columnsAmount, crudHandlers }: Props) => {
                   >
                     <FacultyLink
                       faculty={faculty}
-                      href={`educationTypes/${educationType}/faculties/${faculty}/courses`}
+                      href={`/educationTypes/${educationType}/faculties/${faculty}/courses`}
                     />
                   </EditableItem>
-                </div>
+                </li>
                 {index < array.length - 1 && <Pipe />}
               </Fragment>
             ))}
@@ -121,19 +121,24 @@ export const Faculty = ({ data, columnsAmount, crudHandlers }: Props) => {
             {crudHandlers && (
               <Fragment>
                 {faculties.length > 0 && <Pipe />}
-                <AddItem
-                  onAdd={async (newValue) => {
-                    if (!educationType) return
-                    await crudHandlers.onCreateFaculty(educationType, newValue)
-                  }}
-                >
-                  Добавить факультет
-                </AddItem>
+                <div>
+                  <AddItem
+                    onAdd={async (newValue) => {
+                      if (!educationType) return
+                      await crudHandlers.onCreateFaculty(
+                        educationType,
+                        newValue,
+                      )
+                    }}
+                  >
+                    Добавить факультет
+                  </AddItem>
+                </div>
               </Fragment>
             )}
           </>
         )}
-      </div>
-    </div>
+      </ul>
+    </li>
   )
 }

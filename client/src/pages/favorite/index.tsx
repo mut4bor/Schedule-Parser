@@ -8,7 +8,7 @@ export const FavoritePage = () => {
 
   useEffect(() => {
     if (!!favoriteGroup) {
-      navigate(`/groups/${favoriteGroup}`)
+      navigate(`/groups/${favoriteGroup}`, { replace: true })
     }
   }, [favoriteGroup, navigate])
 

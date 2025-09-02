@@ -9,7 +9,9 @@ type InlineEditProps = {
   inputClassName?: string
   saveButtonClassName?: string
   cancelButtonClassName?: string
-  type?: 'text' | 'date' | 'week'
+  type?: 'text' | 'number' | 'date' | 'week' | 'time'
+  min?: number
+  max?: number
 }
 
 export const InlineEdit = ({
@@ -21,6 +23,8 @@ export const InlineEdit = ({
   saveButtonClassName,
   cancelButtonClassName,
   type = 'text',
+  min,
+  max,
 }: InlineEditProps) => {
   const [value, setValue] = useState(initialValue)
 
@@ -33,13 +37,26 @@ export const InlineEdit = ({
     onCancel?.()
   }
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      handleSave()
+    } else if (e.key === 'Escape') {
+      e.preventDefault()
+      handleCancel()
+    }
+  }
+
   return (
     <div className={`${style.editForm} ${className || ''}`}>
       <input
         type={type}
+        name={type}
         value={value}
         onChange={(e) => setValue(e.target.value)}
+        onKeyDown={handleKeyDown}
         className={`${style.editInput} ${inputClassName || ''}`}
+        {...(type === 'number' ? { min, max } : {})}
       />
       <button
         onClick={handleSave}

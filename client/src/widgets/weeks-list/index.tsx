@@ -65,7 +65,6 @@ export const WeeksList = ({ pickedWeek, setPickedWeek }: Props) => {
     }
   }
 
-  // --- Автовыбор текущей недели ---
   useEffect(() => {
     if (!weeksData || weeksData.length === 0) return
 
@@ -74,13 +73,13 @@ export const WeeksList = ({ pickedWeek, setPickedWeek }: Props) => {
     const currentWeek = getWeekNumber(new Date())
     const formattedCurrentWeek = `${currentWeek.year}-W${currentWeek.week}`
 
-    if (weeksData.includes(formattedCurrentWeek)) {
-      setPickedWeek(formattedCurrentWeek)
-      return
-    }
-
-    setPickedWeek(weeksData[0])
-  }, [pickedWeek, setPickedWeek, weeksData])
+    setPickedWeek(
+      weeksData.includes(formattedCurrentWeek)
+        ? formattedCurrentWeek
+        : weeksData[0],
+    )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [weeksData])
 
   return (
     <ul className={style.list}>

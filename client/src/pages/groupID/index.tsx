@@ -82,6 +82,7 @@ export const GroupIDPage = () => {
     }
     navigate(
       `/educationTypes/${educationType ?? groupData?.educationType}/faculties/${faculty ?? groupData?.faculty}/courses/${course ?? groupData?.course}/groups/${groupID}`,
+      { replace: true },
     )
   }, [
     course,

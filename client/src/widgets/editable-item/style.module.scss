@@ -3,7 +3,6 @@
 @media (min-width: $pageWidth320) {
   .container {
     display: flex;
-    flex: 1 0 auto;
     flex-direction: row;
     justify-content: space-between;
     align-items: stretch;
@@ -13,8 +12,8 @@
 
   .item {
     display: flex;
-    flex: 1 0 auto;
     flex-direction: row;
+    width: 100%;
   }
 
   .button {

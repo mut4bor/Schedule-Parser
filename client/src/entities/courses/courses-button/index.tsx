@@ -13,7 +13,7 @@ export const CourseButton = ({ course }: Props) => {
       to={`/educationTypes/${educationType}/faculties/${faculty}/courses/${course}`}
       className={`${style.link} ${pickedCourse === course ? style.active : ''}`}
     >
-      {course}
+      {course} курс
     </Link>
   )
 }

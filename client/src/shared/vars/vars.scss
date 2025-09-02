@@ -29,4 +29,4 @@ $containerBasicPadding: 1rem;
 $containerPaddingTop: calc($headerHeight + $containerBasicPadding);
 $containerPaddingTopMobile: calc($headerHeightMobile + $containerBasicPadding);
 $containerPaddingBottom: $containerBasicPadding;
-$containerPaddingBottomMobile: calc($tabBarHeight + $containerBasicPadding);
+$containerPaddingBottomMobile: 1rem;

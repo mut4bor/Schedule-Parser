@@ -12,7 +12,9 @@ interface Props {
   crudHandlers?: CrudHandlers
   children: React.ReactNode
   className?: string
-  type?: 'text' | 'date' | 'week'
+  type?: 'text' | 'number' | 'date' | 'week' | 'time'
+  min?: number
+  max?: number
   inputClassName?: string
   saveButtonClassName?: string
   cancelButtonClassName?: string
@@ -24,6 +26,8 @@ export const EditableItem = ({
   children,
   className,
   type = 'text',
+  min,
+  max,
   inputClassName,
   saveButtonClassName,
   cancelButtonClassName,
@@ -34,8 +38,8 @@ export const EditableItem = ({
     if (!crudHandlers?.onUpdate) return
     try {
       if (value === newValue) {
-        // setIsEditing(false)
-        // return
+        setIsEditing(false)
+        return
       }
       await crudHandlers.onUpdate(value, newValue)
       setIsEditing(false)
@@ -68,6 +72,8 @@ export const EditableItem = ({
           inputClassName={inputClassName}
           saveButtonClassName={saveButtonClassName}
           cancelButtonClassName={cancelButtonClassName}
+          min={min}
+          max={max}
         />
       ) : (
         <>

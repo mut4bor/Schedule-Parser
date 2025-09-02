@@ -26,8 +26,6 @@ export const Schedule = ({
   const [updateLesson] = useUpdateLessonInDayMutation()
   const [deleteLesson] = useDeleteLessonFromDayMutation()
 
-  console.log('scheduleData', scheduleData)
-
   const isScheduleData =
     !!scheduleData && pickedDayIndex !== -1 && !!scheduleData[pickedDayIndex]
 
@@ -95,7 +93,9 @@ export const Schedule = ({
   return (
     <ul className={style.lessonList}>
       {isScheduleData && pickedWeek && (
-        <AddItem onAdd={handleCreateLesson}>Добавить пару</AddItem>
+        <AddItem type="time" onAdd={handleCreateLesson}>
+          Добавить пару
+        </AddItem>
       )}
 
       {!isScheduleData || !pickedWeek
@@ -144,6 +144,7 @@ export const Schedule = ({
                     {
                       label: 'Время',
                       value: lesson.time,
+                      type: 'time',
                       update: (newValue: string) =>
                         handleUpdateLesson(lesson._id, { time: newValue }),
                       delete: () =>
@@ -225,14 +226,17 @@ export const Schedule = ({
                     },
                   ].map((field, index) => (
                     <li className={style.editListItem} key={index}>
-                      <p
-                        className={`${style.editLabel} ${!field.value ? style.empty : ''}`}
-                      >
-                        {field.label}:
-                      </p>
+                      <p className={style.editLabel}>{field.label}:</p>
                       <div className={style.editContainer}>
                         <EditableItem
                           value={field.value}
+                          type={
+                            (field?.type as
+                              | 'text'
+                              | 'date'
+                              | 'week'
+                              | 'time') ?? 'text'
+                          }
                           crudHandlers={{
                             onUpdate: async (_, newValue) =>
                               field.update(newValue),

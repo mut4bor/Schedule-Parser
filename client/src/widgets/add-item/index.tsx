@@ -1,18 +1,28 @@
+import * as style from './style.module.scss'
 import { useState } from 'react'
 import { InlineEdit, AdminAddButton } from '@/entities/admin'
 
-type AddItemProps = {
+interface AddItemProps {
   children: React.ReactNode
   onAdd: (value: string) => Promise<void>
-  type?: 'text' | 'date' | 'week'
+  type?: 'text' | 'number' | 'date' | 'week' | 'time'
+  min?: number
+  max?: number
   className?: string
 }
 
-export const AddItem = ({ children, onAdd, type, className }: AddItemProps) => {
+export const AddItem = ({
+  children,
+  onAdd,
+  type,
+  min,
+  max,
+  className,
+}: AddItemProps) => {
   const [isAdding, setIsAdding] = useState(false)
 
   return (
-    <div className={className}>
+    <div className={`${style.container} ${className}`}>
       {isAdding ? (
         <InlineEdit
           initialValue=""
@@ -22,6 +32,8 @@ export const AddItem = ({ children, onAdd, type, className }: AddItemProps) => {
           }}
           onCancel={() => setIsAdding(false)}
           type={type}
+          min={min}
+          max={max}
         />
       ) : (
         <AdminAddButton onClick={() => setIsAdding(true)}>
