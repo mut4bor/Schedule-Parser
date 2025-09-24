@@ -1,7 +1,7 @@
 import * as style from './style.module.scss'
-import { getWeekNumber, formatWeekRange } from './utils'
-import { WeeksButton } from '@/entities/weeks'
+import { getWeekNumber, getWeekValue, useProcessedWeeks } from './utils'
 import { useEffect } from 'react'
+import { WeeksButton } from '@/entities/weeks'
 import {
   useGetWeeksByIDQuery,
   useAddWeekToGroupMutation,
@@ -13,17 +13,22 @@ import { useParams } from 'react-router-dom'
 import { EditableItem } from '../editable-item'
 import { AddItem } from '../add-item'
 
+const currentWeek = getWeekNumber(new Date())
+const formattedCurrentWeek = `${currentWeek.year}-W${currentWeek.week}`
+
 interface Props {
   pickedWeek: string
   setPickedWeek: (week: string) => void
+  groupList: string[]
 }
 
-export const WeeksList = ({ pickedWeek, setPickedWeek }: Props) => {
+export const WeeksList = ({ pickedWeek, setPickedWeek, groupList }: Props) => {
   const { groupID } = useParams()
-
   const { data: weeksData } = useGetWeeksByIDQuery(groupID ?? '', {
     skip: !groupID,
   })
+
+  const processedWeeks = useProcessedWeeks(weeksData, groupList)
 
   const [addWeek] = useAddWeekToGroupMutation()
   const [updateWeek] = useUpdateWeekInGroupMutation()
@@ -32,10 +37,7 @@ export const WeeksList = ({ pickedWeek, setPickedWeek }: Props) => {
   const handleCreateWeek = async (newWeek: string) => {
     if (!newWeek || !groupID) return
     try {
-      await addWeek({
-        id: groupID,
-        weekName: newWeek,
-      }).unwrap()
+      await addWeek({ id: groupID, weekName: newWeek }).unwrap()
     } catch (err) {
       console.error('Ошибка при создании недели:', err)
     }
@@ -65,56 +67,56 @@ export const WeeksList = ({ pickedWeek, setPickedWeek }: Props) => {
   }
 
   useEffect(() => {
-    if (!weeksData || weeksData.length === 0) return
-
-    if (pickedWeek && weeksData.includes(pickedWeek)) return
-
-    const currentWeek = getWeekNumber(new Date())
-    const formattedCurrentWeek = `${currentWeek.year}-W${currentWeek.week}`
+    if (!processedWeeks || processedWeeks.length === 0) return
+    if (pickedWeek && processedWeeks.includes(pickedWeek)) return
 
     setPickedWeek(
-      weeksData.includes(formattedCurrentWeek)
+      processedWeeks.includes(formattedCurrentWeek) && groupList.length === 1
         ? formattedCurrentWeek
-        : weeksData[0],
+        : processedWeeks[0],
     )
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [weeksData])
+  }, [processedWeeks, groupList, pickedWeek, setPickedWeek])
 
   return (
     <ul className={style.list}>
-      {!weeksData
+      {!processedWeeks
         ? Array.from({ length: 7 }).map((_, index) => (
             <li key={index}>
               <Skeleton className={style.skeleton} />
             </li>
           ))
-        : weeksData.map((week, index) => (
+        : processedWeeks.map((week, index) => (
             <li className={style.listItem} key={index}>
               <EditableItem
                 value={week}
-                crudHandlers={{
-                  onUpdate: handleUpdateWeek,
-                  onDelete: handleDeleteWeek,
-                }}
+                crudHandlers={
+                  week !== 'odd' && week !== 'even'
+                    ? {
+                        onUpdate: handleUpdateWeek,
+                        onDelete: handleDeleteWeek,
+                      }
+                    : null
+                }
                 type="week"
+                min={formattedCurrentWeek}
               >
                 <WeeksButton
-                  onClick={() => {
-                    setPickedWeek(week)
-                  }}
+                  onClick={() => setPickedWeek(week)}
                   isActive={pickedWeek === week}
                 >
-                  {formatWeekRange(week)}
+                  {getWeekValue(week)}
                 </WeeksButton>
               </EditableItem>
             </li>
           ))}
 
-      <li>
-        <AddItem onAdd={handleCreateWeek} type="week">
-          Добавить неделю
-        </AddItem>
-      </li>
+      {groupList.length === 1 && (
+        <li>
+          <AddItem onAdd={handleCreateWeek} type="week">
+            Добавить неделю
+          </AddItem>
+        </li>
+      )}
     </ul>
   )
 }

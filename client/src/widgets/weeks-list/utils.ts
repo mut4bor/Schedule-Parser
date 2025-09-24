@@ -1,6 +1,7 @@
+import { useMemo } from 'react'
+
 const formatWeekRange = (weekValue: string) => {
   // Ожидаем формат "YYYY-Www"
-
   const match = /^(\d{4})-W(\d{2})$/.exec(weekValue)
   if (!match) return weekValue
 
@@ -29,6 +30,12 @@ const formatWeekRange = (weekValue: string) => {
   return `${formatDate(ISOweekStart)} - ${formatDate(ISOweekEnd)}`
 }
 
+const getWeekValue = (value: string) => {
+  if (value === 'odd') return 'Нечетная неделя'
+  if (value === 'even') return 'Четная неделя'
+  return formatWeekRange(value)
+}
+
 const getWeekNumber = (date: Date): { year: number; week: number } => {
   const tmp = new Date(
     Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()),
@@ -40,4 +47,56 @@ const getWeekNumber = (date: Date): { year: number; week: number } => {
   return { year: tmp.getUTCFullYear(), week: weekNo }
 }
 
-export { formatWeekRange, getWeekNumber }
+const parseWeek = (w: string) => {
+  const [year, weekStr] = w.split('-W')
+  return { year: Number(year), week: Number(weekStr) }
+}
+
+const useProcessedWeeks = (
+  weeksData: string[] | undefined,
+  groupList: string[],
+) => {
+  return useMemo(() => {
+    if (!weeksData) return undefined
+
+    const now = getWeekNumber(new Date())
+
+    const filtered = weeksData.filter((week) => {
+      if (week === 'even' || week === 'odd') return true
+      if (groupList.length !== 1) return false
+
+      const candidate = parseWeek(week)
+      if (
+        candidate.year > now.year ||
+        (candidate.year === now.year && candidate.week >= now.week)
+      ) {
+        return true
+      }
+
+      return false
+    })
+
+    const isCurrent = (w: string) => {
+      if (w === 'even' || w === 'odd') return false
+      const candidate = parseWeek(w)
+      return candidate.year === now.year && candidate.week === now.week
+    }
+
+    const priority = (w: string) => {
+      if (isCurrent(w)) return 0
+      if (w === 'odd') return 1
+      if (w === 'even') return 2
+      return 3
+    }
+
+    const sorted = filtered.sort((a, b) => {
+      if (isCurrent(a) && !isCurrent(b)) return -1
+      if (!isCurrent(a) && isCurrent(b)) return 1
+      return priority(a) - priority(b)
+    })
+
+    return sorted
+  }, [weeksData, groupList])
+}
+
+export { getWeekNumber, getWeekValue, parseWeek, useProcessedWeeks }

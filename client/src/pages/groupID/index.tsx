@@ -59,6 +59,7 @@ export const GroupIDPage = () => {
   const navigate = useNavigate()
 
   const { data: groupNamesData } = useGetGroupNamesQuery()
+
   const [groupList, dispatchGroupList] = useReducer(groupListReducer, [groupID])
 
   const [pickedWeek, setPickedWeek] = useState<string>('')
@@ -135,7 +136,11 @@ export const GroupIDPage = () => {
           href={`/educationTypes/${educationType ?? groupData?.educationType}/faculties/${faculty ?? groupData?.faculty}/courses/${course ?? groupData?.course}`}
         />
 
-        <WeeksList pickedWeek={pickedWeek} setPickedWeek={setPickedWeek} />
+        <WeeksList
+          pickedWeek={pickedWeek}
+          setPickedWeek={setPickedWeek}
+          groupList={groupList}
+        />
       </div>
 
       <div className={style.content} {...contentSwipeHandler}>
@@ -191,6 +196,7 @@ export const GroupIDPage = () => {
                 groupID={groupID}
                 pickedWeek={pickedWeek}
                 pickedDayIndex={pickedDayIndex}
+                groupList={groupList}
                 key={groupID}
               />
             ))}

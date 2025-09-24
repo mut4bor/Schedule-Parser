@@ -23,9 +23,15 @@ interface Props {
   groupID: string
   pickedWeek: string
   pickedDayIndex: number
+  groupList: string[]
 }
 
-export const GroupInfo = ({ groupID, pickedWeek, pickedDayIndex }: Props) => {
+export const GroupInfo = ({
+  groupID,
+  pickedWeek,
+  pickedDayIndex,
+  groupList,
+}: Props) => {
   const [isOptionsListVisible, setIsOptionsListVisible] = useState(false)
 
   const toggleOptionsList = () => setIsOptionsListVisible((prev) => !prev)
@@ -81,6 +87,7 @@ export const GroupInfo = ({ groupID, pickedWeek, pickedDayIndex }: Props) => {
         groupID={groupID}
         pickedDayIndex={pickedDayIndex}
         pickedWeek={pickedWeek}
+        groupList={groupList}
       />
 
       <RefreshDate date={groupData?.updatedAt} />

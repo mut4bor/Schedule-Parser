@@ -10,8 +10,8 @@ type InlineEditProps = {
   saveButtonClassName?: string
   cancelButtonClassName?: string
   type?: 'text' | 'number' | 'date' | 'week' | 'time'
-  min?: number
-  max?: number
+  min?: number | string
+  max?: number | string
 }
 
 export const InlineEdit = ({

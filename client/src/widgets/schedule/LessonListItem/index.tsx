@@ -7,9 +7,15 @@ interface Props {
   lesson: ILesson
   onDelete: (id: string) => Promise<void>
   onUpdate: (id: string, newLesson: Partial<ILesson>) => Promise<void>
+  groupList: string[]
 }
 
-export const LessonListItem = ({ lesson, onDelete, onUpdate }: Props) => {
+export const LessonListItem = ({
+  lesson,
+  onDelete,
+  onUpdate,
+  groupList,
+}: Props) => {
   const [isCollapsed, setIsCollapsed] = useState(true)
 
   return (
@@ -50,7 +56,9 @@ export const LessonListItem = ({ lesson, onDelete, onUpdate }: Props) => {
       </div>
 
       {!isCollapsed && (
-        <ul className={style.editList}>
+        <ul
+          className={`${style.editList} ${groupList.length === 1 ? style.isColumned : ''}`}
+        >
           {[
             {
               label: 'Время',

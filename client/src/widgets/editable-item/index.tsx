@@ -3,18 +3,18 @@ import { useState } from 'react'
 import { InlineEdit, EditDeleteActions } from '@/entities/admin'
 
 export type CrudHandlers = {
-  onUpdate?: (oldValue: string, newValue: string) => Promise<void>
-  onDelete?: (value: string) => Promise<void>
+  onUpdate?: ((oldValue: string, newValue: string) => Promise<void>) | null
+  onDelete?: ((value: string) => Promise<void>) | null
 }
 
 interface Props {
   value: string
-  crudHandlers?: CrudHandlers
+  crudHandlers?: CrudHandlers | null
   children: React.ReactNode
   className?: string
   type?: 'text' | 'number' | 'date' | 'week' | 'time'
-  min?: number
-  max?: number
+  min?: number | string
+  max?: number | string
   inputClassName?: string
   saveButtonClassName?: string
   cancelButtonClassName?: string

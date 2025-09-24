@@ -16,9 +16,15 @@ interface Props {
   groupID: string
   pickedDayIndex: number
   pickedWeek: string | null
+  groupList: string[]
 }
 
-export const Schedule = ({ groupID, pickedDayIndex, pickedWeek }: Props) => {
+export const Schedule = ({
+  groupID,
+  pickedDayIndex,
+  pickedWeek,
+  groupList,
+}: Props) => {
   const { data: scheduleData } = useGetWeekScheduleByIDQuery(
     {
       groupID: groupID,
@@ -116,6 +122,7 @@ export const Schedule = ({ groupID, pickedDayIndex, pickedWeek }: Props) => {
                 lesson={lesson}
                 onUpdate={handleUpdateLesson}
                 onDelete={handleDeleteLesson}
+                groupList={groupList}
                 key={index}
               />
             ))}

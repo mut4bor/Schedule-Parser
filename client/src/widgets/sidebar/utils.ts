@@ -5,6 +5,10 @@ export const getWeekDates = (weekStr: string | undefined | null) => {
     return []
   }
 
+  if (weekStr === 'even' || weekStr === 'odd') {
+    return ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота']
+  }
+
   const match = /^(\d{4})-W(\d{2})$/.exec(weekStr)
   if (!match) {
     console.error('Неверный формат. Используйте YYYY-Www (например, 2025-W33)')

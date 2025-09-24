@@ -52,6 +52,7 @@ export const MultiSelect = ({ options, onChange, defaultValue }: Props) => {
             >
               <input
                 type="checkbox"
+                className={style.input}
                 checked={selected.includes(option.value)}
                 readOnly
               />
