@@ -28,3 +28,24 @@ export interface IGroup extends Document {
   group: string
   dates: ISchedule
 }
+
+export interface User {
+  id: string
+  email: string
+  password: string
+  role: 'admin' | 'user'
+}
+
+export interface JwtPayload {
+  userId: string
+  email: string
+  role: string
+}
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: JwtPayload
+    }
+  }
+}

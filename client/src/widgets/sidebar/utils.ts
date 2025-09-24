@@ -29,7 +29,7 @@ export const getWeekDates = (weekStr: string | undefined | null) => {
   const daysOfWeek = ['Вс.', 'Пн.', 'Вт.', 'Ср.', 'Чт.', 'Пт.', 'Сб.']
 
   const days: string[] = []
-  for (let i = 0; i < 7; i++) {
+  for (let i = 0; i < 6; i++) {
     const d = new Date(weekStart)
     d.setUTCDate(weekStart.getUTCDate() + i)
 

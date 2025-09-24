@@ -36,6 +36,7 @@ export interface IGroup {
   createdAt: string
   updatedAt: string
   __v: number
+  _id: string
 }
 
 // --- Education Types ---

@@ -29,7 +29,6 @@ export const WeeksList = ({ pickedWeek, setPickedWeek }: Props) => {
   const [updateWeek] = useUpdateWeekInGroupMutation()
   const [deleteWeek] = useDeleteWeekFromGroupMutation()
 
-  // --- CRUD handlers ---
   const handleCreateWeek = async (newWeek: string) => {
     if (!newWeek || !groupID) return
     try {
@@ -110,6 +109,7 @@ export const WeeksList = ({ pickedWeek, setPickedWeek }: Props) => {
               </EditableItem>
             </li>
           ))}
+
       <li>
         <AddItem onAdd={handleCreateWeek} type="week">
           Добавить неделю

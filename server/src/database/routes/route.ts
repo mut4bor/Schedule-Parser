@@ -41,7 +41,8 @@ import {
   getGroupsByEducationType,
 } from '@/database/controllers/educationTypes.controller.js'
 import { getGroupNames, getGroupNamesThatMatchWithReqParams } from '@/database/controllers/name.controller.js'
-
+import { login, logout, refreshToken, getProfile } from '@/database/controllers/auth.controller.js'
+import { authenticateToken } from '@/middleware/auth.js'
 const router = Router()
 
 const checkPassword = (req: Request, res: Response, next: NextFunction) => {
@@ -110,5 +111,10 @@ router.delete(`${groupsPath}/:id/weeks/:weekName/days/:dayIndex/lessons/:lessonI
 // --- Названия групп ---
 router.get(namesPath, getGroupNames)
 router.get(`${namesPath}/search`, getGroupNamesThatMatchWithReqParams)
+
+router.post('/login', login)
+router.post('/logout', logout)
+router.post('/refresh', refreshToken)
+router.get('/profile', authenticateToken, getProfile)
 
 export { router }

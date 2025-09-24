@@ -1,5 +1,5 @@
 import { Group } from '@/database/models/group.model.js'
-import { getFilterParams } from '@/hooks/getFilterParams.js'
+import { getFilterParams } from '@/utils/getFilterParams.js'
 import { datesMap } from './helpers.js'
 import { Request, Response } from 'express'
 

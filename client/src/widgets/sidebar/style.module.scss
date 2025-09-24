@@ -6,7 +6,9 @@
     position: fixed;
     top: 50%;
     left: 0;
-    justify-content: center;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
     transform: translate(-100%, -50%);
     z-index: 2;
     transition: 0.15s ease-in-out;
@@ -43,26 +45,6 @@
     height: 100%;
     fill: $white;
   }
-
-  .list {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-    border-radius: 0.5rem;
-    background: $darkGray;
-    padding: 1rem;
-  }
-  .listElement {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    min-width: 13rem;
-  }
-  .skeleton {
-    height: 3.6rem;
-  }
 }
 
 @media (min-width: $pageWidth768) {
@@ -78,11 +60,5 @@
   }
   .arrowButton {
     display: none;
-  }
-  .list {
-    padding: 2rem;
-  }
-  .listElement {
-    min-width: 13rem;
   }
 }

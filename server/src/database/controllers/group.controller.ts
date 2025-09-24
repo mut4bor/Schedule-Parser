@@ -1,6 +1,6 @@
 import { Group } from '@/database/models/group.model.js'
-import { getDatesOfISOWeek } from '@/hooks/getDatesOfISOWeek.js'
-import { getFilterParams } from '@/hooks/getFilterParams.js'
+import { getDatesOfISOWeek } from '@/utils/getDatesOfISOWeek.js'
+import { getFilterParams } from '@/utils/getFilterParams.js'
 import { Request, Response } from 'express'
 import { datesMap, lessonPlaceholder, lessonTimes } from './helpers.js'
 import { IDay, ILesson, IWeek } from '@/types/index.js'

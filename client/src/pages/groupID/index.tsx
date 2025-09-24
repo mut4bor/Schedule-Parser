@@ -1,24 +1,18 @@
 import * as style from './style.module.scss'
 import { useNavigate, useParams } from 'react-router-dom'
 import { WeeksList } from '@/widgets/weeks-list'
-import { DaysList } from '@/widgets/days-list'
-import { Schedule } from '@/widgets/schedule'
-import {
-  useGetGroupByIDQuery,
-  useGetWeekScheduleByIDQuery,
-  useUpdateGroupByIDMutation,
-} from '@/shared/redux'
-import { useState, useEffect } from 'react'
+import { Sibebar } from '@/widgets/sidebar'
+import { useGetGroupByIDQuery, useGetGroupNamesQuery } from '@/shared/redux'
+import { useState, useEffect, useReducer } from 'react'
 import { useSwipeable } from 'react-swipeable'
-import { RefreshDate } from '@/widgets/refresh-date'
-import { GroupHeading } from '@/entities/group'
 import { ErrorComponent } from '@/widgets/error'
-import { Options } from '@/widgets/options'
-import { getTodayIndex } from './utils'
-import { EditableItem } from '@/widgets/editable-item'
 import { BackToPreviousLink } from '@/entities/navigation'
-
-const { dayWeekIndex } = getTodayIndex()
+import { MultiSelect } from '@/entities/multi-select'
+import { getWeekDates } from '@/widgets/sidebar/utils'
+import { Skeleton } from '@/shared/ui'
+import { DaysButton } from '@/entities/days'
+import { GroupInfo } from '@/widgets/groupInfo'
+import { getTodayIndex } from '@/widgets/groupInfo/utils'
 
 enum DayIndex {
   None = -1,
@@ -31,6 +25,8 @@ enum DayIndex {
   Sunday = 6,
 }
 
+const { dayWeekIndex } = getTodayIndex()
+
 const CreateTapStopPropagationHandler = () =>
   useSwipeable({
     onTap: (event) => {
@@ -38,74 +34,79 @@ const CreateTapStopPropagationHandler = () =>
     },
   })
 
+const groupListReducer = (
+  state: string[],
+  action: { type: string; payload?: string },
+) => {
+  switch (action.type) {
+    case 'ADD':
+      return action.payload && !state.includes(action.payload)
+        ? [...state, action.payload]
+        : state
+    case 'REMOVE':
+      return action.payload
+        ? state.filter((id) => id !== action.payload)
+        : state
+    case 'SET':
+      return action.payload ? [action.payload] : []
+    default:
+      return state
+  }
+}
+
 export const GroupIDPage = () => {
   const { educationType, faculty, course, groupID = '' } = useParams()
   const navigate = useNavigate()
 
+  const { data: groupNamesData } = useGetGroupNamesQuery()
+  const [groupList, dispatchGroupList] = useReducer(groupListReducer, [groupID])
+
   const [pickedWeek, setPickedWeek] = useState<string>('')
   const [pickedDayIndex, setPickedDayIndex] = useState<DayIndex>(DayIndex.None)
 
-  const [isGroupDaysVisible, setIsGroupDaysVisible] = useState(false)
-  const [isOptionsListVisible, setIsOptionsListVisible] = useState(false)
+  const [isSidebarVisible, setIsSidebarVisible] = useState(false)
 
-  const hideGroupDays = () => setIsGroupDaysVisible(false)
-  const showGroupDays = () => setIsGroupDaysVisible(true)
-  const toggleGroupDays = () => setIsGroupDaysVisible((prev) => !prev)
+  const week = getWeekDates(pickedWeek)
 
-  const hideOptionsList = () => setIsOptionsListVisible(false)
-  const toggleOptionsList = () => setIsOptionsListVisible((prev) => !prev)
+  const hideGroupDays = () => setIsSidebarVisible(false)
+  const showGroupDays = () => setIsSidebarVisible(true)
+  const toggleGroupDays = () => setIsSidebarVisible((prev) => !prev)
 
   const contentSwipeHandler = useSwipeable({
     onSwipedLeft: hideGroupDays,
     onSwipedRight: showGroupDays,
     onTap: () => {
       hideGroupDays()
-      hideOptionsList()
     },
     preventScrollOnSwipe: true,
   })
 
   const daysListStopPropagationHandler = CreateTapStopPropagationHandler()
-  const optionsStopPropagationHandler = CreateTapStopPropagationHandler()
 
-  const { data: groupData } = useGetGroupByIDQuery(groupID, {
-    skip: !groupID,
-  })
-
-  useEffect(() => {
-    if (
-      (!educationType && !groupData?.educationType) ||
-      (!faculty && !groupData?.faculty) ||
-      (!course && !groupData?.course)
-    ) {
-      return
-    }
-    navigate(
-      `/educationTypes/${educationType ?? groupData?.educationType}/faculties/${faculty ?? groupData?.faculty}/courses/${course ?? groupData?.course}/groups/${groupID}`,
-      { replace: true },
-    )
-  }, [
-    course,
-    educationType,
-    faculty,
-    groupData?.course,
-    groupData?.educationType,
-    groupData?.faculty,
-    groupID,
-    navigate,
-  ])
-
-  const { data: scheduleData } = useGetWeekScheduleByIDQuery(
+  const { data: groupData } = useGetGroupByIDQuery(
+    groupList.length === 1 ? groupList[0] : groupID,
     {
-      groupID: groupID,
-      week: pickedWeek ?? '',
-    },
-    {
-      skip: !groupID || !pickedWeek,
+      skip: !groupID,
     },
   )
 
-  const [updateGroup] = useUpdateGroupByIDMutation()
+  useEffect(() => {
+    if (!groupData) {
+      return
+    }
+
+    navigate(
+      `/educationTypes/${groupData.educationType}/faculties/${groupData.faculty}/courses/${groupData.course}/groups/${groupData._id}`,
+      { replace: true },
+    )
+  }, [
+    groupData,
+    groupData?._id,
+    groupData?.course,
+    groupData?.educationType,
+    groupData?.faculty,
+    navigate,
+  ])
 
   useEffect(() => {
     setPickedDayIndex(dayWeekIndex)
@@ -139,48 +140,60 @@ export const GroupIDPage = () => {
 
       <div className={style.content} {...contentSwipeHandler}>
         <div className={style.wrapper}>
-          <DaysList
-            pickedDayIndex={pickedDayIndex}
-            pickedWeek={pickedWeek}
-            setPickedDayIndex={setPickedDayIndex}
-            scheduleData={scheduleData}
-            toggleIsGroupDaysVisible={toggleGroupDays}
-            isGroupDaysVisible={isGroupDaysVisible}
+          <Sibebar
+            toggleIsSidebarVisible={toggleGroupDays}
+            isSidebarVisible={isSidebarVisible}
             {...daysListStopPropagationHandler}
-          />
-          <div className={style.schedule}>
-            <div className={style.headingContainer}>
-              <div>
-                <EditableItem
-                  value={groupData?.group ?? ''}
-                  crudHandlers={{
-                    onUpdate: async (_, newValue) => {
-                      if (!groupID) return
-                      await updateGroup({
-                        id: groupID,
-                        data: { group: newValue },
-                      }).unwrap()
-                    },
-                  }}
-                >
-                  <GroupHeading>{groupData?.group}</GroupHeading>
-                </EditableItem>
-              </div>
+          >
+            <ul className={style.list}>
+              {groupNamesData && (
+                <div className={style.groupSelect}>
+                  <MultiSelect
+                    defaultValue={groupID}
+                    options={groupNamesData.map((item) => ({
+                      value: item._id,
+                      label: item.group,
+                    }))}
+                    onChange={(selectedIds: string[]) => {
+                      dispatchGroupList({ type: 'SET', payload: '' })
+                      selectedIds.forEach((id) =>
+                        dispatchGroupList({ type: 'ADD', payload: id }),
+                      )
+                    }}
+                  />
+                </div>
+              )}
 
-              <Options
+              {!week.length
+                ? Array.from({ length: 6 }).map((_, index) => (
+                    <li className={style.listElement} key={index}>
+                      <Skeleton className={style.skeleton} />
+                    </li>
+                  ))
+                : week.map((day, index) => (
+                    <li className={style.listElement} key={index}>
+                      <DaysButton
+                        onClick={() => {
+                          setPickedDayIndex(index)
+                        }}
+                        isActive={pickedDayIndex === index}
+                      >
+                        {day}
+                      </DaysButton>
+                    </li>
+                  ))}
+            </ul>
+          </Sibebar>
+
+          <div className={style.groups}>
+            {groupList.map((groupID) => (
+              <GroupInfo
                 groupID={groupID}
-                isOptionsListVisible={isOptionsListVisible}
-                toggleOptionsList={toggleOptionsList}
-                {...optionsStopPropagationHandler}
+                pickedWeek={pickedWeek}
+                pickedDayIndex={pickedDayIndex}
+                key={groupID}
               />
-            </div>
-            <Schedule
-              scheduleData={scheduleData}
-              groupID={groupID}
-              pickedDayIndex={pickedDayIndex}
-              pickedWeek={pickedWeek}
-            />
-            <RefreshDate date={groupData?.updatedAt} />
+            ))}
           </div>
         </div>
       </div>
