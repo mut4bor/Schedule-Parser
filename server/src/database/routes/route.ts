@@ -1,5 +1,4 @@
-import { Router, Request, Response, NextFunction } from 'express'
-import { NODE_ENV, PRODUCTION_DOMAIN, X_ADMIN_PASSWORD } from '@/config/index.js'
+import { Router } from 'express'
 import {
   getAllGroups,
   getGroupById,
@@ -41,19 +40,11 @@ import {
   getGroupsByEducationType,
 } from '@/database/controllers/educationTypes.controller.js'
 import { getGroupNames, getGroupNamesThatMatchWithReqParams } from '@/database/controllers/name.controller.js'
-import { login, logout, refreshToken, getProfile } from '@/database/controllers/auth.controller.js'
-import { authenticateToken } from '@/middleware/auth.js'
+import { authMiddleware } from '@/middleware/authMiddleware.js'
+import { login, refresh, logout } from '../controllers/auth.controller.js'
+
+// --- Router ---
 const router = Router()
-
-const checkPassword = (req: Request, res: Response, next: NextFunction) => {
-  const password = req.headers['x-admin-password']
-
-  if (password === X_ADMIN_PASSWORD) {
-    next()
-  } else {
-    res.status(401).json({ message: 'Unauthorized: Incorrect password' })
-  }
-}
 
 const educationTypePath = `/education-types`
 const facultyPath = `/faculty`
@@ -61,12 +52,12 @@ const coursePath = `/course`
 const groupsPath = `/groups`
 const namesPath = `/names`
 
-router.use((req, res, next) => {
-  if (req.method !== 'GET') {
-    return checkPassword(req, res, next)
-  }
-  next()
-})
+// --- Авторизация ---
+router.post('/login', login)
+router.post('/logout', logout)
+router.post('/refresh', refresh)
+
+router.use(authMiddleware)
 
 // --- Типы образования ---
 router.get(educationTypePath, getEducationTypes)
@@ -111,10 +102,5 @@ router.delete(`${groupsPath}/:id/weeks/:weekName/days/:dayIndex/lessons/:lessonI
 // --- Названия групп ---
 router.get(namesPath, getGroupNames)
 router.get(`${namesPath}/search`, getGroupNamesThatMatchWithReqParams)
-
-router.post('/login', login)
-router.post('/logout', logout)
-router.post('/refresh', refreshToken)
-router.get('/profile', authenticateToken, getProfile)
 
 export { router }

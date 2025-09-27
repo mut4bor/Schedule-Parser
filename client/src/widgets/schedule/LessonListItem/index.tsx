@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { EditableItem } from '@/widgets/editable-item'
 import * as style from './style.module.scss'
 import { ILesson } from '@/shared/redux/types'
+import { useAppSelector } from '@/shared/redux'
 
 interface Props {
   lesson: ILesson
@@ -16,6 +17,7 @@ export const LessonListItem = ({
   onUpdate,
   groupList,
 }: Props) => {
+  const accessToken = useAppSelector((store) => store.auth.accessToken)
   const [isCollapsed, setIsCollapsed] = useState(true)
 
   return (
@@ -47,15 +49,17 @@ export const LessonListItem = ({
           </p>
         </EditableItem>
 
-        <button
-          className={style.toggleBtn}
-          onClick={() => setIsCollapsed((prev) => !prev)}
-        >
-          {isCollapsed ? '▼' : '▲'}
-        </button>
+        {accessToken && (
+          <button
+            className={style.toggleBtn}
+            onClick={() => setIsCollapsed((prev) => !prev)}
+          >
+            {isCollapsed ? '▼' : '▲'}
+          </button>
+        )}
       </div>
 
-      {!isCollapsed && (
+      {!isCollapsed && accessToken && (
         <ul
           className={`${style.editList} ${groupList.length === 1 ? style.isColumned : ''}`}
         >
@@ -155,7 +159,6 @@ export const LessonListItem = ({
                   }
                   crudHandlers={{
                     onUpdate: async (_, newValue) => field.update(newValue),
-                    // onDelete: async () => field.delete(),
                   }}
                 >
                   <p

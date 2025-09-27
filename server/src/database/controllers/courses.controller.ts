@@ -50,7 +50,13 @@ const createCourse = async (req: Request, res: Response) => {
 
 const updateCourse = async (req: Request, res: Response) => {
   try {
-    const { oldCourse, newCourse } = req.body
+    const { educationType, faculty, oldCourse, newCourse } = req.body
+
+    if (!educationType || !faculty) {
+      return res.status(400).json({
+        message: 'educationType and faculty are required',
+      })
+    }
 
     if (!oldCourse || !newCourse) {
       return res.status(400).json({
@@ -58,7 +64,7 @@ const updateCourse = async (req: Request, res: Response) => {
       })
     }
 
-    const result = await Group.updateMany({ course: oldCourse }, { course: newCourse })
+    const result = await Group.updateMany({ educationType, faculty, course: oldCourse }, { course: newCourse })
 
     res.status(200).json({
       message: 'Course updated successfully',

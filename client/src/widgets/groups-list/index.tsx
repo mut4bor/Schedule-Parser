@@ -6,11 +6,14 @@ import {
   useCreateGroupMutation,
   useUpdateGroupByIDMutation,
   useDeleteGroupByIDMutation,
+  useAppSelector,
 } from '@/shared/redux'
 import { AddItem } from '@/widgets/add-item'
 import { EditableItem } from '../editable-item'
 
 export const GroupsList = () => {
+  const accessToken = useAppSelector((store) => store.auth.accessToken)
+
   const { educationType, faculty, course } = useParams()
   const favoriteGroup = localStorage.getItem('favorite-group')
 
@@ -92,7 +95,9 @@ export const GroupsList = () => {
             ))}
       </ul>
 
-      <AddItem onAdd={handleCreateGroup}>Добавить группу</AddItem>
+      {accessToken && (
+        <AddItem onAdd={handleCreateGroup}>Добавить группу</AddItem>
+      )}
     </div>
   )
 }

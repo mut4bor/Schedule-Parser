@@ -8,6 +8,7 @@ import {
   useCreateCourseMutation,
   useUpdateCourseMutation,
   useDeleteCourseMutation,
+  useAppSelector,
 } from '@/shared/redux'
 import routes from '@/shared/routes'
 import { AddItem } from '@/widgets/add-item'
@@ -17,16 +18,7 @@ export const Courses = () => {
   const navigate = useNavigate()
   const { educationType, faculty, course } = useParams()
 
-  useEffect(() => {
-    if (
-      !educationType ||
-      educationType === 'undefined' ||
-      !faculty ||
-      faculty === 'undefined'
-    ) {
-      navigate(routes.BASE_URL)
-    }
-  }, [educationType, faculty, navigate])
+  const accessToken = useAppSelector((store) => store.auth.accessToken)
 
   const searchParams = new URLSearchParams({
     educationType: educationType ?? '',
@@ -36,6 +28,18 @@ export const Courses = () => {
   const { data: coursesData } = useGetCoursesQuery(searchParams, {
     skip: !educationType || !faculty,
   })
+
+  useEffect(() => {
+    if (
+      coursesData?.length === 0 ||
+      !educationType ||
+      educationType === 'undefined' ||
+      !faculty ||
+      faculty === 'undefined'
+    ) {
+      navigate(routes.BASE_URL)
+    }
+  }, [coursesData, educationType, faculty, navigate])
 
   const [createCourse] = useCreateCourseMutation()
   const [updateCourse] = useUpdateCourseMutation()
@@ -55,8 +59,15 @@ export const Courses = () => {
   }
 
   const handleUpdateCourse = async (oldCourse: string, newCourse: string) => {
+    if (!educationType || !faculty) return
+
     try {
-      await updateCourse({ oldCourse, newCourse }).unwrap()
+      await updateCourse({
+        educationType,
+        faculty,
+        oldCourse,
+        newCourse,
+      }).unwrap()
     } catch (err) {
       console.error('Ошибка при обновлении курса:', err)
     }
@@ -76,20 +87,14 @@ export const Courses = () => {
     }
   }
 
-  const crudHandlers = {
-    onUpdateCourse: handleUpdateCourse,
-    onDeleteCourse: handleDeleteCourse,
-  }
-
   useEffect(() => {
-    if (!!coursesData && coursesData.length > 0) {
-      navigate(
-        `/educationTypes/${educationType}/faculties/${faculty}/courses/${
-          !!course ? course : coursesData[0]
-        }`,
-        { replace: true },
-      )
-    }
+    if (!coursesData?.length) return
+
+    if (course && coursesData.includes(course)) return
+
+    navigate(`/educationTypes/${educationType}/faculties/${faculty}/courses/${coursesData[0]}`, {
+      replace: true,
+    })
   }, [course, coursesData, educationType, faculty, navigate])
 
   return (
@@ -108,19 +113,19 @@ export const Courses = () => {
                 min={1}
                 max={6}
                 crudHandlers={{
-                  onUpdate: (_, newValue) =>
-                    crudHandlers.onUpdateCourse(course, newValue),
-                  onDelete: () => crudHandlers.onDeleteCourse(course),
+                  onUpdate: (_, newValue) => handleUpdateCourse(course, newValue),
+                  onDelete: () => handleDeleteCourse(course),
                 }}
               >
                 <CourseButton course={course} />
               </EditableItem>
             </li>
           ))}
-
-      <AddItem type="number" min={1} max={6} onAdd={handleCreateCourse}>
-        Добавить курс
-      </AddItem>
+      {accessToken && (
+        <AddItem type="number" min={1} max={6} onAdd={handleCreateCourse}>
+          Добавить курс
+        </AddItem>
+      )}
     </ul>
   )
 }

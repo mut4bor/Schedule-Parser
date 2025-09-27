@@ -4,6 +4,7 @@ import { FacultyLink } from '@/entities/faculty'
 import { Fragment } from 'react'
 import { EditableItem } from '@/widgets/editable-item'
 import { AddItem } from '../add-item'
+import { useAppSelector } from '@/shared/redux'
 
 const Pipe = () => {
   return <span className={style.pipe}></span>
@@ -38,6 +39,8 @@ export const Faculty = ({ data, columnsAmount, crudHandlers }: Props) => {
       ? columnsAmount
       : 1
     : 4
+
+  const accessToken = useAppSelector((store) => store.auth.accessToken)
 
   return (
     <li className={style.container}>
@@ -118,7 +121,7 @@ export const Faculty = ({ data, columnsAmount, crudHandlers }: Props) => {
               </Fragment>
             ))}
 
-            {crudHandlers && (
+            {accessToken && crudHandlers && (
               <Fragment>
                 {faculties.length > 0 && <Pipe />}
                 <div>

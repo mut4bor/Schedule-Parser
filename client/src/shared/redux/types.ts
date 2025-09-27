@@ -74,6 +74,8 @@ export interface CreateCourseDTO {
 }
 
 export interface UpdateCourseDTO {
+  educationType: string
+  faculty: string
   oldCourse: string
   newCourse: string
 }

@@ -1,6 +1,7 @@
 import * as style from './style.module.scss'
 import { useState } from 'react'
 import { InlineEdit, EditDeleteActions } from '@/entities/admin'
+import { useAppSelector } from '@/shared/redux'
 
 export type CrudHandlers = {
   onUpdate?: ((oldValue: string, newValue: string) => Promise<void>) | null
@@ -59,6 +60,12 @@ export const EditableItem = ({
     } catch (err) {
       console.error('Ошибка при удалении:', err)
     }
+  }
+
+  const accessToken = useAppSelector((store) => store.auth.accessToken)
+
+  if (!accessToken) {
+    return children
   }
 
   return (

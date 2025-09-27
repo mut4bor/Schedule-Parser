@@ -4,6 +4,7 @@ import { ILesson } from '@/shared/redux/types'
 import {
   useUpdateLessonInDayMutation,
   useDeleteLessonFromDayMutation,
+  useAppSelector,
 } from '@/shared/redux'
 import { AddItem } from '@/widgets/add-item'
 import {
@@ -25,6 +26,8 @@ export const Schedule = ({
   pickedWeek,
   groupList,
 }: Props) => {
+  const accessToken = useAppSelector((store) => store.auth.accessToken)
+
   const { data: scheduleData } = useGetWeekScheduleByIDQuery(
     {
       groupID: groupID,
@@ -127,7 +130,7 @@ export const Schedule = ({
               />
             ))}
 
-      {isScheduleData && pickedWeek && (
+      {accessToken && isScheduleData && pickedWeek && (
         <AddItem type="time" onAdd={handleCreateLesson}>
           Добавить пару
         </AddItem>

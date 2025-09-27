@@ -1,21 +1,14 @@
 export {
-  // Groups
-  useGetAllGroupsQuery,
-  useGetGroupByIDQuery,
-  useCreateGroupMutation,
-  useUpdateGroupByIDMutation,
-  useDeleteGroupByIDMutation,
-  useGetWeeksByIDQuery,
-  useGetWeekScheduleByIDQuery,
-  useAddWeekToGroupMutation,
-  useUpdateWeekInGroupMutation,
-  useDeleteWeekFromGroupMutation,
-  useUpdateLessonInDayMutation,
-  useDeleteLessonFromDayMutation,
+  //Login
+  useLoginMutation,
+  useLogoutMutation,
 
-  // Names
-  useGetGroupNamesQuery,
-  useGetGroupNamesThatMatchWithReqParamsQuery,
+  // Education Types
+  useGetEducationTypesQuery,
+  useCreateEducationTypeMutation,
+  useUpdateEducationTypeMutation,
+  useDeleteEducationTypeMutation,
+  useGetGroupsByEducationTypeQuery,
 
   // Faculties
   useGetFacultiesQuery,
@@ -32,12 +25,24 @@ export {
   useDeleteCourseMutation,
   useGetGroupsByCourseQuery,
 
-  // Education Types
-  useGetEducationTypesQuery,
-  useCreateEducationTypeMutation,
-  useUpdateEducationTypeMutation,
-  useDeleteEducationTypeMutation,
-  useGetGroupsByEducationTypeQuery,
+  // Groups
+  useGetAllGroupsQuery,
+  useGetGroupByIDQuery,
+  useCreateGroupMutation,
+  useUpdateGroupByIDMutation,
+  useDeleteGroupByIDMutation,
+  useGetWeeksByIDQuery,
+  useGetWeekScheduleByIDQuery,
+  useAddWeekToGroupMutation,
+  useUpdateWeekInGroupMutation,
+  useDeleteWeekFromGroupMutation,
+  useCreateLessonInDayMutation,
+  useUpdateLessonInDayMutation,
+  useDeleteLessonFromDayMutation,
+
+  // Names
+  useGetGroupNamesQuery,
+  useGetGroupNamesThatMatchWithReqParamsQuery,
 } from './slices/apiSlice'
 
 export type { IName } from './types'

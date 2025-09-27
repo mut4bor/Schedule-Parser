@@ -12,8 +12,11 @@ const getEnvVar = (key: string) => {
   return process.env[key] || ''
 }
 
-export const NODE_ENV = getEnvVar('NODE_ENV')
-export const PRODUCTION_DOMAIN = getEnvVar('PRODUCTION_DOMAIN')
-export const PORT = getEnvVar('PORT')
-export const X_ADMIN_PASSWORD = getEnvVar('X_ADMIN_PASSWORD')
-export const MONGODB_URL = getEnvVar('MONGODB_URL')
+export const env = {
+  NODE_ENV: getEnvVar('NODE_ENV'),
+  PRODUCTION_DOMAIN: getEnvVar('PRODUCTION_DOMAIN'),
+  PORT: getEnvVar('PORT'),
+  JWT_SECRET: getEnvVar('JWT_SECRET'),
+  ADMIN_PASSWORD: getEnvVar('ADMIN_PASSWORD'),
+  MONGODB_URL: getEnvVar('MONGODB_URL'),
+}

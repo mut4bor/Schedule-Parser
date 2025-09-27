@@ -2,27 +2,26 @@ import * as style from './style.module.scss'
 import {
   HeaderHeading,
   HeaderInput,
+  HeaderLogoutButton,
   HeaderSearchResult,
 } from '@/entities/header'
 import { useState, useEffect } from 'react'
-import { useGetGroupNamesThatMatchWithReqParamsQuery } from '@/shared/redux'
+import { useAppSelector, useGetGroupNamesThatMatchWithReqParamsQuery } from '@/shared/redux'
 import { HeaderFavoriteLink } from '@/entities/header/header-favorite-link'
 
 export const Header = () => {
+  const accessToken = useAppSelector((store) => store.auth.accessToken)
+
   const [searchValue, setSearchValue] = useState<string>('')
-  const [isSearchInputFocused, setIsSearchInputFocused] =
-    useState<boolean>(false)
+  const [isSearchInputFocused, setIsSearchInputFocused] = useState<boolean>(false)
 
   const namesSearchParams = new URLSearchParams({
     searchValue: searchValue,
   }).toString()
 
-  const { data: namesData } = useGetGroupNamesThatMatchWithReqParamsQuery(
-    namesSearchParams,
-    {
-      skip: !searchValue,
-    },
-  )
+  const { data: namesData } = useGetGroupNamesThatMatchWithReqParamsQuery(namesSearchParams, {
+    skip: !searchValue,
+  })
 
   const [isVisible, setIsVisible] = useState(true)
   const [lastScrollY, setLastScrollY] = useState(0)
@@ -30,18 +29,16 @@ export const Header = () => {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const controlHeader = () => {
-        if (typeof window !== 'undefined') {
-          if (window.scrollY > 120) {
-            if (window.scrollY > lastScrollY) {
-              setIsVisible(false)
-            } else {
-              setIsVisible(true)
-            }
+        if (window.scrollY > 120) {
+          if (window.scrollY > lastScrollY) {
+            setIsVisible(false)
           } else {
             setIsVisible(true)
           }
-          setLastScrollY(window.scrollY)
+        } else {
+          setIsVisible(true)
         }
+        setLastScrollY(window.scrollY)
       }
 
       window.addEventListener('scroll', controlHeader)
@@ -53,9 +50,7 @@ export const Header = () => {
   }, [lastScrollY])
 
   return (
-    <header
-      className={`${style.header} ${isVisible ? style.visible : style.hidden}`}
-    >
+    <header className={`${style.header} ${isVisible ? style.visible : style.hidden}`}>
       <div className={style.wrapper}>
         <div className={style.container}>
           <HeaderHeading />
@@ -73,6 +68,7 @@ export const Header = () => {
             </div>
 
             <HeaderFavoriteLink />
+            {accessToken && <HeaderLogoutButton />}
           </div>
         </div>
       </div>

@@ -1,107 +1,60 @@
-// controllers/authController.ts
 import { Request, Response } from 'express'
+import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
-import { User, JwtPayload } from '@/types/index.js'
-import { generateAccessToken, generateRefreshToken, verifyToken } from '@/utils/jwt.js'
-import { AUTH_CONFIG } from '@/config/auth.js'
+import { env } from '@/config/index.js'
+const REFRESH_SECRET = env.JWT_SECRET + '_refresh'
 
-// Моковая база данных пользователей (замени на реальную)
-const users: User[] = [
+const users = [
   {
-    id: '1',
-    email: 'admin@example.com',
-    password: '$2a$12$example', // хешированный пароль
-    role: 'admin',
+    id: 1,
+    username: 'admin',
+    password: bcrypt.hashSync(env.ADMIN_PASSWORD, 10),
   },
 ]
 
-export const login = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { email, password } = req.body
+const login = async (req: Request, res: Response) => {
+  const { username, password } = req.body
+  const user = users.find((u) => u.username === username)
+  if (!user) return res.status(401).json({ message: 'Invalid credentials' })
 
-    if (!email || !password) {
-      res.status(400).json({ message: 'Email and password are required' })
-      return
-    }
+  const isValid = bcrypt.compareSync(password, user.password)
+  if (!isValid) return res.status(401).json({ message: 'Invalid credentials' })
 
-    // Найти пользователя
-    const user = users.find((u) => u.email === email)
-    if (!user) {
-      res.status(401).json({ message: 'Invalid credentials' })
-      return
-    }
+  const accessToken = jwt.sign({ id: user.id, username: user.username }, env.JWT_SECRET, { expiresIn: '1h' })
+  const refreshToken = jwt.sign({ id: user.id, username: user.username }, REFRESH_SECRET, { expiresIn: '7d' })
 
-    // Проверить пароль
-    const isValidPassword = await bcrypt.compare(password, user.password)
-    if (!isValidPassword) {
-      res.status(401).json({ message: 'Invalid credentials' })
-      return
-    }
+  res.cookie('refreshToken', refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 дней
+  })
 
-    // Создать токены
-    const tokenPayload: JwtPayload = {
-      userId: user.id,
-      email: user.email,
-      role: user.role,
-    }
+  return res.json({ accessToken })
+}
 
-    const accessToken = generateAccessToken(tokenPayload)
-    const refreshToken = generateRefreshToken(tokenPayload)
+const logout = async (req: Request, res: Response) => {
+  res.clearCookie('refreshToken', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+  })
+  return res.json({ message: 'Logged out' })
+}
 
-    // Установить cookies
-    res.cookie('accessToken', accessToken, AUTH_CONFIG.COOKIE_OPTIONS)
-    res.cookie('refreshToken', refreshToken, AUTH_CONFIG.REFRESH_COOKIE_OPTIONS)
+const refresh = async (req: Request, res: Response) => {
+  const token = req.cookies?.refreshToken
+  if (!token) return res.status(401).json({ message: 'No refresh token' })
 
-    res.json({
-      message: 'Login successful',
-      user: {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-      },
+  jwt.verify(token, REFRESH_SECRET, (err: any, user: any) => {
+    if (err) return res.status(403).json({ message: 'Invalid refresh token' })
+
+    const accessToken = jwt.sign({ id: user.id, username: user.username }, env.JWT_SECRET, {
+      expiresIn: '1h',
     })
-  } catch (error) {
-    res.status(500).json({ message: 'Internal server error' })
-  }
+
+    return res.json({ accessToken })
+  })
 }
 
-export const logout = (_req: Request, res: Response): void => {
-  res.clearCookie('accessToken')
-  res.clearCookie('refreshToken')
-  res.json({ message: 'Logout successful' })
-}
-
-export const refreshToken = (req: Request, res: Response): void => {
-  const refreshToken = req.cookies.refreshToken
-
-  if (!refreshToken) {
-    res.status(401).json({ message: 'Refresh token required' })
-    return
-  }
-
-  try {
-    const decoded = verifyToken(refreshToken)
-
-    // Создать новые токены
-    const tokenPayload: JwtPayload = {
-      userId: decoded.userId,
-      email: decoded.email,
-      role: decoded.role,
-    }
-
-    const newAccessToken = generateAccessToken(tokenPayload)
-    const newRefreshToken = generateRefreshToken(tokenPayload)
-
-    // Обновить cookies
-    res.cookie('accessToken', newAccessToken, AUTH_CONFIG.COOKIE_OPTIONS)
-    res.cookie('refreshToken', newRefreshToken, AUTH_CONFIG.REFRESH_COOKIE_OPTIONS)
-
-    res.json({ message: 'Tokens refreshed' })
-  } catch (error) {
-    res.status(403).json({ message: 'Invalid refresh token' })
-  }
-}
-
-export const getProfile = (req: Request, res: Response): void => {
-  res.json({ user: req.user })
-}
+export { login, logout, refresh }

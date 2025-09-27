@@ -8,10 +8,13 @@ import {
   useCreateEducationTypeMutation,
   useUpdateEducationTypeMutation,
   useDeleteEducationTypeMutation,
+  useAppSelector,
 } from '@/shared/redux'
 import { AddItem } from '@/widgets/add-item'
 
 export const MainPage = () => {
+  const accessToken = useAppSelector((store) => store.auth.accessToken)
+
   const {
     data: facultiesData,
     isLoading: isFacultiesLoading,
@@ -122,19 +125,33 @@ export const MainPage = () => {
             ? Array.from({ length: 3 }).map((_, index) => (
                 <Faculty columnsAmount={4 - index} key={index} />
               ))
-            : Object.entries(facultiesData).map(
-                ([educationType, faculties], key) => (
+            : Object.entries(facultiesData)
+                .sort(([a], [b]) => {
+                  const order = ['бакалавриат', 'магистратура', 'аспирантура']
+                  const aIndex = order.indexOf(a.toLowerCase())
+                  const bIndex = order.indexOf(b.toLowerCase())
+                  if (aIndex === -1 && bIndex === -1) {
+                    return a.localeCompare(b, 'ru')
+                  }
+                  if (aIndex === -1) return 1
+                  if (bIndex === -1) return -1
+                  return aIndex - bIndex
+                })
+                .map(([educationType, faculties], key) => (
                   <Faculty
                     key={key}
                     data={{ educationType, faculties }}
                     crudHandlers={crudHandlers}
                   />
-                ),
-              )}
+                ))}
         </ul>
       )}
 
-      <AddItem onAdd={handleCreateEducationType}>Добавить тип обучения</AddItem>
+      {accessToken && (
+        <AddItem onAdd={handleCreateEducationType}>
+          Добавить тип обучения
+        </AddItem>
+      )}
     </div>
   )
 }

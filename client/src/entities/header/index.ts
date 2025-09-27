@@ -1,5 +1,6 @@
 export { HeaderFavoriteLink } from './header-favorite-link'
 export { HeaderHeading } from './header-heading'
 export { HeaderInput } from './header-input'
+export { HeaderLogoutButton } from './header-logout-button'
 export { HeaderSearchResult } from './header-search-result'
 export { HeaderTextLink } from './header-text-link'

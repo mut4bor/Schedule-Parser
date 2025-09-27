@@ -6,6 +6,9 @@ import { MainPage } from './main'
 import { CoursesPage } from './courses'
 import { GroupIDPage } from './groupID'
 import { FavoritePage } from './favorite'
+import { LoginPage } from './login'
+import { GroupRedirectPage } from './groupRedirect'
+
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import routes from '@/shared/routes'
@@ -22,7 +25,8 @@ const routesArray = [
     Component: FavoritePage,
   },
   { path: routes.GROUP_PATH, Component: GroupIDPage },
-  { path: `/groups/:groupID`, Component: GroupIDPage },
+  { path: `/groups/:groupID`, Component: GroupRedirectPage },
+  { path: routes.LOGIN_PATH, Component: LoginPage },
 ]
 
 export const Routing = () => {

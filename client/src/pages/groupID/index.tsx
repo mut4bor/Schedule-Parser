@@ -1,11 +1,10 @@
 import * as style from './style.module.scss'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { WeeksList } from '@/widgets/weeks-list'
 import { Sibebar } from '@/widgets/sidebar'
-import { useGetGroupByIDQuery, useGetGroupNamesQuery } from '@/shared/redux'
+import { useAppSelector, useGetGroupByIDQuery, useGetGroupNamesQuery } from '@/shared/redux'
 import { useState, useEffect, useReducer } from 'react'
 import { useSwipeable } from 'react-swipeable'
-import { ErrorComponent } from '@/widgets/error'
 import { BackToPreviousLink } from '@/entities/navigation'
 import { MultiSelect } from '@/entities/multi-select'
 import { getWeekDates } from '@/widgets/sidebar/utils'
@@ -34,19 +33,12 @@ const CreateTapStopPropagationHandler = () =>
     },
   })
 
-const groupListReducer = (
-  state: string[],
-  action: { type: string; payload?: string },
-) => {
+const groupListReducer = (state: string[], action: { type: string; payload?: string }) => {
   switch (action.type) {
     case 'ADD':
-      return action.payload && !state.includes(action.payload)
-        ? [...state, action.payload]
-        : state
+      return action.payload && !state.includes(action.payload) ? [...state, action.payload] : state
     case 'REMOVE':
-      return action.payload
-        ? state.filter((id) => id !== action.payload)
-        : state
+      return action.payload ? state.filter((id) => id !== action.payload) : state
     case 'SET':
       return action.payload ? [action.payload] : []
     default:
@@ -55,7 +47,11 @@ const groupListReducer = (
 }
 
 export const GroupIDPage = () => {
+  const location = useLocation()
+  const accessToken = useAppSelector((store) => store.auth.accessToken)
+
   const { educationType, faculty, course, groupID = '' } = useParams()
+
   const navigate = useNavigate()
 
   const { data: groupNamesData } = useGetGroupNamesQuery()
@@ -84,12 +80,9 @@ export const GroupIDPage = () => {
 
   const daysListStopPropagationHandler = CreateTapStopPropagationHandler()
 
-  const { data: groupData } = useGetGroupByIDQuery(
-    groupList.length === 1 ? groupList[0] : groupID,
-    {
-      skip: !groupID,
-    },
-  )
+  const { data: groupData } = useGetGroupByIDQuery(groupList[0], {
+    skip: !groupID || !groupList[0],
+  })
 
   useEffect(() => {
     if (!groupData) {
@@ -100,14 +93,7 @@ export const GroupIDPage = () => {
       `/educationTypes/${groupData.educationType}/faculties/${groupData.faculty}/courses/${groupData.course}/groups/${groupData._id}`,
       { replace: true },
     )
-  }, [
-    groupData,
-    groupData?._id,
-    groupData?.course,
-    groupData?.educationType,
-    groupData?.faculty,
-    navigate,
-  ])
+  }, [groupData, navigate])
 
   useEffect(() => {
     setPickedDayIndex(dayWeekIndex)
@@ -118,29 +104,14 @@ export const GroupIDPage = () => {
     }
   }, [groupID])
 
-  if (!groupID) {
-    return (
-      <ErrorComponent
-        error={{
-          status: 500,
-          data: { message: 'Invalid groupID' },
-        }}
-      />
-    )
-  }
-
   return (
-    <div className={style.container}>
+    <div className={style.container} key={location.pathname}>
       <div className={style.weeksContainer}>
         <BackToPreviousLink
           href={`/educationTypes/${educationType ?? groupData?.educationType}/faculties/${faculty ?? groupData?.faculty}/courses/${course ?? groupData?.course}`}
         />
 
-        <WeeksList
-          pickedWeek={pickedWeek}
-          setPickedWeek={setPickedWeek}
-          groupList={groupList}
-        />
+        <WeeksList pickedWeek={pickedWeek} setPickedWeek={setPickedWeek} groupList={groupList} />
       </div>
 
       <div className={style.content} {...contentSwipeHandler}>
@@ -151,7 +122,7 @@ export const GroupIDPage = () => {
             {...daysListStopPropagationHandler}
           >
             <ul className={style.list}>
-              {groupNamesData && (
+              {accessToken && groupNamesData && (
                 <div className={style.groupSelect}>
                   <MultiSelect
                     defaultValue={groupID}
@@ -161,9 +132,7 @@ export const GroupIDPage = () => {
                     }))}
                     onChange={(selectedIds: string[]) => {
                       dispatchGroupList({ type: 'SET', payload: '' })
-                      selectedIds.forEach((id) =>
-                        dispatchGroupList({ type: 'ADD', payload: id }),
-                      )
+                      selectedIds.forEach((id) => dispatchGroupList({ type: 'ADD', payload: id }))
                     }}
                   />
                 </div>

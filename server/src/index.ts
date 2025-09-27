@@ -1,17 +1,20 @@
 import express from 'express'
 import bodyParser from 'body-parser'
-import cors from 'cors'
+import cors, { CorsOptions } from 'cors'
 import mongoose from 'mongoose'
 import { router } from '@/database/routes/route.js'
-import { PORT, MONGODB_URL, PRODUCTION_DOMAIN, NODE_ENV } from '@/config/index.js'
+import { env } from '@/config/index.js'
+import cookieParser from 'cookie-parser'
 
 const app = express()
-const HOST_PORT = PORT || 3000
+const HOST_PORT = env.PORT || 3000
 
-const corsOptions = {
-  origin: NODE_ENV === 'production' ? PRODUCTION_DOMAIN : '*',
+const corsOptions: CorsOptions = {
+  origin: env.NODE_ENV === 'production' ? env.PRODUCTION_DOMAIN : 'http://localhost:5173',
+  credentials: true,
 }
 
+app.use(cookieParser())
 app.use(cors(corsOptions))
 app.use(bodyParser.json({ limit: '50mb' }))
 app.use(
@@ -29,7 +32,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api', router)
 
 mongoose
-  .connect(MONGODB_URL)
+  .connect(env.MONGODB_URL)
   .then(() => {
     console.log('✅ Connected to database!')
     app.listen(HOST_PORT, () => {

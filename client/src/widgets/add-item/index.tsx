@@ -1,6 +1,7 @@
 import * as style from './style.module.scss'
 import { useState } from 'react'
 import { InlineEdit, AdminAddButton } from '@/entities/admin'
+import { useAppSelector } from '@/shared/redux'
 
 interface AddItemProps {
   children: React.ReactNode
@@ -20,6 +21,12 @@ export const AddItem = ({
   className,
 }: AddItemProps) => {
   const [isAdding, setIsAdding] = useState(false)
+
+  const accessToken = useAppSelector((store) => store.auth.accessToken)
+
+  // if (!accessToken) {
+  //   return null
+  // }
 
   return (
     <div className={`${style.container} ${className}`}>

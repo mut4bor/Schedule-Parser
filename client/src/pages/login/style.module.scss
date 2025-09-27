@@ -1,0 +1,100 @@
+@use '@/shared/vars/vars' as *;
+
+@function alpha($color, $alpha) {
+  @return rgba(red($color), green($color), blue($color), $alpha);
+}
+
+@media (min-width: $pageWidth320) {
+  .container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 0 auto;
+    padding: $containerPaddingTopMobile - 0.5rem $containerPaddingX
+      $containerPaddingBottomMobile;
+    max-width: $containerWidth;
+    min-height: calc(100svh - $headerHeight);
+  }
+
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin: 2rem auto 0 auto;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.08);
+    border-radius: 0.75rem;
+    background: $darkGray;
+    padding: 2rem 1.5rem;
+    width: 100%;
+    max-width: 32rem;
+  }
+
+  .formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .label {
+    margin-bottom: 0.2rem;
+    color: alpha($white, 0.85);
+    font-size: 1.6rem;
+  }
+
+  .input {
+    transition: 0.15s;
+    outline: none;
+    border: 1px solid alpha($white, 0.3);
+    border-radius: 0.4rem;
+    background: alpha($white, 0.15);
+    padding: 0.8rem 1rem;
+    color: $white;
+    font-size: 1.6rem;
+
+    &::placeholder {
+      color: alpha($white, 0.6);
+    }
+    &:focus {
+      border-color: $accentColor;
+    }
+  }
+
+  .submitButton {
+    transition: 0.15s;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    border: none;
+    border-radius: 0.4rem;
+    background: $accentColor;
+    padding: 0.8rem 0;
+    color: $white;
+    font-size: 1.6rem;
+    &:disabled {
+      cursor: not-allowed;
+      background: alpha($white, 0.5);
+    }
+    @media (hover: hover) {
+      &:hover:not(:disabled) {
+        background: darken($accentColor, 8%);
+      }
+    }
+  }
+
+  .errorMessage {
+    margin-top: 0.5rem;
+    color: $accentColor;
+    font-size: 1.2rem;
+    text-align: center;
+  }
+}
+
+@media (min-width: $pageWidth768) {
+  .container {
+    padding: $containerPaddingTop - 0.5rem $containerPaddingX
+      $containerPaddingBottom;
+  }
+  .form {
+    padding: 2.5rem 2.5rem;
+    max-width: 36rem;
+  }
+}

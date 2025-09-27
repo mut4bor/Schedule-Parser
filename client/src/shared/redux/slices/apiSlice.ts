@@ -1,5 +1,11 @@
-import { API_URL, X_ADMIN_PASSWORD } from '@/shared/config'
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { API_URL } from '@/shared/config'
+import {
+  BaseQueryFn,
+  createApi,
+  FetchArgs,
+  FetchBaseQueryError,
+  fetchBaseQuery,
+} from '@reduxjs/toolkit/query/react'
 import {
   IGroup,
   IName,
@@ -22,6 +28,8 @@ import {
   IWeek,
   CreateLessonDTO,
 } from '../types'
+import { logout, setAccessToken } from './authSlice'
+import { RootState } from '../store'
 
 const groupsPath = `groups`
 const namesPath = `names`
@@ -33,26 +41,79 @@ const getParams = (params: string | void) => {
   return params ? `?${params}` : ''
 }
 
-const baseQuery = fetchBaseQuery({
+const rawBaseQuery = fetchBaseQuery({
   baseUrl: API_URL,
+  credentials: 'include',
+  prepareHeaders: (headers, { getState }) => {
+    const token = (getState() as RootState).auth.accessToken
+
+    if (token) {
+      headers.set('authorization', `Bearer ${token}`)
+    }
+    return headers
+  },
 })
+
+const baseQueryWithAuth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (
+  args,
+  api,
+  extraOptions,
+) => {
+  let result = await rawBaseQuery(args, api, extraOptions)
+
+  if (result.error && (result.error.status === 401 || result.error.status === 403)) {
+    const refreshResult = await rawBaseQuery({ url: '/refresh', method: 'POST' }, api, extraOptions)
+
+    if (refreshResult.data) {
+      const accessToken = (refreshResult.data as any).accessToken
+
+      api.dispatch(setAccessToken(accessToken))
+
+      result = await rawBaseQuery(args, api, extraOptions)
+    } else {
+      api.dispatch(logout())
+    }
+  }
+  return result
+}
 
 const apiSlice = createApi({
   reducerPath: 'api',
 
-  baseQuery: baseQuery,
+  baseQuery: baseQueryWithAuth,
 
-  tagTypes: [
-    'EducationTypes',
-    'Faculties',
-    'Courses',
-    'Groups',
-    'Names',
-    'Weeks',
-    'Schedule',
-  ],
+  tagTypes: ['EducationTypes', 'Faculties', 'Courses', 'Groups', 'Names', 'Weeks', 'Schedule'],
 
   endpoints: (builder) => ({
+    login: builder.mutation<{ accessToken: string }, { username: string; password: string }>({
+      query: (credentials) => ({
+        url: `/login`,
+        method: 'POST',
+        body: credentials,
+      }),
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled
+          dispatch(setAccessToken(data.accessToken))
+        } catch {
+          // ошибки можно обработать тут
+        }
+      },
+    }),
+
+    logout: builder.mutation<void, void>({
+      query: () => ({
+        url: '/logout',
+        method: 'POST',
+      }),
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled
+        } finally {
+          dispatch(logout())
+        }
+      },
+    }),
     // --- Education Types ---
     getEducationTypes: builder.query<string[], void>({
       query: () => `/${educationTypePath}`,
@@ -62,16 +123,9 @@ const apiSlice = createApi({
       query: (body) => ({
         url: `/${educationTypePath}`,
         method: 'POST',
-        headers: { 'x-admin-password': X_ADMIN_PASSWORD },
         body,
       }),
-      invalidatesTags: [
-        'EducationTypes',
-        'Faculties',
-        'Courses',
-        'Groups',
-        'Names',
-      ],
+      invalidatesTags: ['EducationTypes', 'Faculties', 'Courses', 'Groups', 'Names'],
     }),
     updateEducationType: builder.mutation<
       { message: string; modifiedCount: number },
@@ -80,33 +134,16 @@ const apiSlice = createApi({
       query: (body) => ({
         url: `/${educationTypePath}`,
         method: 'PUT',
-        headers: { 'x-admin-password': X_ADMIN_PASSWORD },
         body,
       }),
-      invalidatesTags: [
-        'EducationTypes',
-        'Faculties',
-        'Courses',
-        'Groups',
-        'Names',
-      ],
+      invalidatesTags: ['EducationTypes', 'Faculties', 'Courses', 'Groups', 'Names'],
     }),
-    deleteEducationType: builder.mutation<
-      { message: string; deletedCount: number },
-      string
-    >({
+    deleteEducationType: builder.mutation<{ message: string; deletedCount: number }, string>({
       query: (educationType) => ({
         url: `/${educationTypePath}/${educationType}`,
         method: 'DELETE',
-        headers: { 'x-admin-password': X_ADMIN_PASSWORD },
       }),
-      invalidatesTags: [
-        'EducationTypes',
-        'Faculties',
-        'Courses',
-        'Groups',
-        'Names',
-      ],
+      invalidatesTags: ['EducationTypes', 'Faculties', 'Courses', 'Groups', 'Names'],
     }),
     getGroupsByEducationType: builder.query<IGroup[], string>({
       query: (educationType) => `/${educationTypePath}/${educationType}/groups`,
@@ -126,31 +163,22 @@ const apiSlice = createApi({
       query: (body) => ({
         url: `/${facultyPath}`,
         method: 'POST',
-        headers: { 'x-admin-password': X_ADMIN_PASSWORD },
         body,
       }),
       invalidatesTags: ['Faculties', 'Courses', 'Groups', 'Names'],
     }),
-    updateFaculty: builder.mutation<
-      { message: string; modifiedCount: number },
-      UpdateFacultyDTO
-    >({
+    updateFaculty: builder.mutation<{ message: string; modifiedCount: number }, UpdateFacultyDTO>({
       query: (body) => ({
         url: `/${facultyPath}`,
         method: 'PUT',
-        headers: { 'x-admin-password': X_ADMIN_PASSWORD },
         body,
       }),
       invalidatesTags: ['Faculties', 'Courses', 'Groups', 'Names'],
     }),
-    deleteFaculty: builder.mutation<
-      { message: string; deletedCount: number },
-      DeleteFacultyDTO
-    >({
+    deleteFaculty: builder.mutation<{ message: string; deletedCount: number }, DeleteFacultyDTO>({
       query: ({ educationType, faculty }) => ({
         url: `/${facultyPath}/${educationType}/${faculty}`,
         method: 'DELETE',
-        headers: { 'x-admin-password': X_ADMIN_PASSWORD },
       }),
       invalidatesTags: ['Faculties', 'Courses', 'Groups', 'Names'],
     }),
@@ -168,31 +196,22 @@ const apiSlice = createApi({
       query: (body) => ({
         url: `/${coursePath}`,
         method: 'POST',
-        headers: { 'x-admin-password': X_ADMIN_PASSWORD },
         body,
       }),
       invalidatesTags: ['Courses', 'Groups', 'Names'],
     }),
-    updateCourse: builder.mutation<
-      { message: string; modifiedCount: number },
-      UpdateCourseDTO
-    >({
+    updateCourse: builder.mutation<{ message: string; modifiedCount: number }, UpdateCourseDTO>({
       query: (body) => ({
         url: `/${coursePath}`,
         method: 'PUT',
-        headers: { 'x-admin-password': X_ADMIN_PASSWORD },
         body,
       }),
       invalidatesTags: ['Courses', 'Groups', 'Names'],
     }),
-    deleteCourse: builder.mutation<
-      { message: string; deletedCount: number },
-      DeleteCourseDTO
-    >({
+    deleteCourse: builder.mutation<{ message: string; deletedCount: number }, DeleteCourseDTO>({
       query: ({ educationType, faculty, course }) => ({
         url: `/${coursePath}/${educationType}/${faculty}/${course}`,
         method: 'DELETE',
-        headers: { 'x-admin-password': X_ADMIN_PASSWORD },
       }),
       invalidatesTags: ['Courses', 'Groups', 'Names'],
     }),
@@ -214,19 +233,14 @@ const apiSlice = createApi({
       query: (body) => ({
         url: `/${groupsPath}`,
         method: 'POST',
-        headers: { 'x-admin-password': X_ADMIN_PASSWORD },
         body,
       }),
       invalidatesTags: ['Groups', 'Names'],
     }),
-    updateGroupByID: builder.mutation<
-      IGroup,
-      { id: string; data: UpdateGroupDTO }
-    >({
+    updateGroupByID: builder.mutation<IGroup, { id: string; data: UpdateGroupDTO }>({
       query: ({ id, data }) => ({
         url: `/${groupsPath}/${id}`,
         method: 'PUT',
-        headers: { 'x-admin-password': X_ADMIN_PASSWORD },
         body: data,
       }),
       invalidatesTags: ['Groups', 'Names'],
@@ -235,7 +249,6 @@ const apiSlice = createApi({
       query: (id) => ({
         url: `/${groupsPath}/${id}`,
         method: 'DELETE',
-        headers: { 'x-admin-password': X_ADMIN_PASSWORD },
       }),
       invalidatesTags: ['Groups', 'Names'],
     }),
@@ -245,10 +258,7 @@ const apiSlice = createApi({
       query: (groupID) => `/${groupsPath}/${groupID}/weeks`,
       providesTags: ['Weeks'],
     }),
-    getWeekScheduleByID: builder.query<
-      IWeek,
-      { groupID: string; week: string }
-    >({
+    getWeekScheduleByID: builder.query<IWeek, { groupID: string; week: string }>({
       query: ({ groupID, week }) => `/${groupsPath}/${groupID}/weeks/${week}`,
       providesTags: ['Schedule'],
     }),
@@ -257,7 +267,6 @@ const apiSlice = createApi({
       query: ({ id, weekName }) => ({
         url: `/${groupsPath}/${id}/weeks`,
         method: 'POST',
-        headers: { 'x-admin-password': X_ADMIN_PASSWORD },
         body: { weekName },
       }),
       invalidatesTags: ['Weeks'],
@@ -266,7 +275,6 @@ const apiSlice = createApi({
       query: ({ id, oldWeekName, newWeekName }) => ({
         url: `/${groupsPath}/${id}/weeks`,
         method: 'PUT',
-        headers: { 'x-admin-password': X_ADMIN_PASSWORD },
         body: { oldWeekName, newWeekName },
       }),
       invalidatesTags: ['Weeks'],
@@ -275,7 +283,6 @@ const apiSlice = createApi({
       query: ({ id, weekName }) => ({
         url: `/${groupsPath}/${id}/weeks/${weekName}`,
         method: 'DELETE',
-        headers: { 'x-admin-password': X_ADMIN_PASSWORD },
       }),
       invalidatesTags: ['Weeks'],
     }),
@@ -284,7 +291,6 @@ const apiSlice = createApi({
       query: ({ id, weekName, dayIndex, ...body }) => ({
         url: `/${groupsPath}/${id}/weeks/${weekName}/days/${dayIndex}/lessons`,
         method: 'POST',
-        headers: { 'x-admin-password': X_ADMIN_PASSWORD },
         body,
       }),
       invalidatesTags: ['Schedule'],
@@ -294,22 +300,18 @@ const apiSlice = createApi({
       query: ({ id, weekName, dayIndex, lessonId, ...body }) => ({
         url: `/${groupsPath}/${id}/weeks/${weekName}/days/${dayIndex}/lessons/${lessonId}`,
         method: 'PUT',
-        headers: { 'x-admin-password': X_ADMIN_PASSWORD },
         body,
       }),
       invalidatesTags: ['Schedule'],
     }),
 
-    deleteLessonFromDay: builder.mutation<{ message: string }, DeleteLessonDTO>(
-      {
-        query: ({ id, weekName, dayIndex, lessonId }) => ({
-          url: `/${groupsPath}/${id}/weeks/${weekName}/days/${dayIndex}/lessons/${lessonId}`,
-          method: 'DELETE',
-          headers: { 'x-admin-password': X_ADMIN_PASSWORD },
-        }),
-        invalidatesTags: ['Schedule'],
-      },
-    ),
+    deleteLessonFromDay: builder.mutation<{ message: string }, DeleteLessonDTO>({
+      query: ({ id, weekName, dayIndex, lessonId }) => ({
+        url: `/${groupsPath}/${id}/weeks/${weekName}/days/${dayIndex}/lessons/${lessonId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Schedule'],
+    }),
 
     // --- Names ---
     getGroupNames: builder.query<IName[], string | void>({
@@ -324,6 +326,10 @@ const apiSlice = createApi({
 })
 
 export const {
+  //Login
+  useLoginMutation,
+  useLogoutMutation,
+
   // Education Types
   useGetEducationTypesQuery,
   useCreateEducationTypeMutation,

@@ -7,6 +7,7 @@ import {
   useAddWeekToGroupMutation,
   useUpdateWeekInGroupMutation,
   useDeleteWeekFromGroupMutation,
+  useAppSelector,
 } from '@/shared/redux'
 import { Skeleton } from '@/shared/ui'
 import { useParams } from 'react-router-dom'
@@ -23,6 +24,8 @@ interface Props {
 }
 
 export const WeeksList = ({ pickedWeek, setPickedWeek, groupList }: Props) => {
+  const accessToken = useAppSelector((store) => store.auth.accessToken)
+
   const { groupID } = useParams()
   const { data: weeksData } = useGetWeeksByIDQuery(groupID ?? '', {
     skip: !groupID,
@@ -67,7 +70,7 @@ export const WeeksList = ({ pickedWeek, setPickedWeek, groupList }: Props) => {
   }
 
   useEffect(() => {
-    if (!processedWeeks || processedWeeks.length === 0) return
+    if (!processedWeeks?.length) return
     if (pickedWeek && processedWeeks.includes(pickedWeek)) return
 
     setPickedWeek(
@@ -90,27 +93,24 @@ export const WeeksList = ({ pickedWeek, setPickedWeek, groupList }: Props) => {
               <EditableItem
                 value={week}
                 crudHandlers={
-                  week !== 'odd' && week !== 'even'
-                    ? {
+                  week === 'odd' || week === 'even'
+                    ? null
+                    : {
                         onUpdate: handleUpdateWeek,
                         onDelete: handleDeleteWeek,
                       }
-                    : null
                 }
                 type="week"
                 min={formattedCurrentWeek}
               >
-                <WeeksButton
-                  onClick={() => setPickedWeek(week)}
-                  isActive={pickedWeek === week}
-                >
+                <WeeksButton onClick={() => setPickedWeek(week)} isActive={pickedWeek === week}>
                   {getWeekValue(week)}
                 </WeeksButton>
               </EditableItem>
             </li>
           ))}
 
-      {groupList.length === 1 && (
+      {accessToken && groupList.length === 1 && (
         <li>
           <AddItem onAdd={handleCreateWeek} type="week">
             Добавить неделю
