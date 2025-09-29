@@ -13,6 +13,9 @@ export default defineConfig({
   server: {
     open: true,
   },
+  preview: {
+    allowedHosts: ['lesgaft.orudo.ru'],
+  },
   css: {
     modules: {
       generateScopedName: '[name]__[local]___[hash:base64:5]',
