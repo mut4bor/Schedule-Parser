@@ -7,7 +7,9 @@ import routes from '@/shared/routes'
 export const CoursesPage = () => {
   return (
     <div className={style.container}>
-      <BackToPreviousLink href={routes.BASE_URL} />
+      <div className={style.linkContainer}>
+        <BackToPreviousLink href={routes.BASE_URL} />
+      </div>
 
       <div className={style.wrapper}>
         <Courses />

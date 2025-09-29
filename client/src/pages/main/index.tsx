@@ -1,26 +1,157 @@
 import * as style from './style.module.scss'
 import { Faculty } from '@/widgets/faculty'
-import { useGetFacultiesQuery } from '@/shared/redux'
-import { ErrorComponent } from '@/widgets/error'
+import {
+  useGetFacultiesQuery,
+  useCreateFacultyMutation,
+  useUpdateFacultyMutation,
+  useDeleteFacultyMutation,
+  useCreateEducationTypeMutation,
+  useUpdateEducationTypeMutation,
+  useDeleteEducationTypeMutation,
+  useAppSelector,
+} from '@/shared/redux'
+import { AddItem } from '@/widgets/add-item'
 
 export const MainPage = () => {
-  const { data: facultiesData, error: facultiesError } = useGetFacultiesQuery()
+  const accessToken = useAppSelector((store) => store.auth.accessToken)
 
-  if (facultiesError) {
-    return <ErrorComponent error={facultiesError} hideMainPageButton />
+  const {
+    data: facultiesData,
+    isLoading: isFacultiesLoading,
+    error: facultiesError,
+  } = useGetFacultiesQuery()
+
+  const [createEducationType] = useCreateEducationTypeMutation()
+  const [updateEducationType] = useUpdateEducationTypeMutation()
+  const [deleteEducationType] = useDeleteEducationTypeMutation()
+
+  const [createFaculty] = useCreateFacultyMutation()
+  const [updateFaculty] = useUpdateFacultyMutation()
+  const [deleteFaculty] = useDeleteFacultyMutation()
+
+  const handleCreateEducationType = async (newType: string) => {
+    if (!newType) return
+    try {
+      await createEducationType({
+        educationType: newType,
+      }).unwrap()
+    } catch (err) {
+      console.error('Ошибка при создании типа образования:', err)
+      throw err
+    }
+  }
+
+  const handleUpdateEducationType = async (
+    oldType: string,
+    newType: string,
+  ) => {
+    try {
+      await updateEducationType({
+        oldEducationType: oldType,
+        newEducationType: newType,
+      }).unwrap()
+    } catch (err) {
+      console.error('Ошибка при обновлении типа образования:', err)
+      throw err
+    }
+  }
+
+  const handleDeleteEducationType = async (educationType: string) => {
+    try {
+      await deleteEducationType(educationType).unwrap()
+    } catch (err) {
+      console.error('Ошибка при удалении типа образования:', err)
+      throw err
+    }
+  }
+
+  const handleCreateFaculty = async (
+    educationType: string,
+    faculty: string,
+  ) => {
+    try {
+      await createFaculty({
+        educationType,
+        faculty,
+      }).unwrap()
+    } catch (err) {
+      console.error('Ошибка при создании факультета:', err)
+      throw err
+    }
+  }
+
+  const handleUpdateFaculty = async (
+    educationType: string,
+    oldFaculty: string,
+    newFaculty: string,
+  ) => {
+    try {
+      await updateFaculty({
+        educationType,
+        oldFaculty,
+        newFaculty,
+      }).unwrap()
+    } catch (err) {
+      console.error('Ошибка при обновлении факультета:', err)
+      throw err
+    }
+  }
+
+  const handleDeleteFaculty = async (
+    educationType: string,
+    faculty: string,
+  ) => {
+    try {
+      await deleteFaculty({ educationType, faculty }).unwrap()
+    } catch (err) {
+      console.error('Ошибка при удалении факультета:', err)
+      throw err
+    }
+  }
+
+  const crudHandlers = {
+    onUpdateEducationType: handleUpdateEducationType,
+    onDeleteEducationType: handleDeleteEducationType,
+    onCreateFaculty: handleCreateFaculty,
+    onUpdateFaculty: handleUpdateFaculty,
+    onDeleteFaculty: handleDeleteFaculty,
   }
 
   return (
     <div className={style.container}>
-      {!facultiesData
-        ? Array.from({ length: 3 }).map((_, index) => (
-            <Faculty columnsAmount={4 - index} key={index} />
-          ))
-        : Object.entries(facultiesData).map(
-            ([educationType, faculties], key) => (
-              <Faculty data={{ educationType, faculties }} key={key} />
-            ),
-          )}
+      {!facultiesError && (
+        <ul className={style.list}>
+          {!facultiesData || isFacultiesLoading
+            ? Array.from({ length: 3 }).map((_, index) => (
+                <Faculty columnsAmount={4 - index} key={index} />
+              ))
+            : Object.entries(facultiesData)
+                .sort(([a], [b]) => {
+                  const order = ['бакалавриат', 'магистратура', 'аспирантура']
+                  const aIndex = order.indexOf(a.toLowerCase())
+                  const bIndex = order.indexOf(b.toLowerCase())
+                  if (aIndex === -1 && bIndex === -1) {
+                    return a.localeCompare(b, 'ru')
+                  }
+                  if (aIndex === -1) return 1
+                  if (bIndex === -1) return -1
+                  return aIndex - bIndex
+                })
+                .map(([educationType, faculties], key) => (
+                  <Faculty
+                    key={key}
+                    data={{ educationType, faculties }}
+                    crudHandlers={crudHandlers}
+                  />
+                ))}
+        </ul>
+      )}
+
+      {accessToken && (
+        <AddItem onAdd={handleCreateEducationType}>
+          Добавить тип обучения
+        </AddItem>
+      )}
     </div>
   )
 }

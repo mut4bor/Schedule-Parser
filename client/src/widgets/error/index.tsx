@@ -1,12 +1,15 @@
 import * as style from './style.module.scss'
-import { ErrorComponentProps } from './types'
 import { Link } from 'react-router-dom'
 import routes from '@/shared/routes'
+import { SerializedError } from '@reduxjs/toolkit'
+import { FetchBaseQueryError } from '@reduxjs/toolkit/query'
 
-export const ErrorComponent = ({
-  error,
-  hideMainPageButton,
-}: ErrorComponentProps) => {
+export interface Props {
+  error: FetchBaseQueryError | SerializedError
+  hideMainPageButton?: boolean
+}
+
+export const ErrorComponent = ({ error, hideMainPageButton }: Props) => {
   const { statusCode, errorMessage } = getErrorDetails(error)
 
   return (
@@ -26,7 +29,7 @@ export const ErrorComponent = ({
   )
 }
 
-const getErrorDetails = (error: ErrorComponentProps['error']) => {
+const getErrorDetails = (error: Props['error']) => {
   if ('status' in error) {
     const statusCode = error.status
     if (typeof error.data === 'string') {

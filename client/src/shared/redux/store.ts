@@ -1,15 +1,15 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { setupListeners } from '@reduxjs/toolkit/query'
 import api from './slices/apiSlice'
-import searchSlice from './slices/searchSlice'
-import navigationSlice from './slices/navigationSlice'
+import auth from './slices/authSlice'
+
 export const store = configureStore({
   reducer: {
     [api.reducerPath]: api.reducer,
-    navigation: navigationSlice,
-    search: searchSlice,
+    [auth.reducerPath]: auth.reducer,
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(api.middleware),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(api.middleware),
 })
 
 setupListeners(store.dispatch)

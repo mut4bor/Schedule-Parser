@@ -1,0 +1,118 @@
+@use '@/shared/vars/vars' as *;
+
+@media (min-width: $pageWidth320) {
+  .lessonList {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .lessonHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .toggleBtn {
+    transition: transform 0.2s ease;
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: $white;
+    font-size: 1.6rem;
+
+    &:hover {
+      color: $accentColor;
+    }
+  }
+
+  .lessonListItem {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .skeleton {
+    min-height: 3.6rem;
+  }
+
+  .editList {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding-left: 1rem;
+
+    &.isColumned {
+      flex-direction: column;
+      flex-wrap: nowrap;
+    }
+  }
+
+  .editListItem {
+    display: flex;
+    flex-direction: row;
+    max-width: 100%;
+  }
+
+  .editContainer {
+    display: flex;
+  }
+
+  .text,
+  .editLabel,
+  .editValue {
+    display: flex;
+    align-items: center;
+    border-radius: 0.5rem;
+    background: $white10Alpha;
+    width: 100%;
+    color: $white;
+  }
+
+  .text {
+    padding: 0.8rem 1.5rem;
+    font-size: 2rem;
+  }
+
+  .editLabel,
+  .editValue {
+    padding: 0.6rem 1.125rem;
+    font-size: 1.4rem;
+    white-space: nowrap;
+  }
+
+  .editLabel {
+    display: block;
+    flex: 0 1 auto; // позволяет сжиматься
+    background: none;
+    width: fit-content;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .editValue {
+    background: $accentColor;
+
+    &.empty {
+      background: $white10Alpha;
+      min-width: 7rem;
+    }
+  }
+
+  .pipe {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+  }
+}
+
+@media (min-width: $pageWidth425) {
+  .editLabel,
+  .editValue {
+    font-size: 1.6rem;
+  }
+}

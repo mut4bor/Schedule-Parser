@@ -1,4 +1,4 @@
-@import '@/shared/vars/vars';
+@use '@/shared/vars/vars' as *;
 
 @media (min-width: $pageWidth320) {
   .list {
@@ -11,13 +11,15 @@
     background: $darkGray;
     padding: 1rem;
   }
+
   .listElement {
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: space-between;
+    align-items: stretch;
     width: 100%;
     min-width: 10rem;
   }
+
   .skeleton {
     height: 3.6rem;
   }
@@ -27,6 +29,7 @@
   .list {
     padding: 2rem;
   }
+
   .listElement {
     min-width: 13rem;
   }

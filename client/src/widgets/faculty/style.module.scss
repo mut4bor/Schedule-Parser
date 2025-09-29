@@ -1,4 +1,4 @@
-@import '@/shared/vars/vars';
+@use '@/shared/vars/vars' as *;
 
 @media (min-width: $pageWidth320) {
   .container {
@@ -52,6 +52,24 @@
     background: $white;
     width: 100%;
     min-height: 0.3rem;
+  }
+
+  .educationTypeHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .facultyItem {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .facultyWithActions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 }
 

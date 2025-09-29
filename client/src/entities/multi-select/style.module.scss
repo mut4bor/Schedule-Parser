@@ -1,0 +1,73 @@
+@use '@/shared/vars/vars' as *;
+
+.multiSelect {
+  position: relative;
+  width: 100%;
+  height: fit-content;
+}
+
+.control {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  border: 1px solid $lightGray;
+  border-radius: 6px;
+  background: $white;
+  padding: 8px 12px;
+  width: 100%;
+  color: $backgroundColor;
+
+  white-space: nowrap;
+}
+
+.selectedValue {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  font-size: 14px;
+  line-height: 16px;
+  text-overflow: ellipsis;
+}
+
+.arrow {
+  opacity: 0.6;
+  font-size: 12px;
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  left: 0;
+  z-index: 99999;
+  margin-top: 4px;
+  border: 1px solid $lightGray;
+  border-radius: 6px;
+  background: $white;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 6px 12px;
+  color: $backgroundColor;
+  font-size: 14px;
+
+  &:hover {
+    background: #f5f5f5;
+  }
+}
+
+.input {
+  margin-right: 8px;
+}
+
+.selected {
+  background: #e6f0ff;
+}

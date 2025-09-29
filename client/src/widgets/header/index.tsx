@@ -1,53 +1,46 @@
 import * as style from './style.module.scss'
 import {
-  HeaderGithubLink,
   HeaderHeading,
   HeaderInput,
-  HeaderLoginButton,
+  HeaderLogoutButton,
   HeaderSearchResult,
-  HeaderTelegramLink,
 } from '@/entities/header'
 import { useState, useEffect } from 'react'
-import {
-  useGetGroupNamesThatMatchWithReqParamsQuery,
-  useAppSelector,
-} from '@/shared/redux'
-import { HeaderTextLink } from '@/entities/header/ui/header-text-link'
-import routes from '@/shared/routes'
-import { HeaderFavoriteLink } from '@/entities/header/ui/header-favorite-link'
+import { useAppSelector, useGetGroupNamesThatMatchWithReqParamsQuery } from '@/shared/redux'
+import { HeaderFavoriteLink } from '@/entities/header/header-favorite-link'
 
 export const Header = () => {
-  const searchValue = useAppSelector((store) => store.search.searchValue)
+  const accessToken = useAppSelector((store) => store.auth.accessToken)
+
+  const [searchValue, setSearchValue] = useState<string>('')
+  const [isSearchInputFocused, setIsSearchInputFocused] = useState<boolean>(false)
 
   const namesSearchParams = new URLSearchParams({
     searchValue: searchValue,
   }).toString()
 
-  const { data: namesData, error: namesError } =
-    useGetGroupNamesThatMatchWithReqParamsQuery(namesSearchParams, {
-      skip: !searchValue,
-    })
+  const { data: namesData } = useGetGroupNamesThatMatchWithReqParamsQuery(namesSearchParams, {
+    skip: !searchValue,
+  })
 
   const [isVisible, setIsVisible] = useState(true)
   const [lastScrollY, setLastScrollY] = useState(0)
 
-  const controlHeader = () => {
+  useEffect(() => {
     if (typeof window !== 'undefined') {
-      if (window.scrollY > 120) {
-        if (window.scrollY > lastScrollY) {
-          setIsVisible(false)
+      const controlHeader = () => {
+        if (window.scrollY > 120) {
+          if (window.scrollY > lastScrollY) {
+            setIsVisible(false)
+          } else {
+            setIsVisible(true)
+          }
         } else {
           setIsVisible(true)
         }
-      } else {
-        setIsVisible(true)
+        setLastScrollY(window.scrollY)
       }
-      setLastScrollY(window.scrollY)
-    }
-  }
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
       window.addEventListener('scroll', controlHeader)
 
       return () => {
@@ -57,27 +50,25 @@ export const Header = () => {
   }, [lastScrollY])
 
   return (
-    <header
-      className={`${style.header} ${isVisible ? style.visible : style.hidden}`}
-    >
+    <header className={`${style.header} ${isVisible ? style.visible : style.hidden}`}>
       <div className={style.wrapper}>
         <div className={style.container}>
           <HeaderHeading />
 
           <div className={style.content}>
             <div className={style.inputGroup}>
-              <HeaderInput />
-              <HeaderSearchResult namesData={namesData} />
+              <HeaderInput
+                setSearchValue={setSearchValue}
+                setIsSearchInputFocused={setIsSearchInputFocused}
+              />
+              <HeaderSearchResult
+                namesData={namesData}
+                isSearchInputFocused={isSearchInputFocused}
+              />
             </div>
-            {/* <HeaderTextLink
-              text="Преподаватели"
-              href={routes.TEACHER_SEARCH_PATH}
-            />
-            <HeaderTextLink text="Избранное" href={routes.FAVORITE_PATH} /> */}
-            <HeaderGithubLink />
-            <HeaderTelegramLink />
+
             <HeaderFavoriteLink />
-            {/* <HeaderLoginButton onClick={() => {}} /> */}
+            {accessToken && <HeaderLogoutButton />}
           </div>
         </div>
       </div>

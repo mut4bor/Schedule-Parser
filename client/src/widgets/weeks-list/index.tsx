@@ -1,84 +1,122 @@
 import * as style from './style.module.scss'
-import { BackToPreviousLink } from '@/entities/navigation'
-import { WeeksButton } from '@/entities/weeks'
+import { getWeekNumber, getWeekValue, useProcessedWeeks } from './utils'
 import { useEffect } from 'react'
+import { WeeksButton } from '@/entities/weeks'
 import {
-  useAppDispatch,
-  useAppSelector,
   useGetWeeksByIDQuery,
-  weekChanged,
+  useAddWeekToGroupMutation,
+  useUpdateWeekInGroupMutation,
+  useDeleteWeekFromGroupMutation,
+  useAppSelector,
 } from '@/shared/redux'
-import { getDaysInRange, getDayToPick } from '@/shared/hooks'
 import { Skeleton } from '@/shared/ui'
-import routes from '@/shared/routes'
-import { ErrorComponent } from '@/widgets/error'
 import { useParams } from 'react-router-dom'
+import { EditableItem } from '../editable-item'
+import { AddItem } from '../add-item'
 
-const { day } = getDayToPick()
+const currentWeek = getWeekNumber(new Date())
+const formattedCurrentWeek = `${currentWeek.year}-W${currentWeek.week}`
 
-export const WeeksList = () => {
+interface Props {
+  pickedWeek: string
+  setPickedWeek: (week: string) => void
+  groupList: string[]
+}
+
+export const WeeksList = ({ pickedWeek, setPickedWeek, groupList }: Props) => {
+  const accessToken = useAppSelector((store) => store.auth.accessToken)
+
   const { groupID } = useParams()
+  const { data: weeksData } = useGetWeeksByIDQuery(groupID ?? '', {
+    skip: !groupID,
+  })
 
-  const { data: weeksData, error: weeksError } = useGetWeeksByIDQuery(
-    groupID ?? '',
-    {
-      skip: !groupID,
-    },
-  )
+  const processedWeeks = useProcessedWeeks(weeksData, groupList)
 
-  const dispatch = useAppDispatch()
+  const [addWeek] = useAddWeekToGroupMutation()
+  const [updateWeek] = useUpdateWeekInGroupMutation()
+  const [deleteWeek] = useDeleteWeekFromGroupMutation()
 
-  const pickedWeek = useAppSelector((store) => store.navigation.week)
-
-  useEffect(() => {
-    if (!!weeksData) {
-      const daysRange = weeksData.map((item) => getDaysInRange(item))
-
-      const currentWeekIndex = daysRange.findIndex((subArray) =>
-        subArray.includes(day),
-      )
-      const currentWeek = weeksData[currentWeekIndex]
-
-      if (currentWeek) {
-        dispatch(weekChanged(currentWeek))
-        return
-      }
-
-      dispatch(weekChanged(weeksData[0]))
+  const handleCreateWeek = async (newWeek: string) => {
+    if (!newWeek || !groupID) return
+    try {
+      await addWeek({ id: groupID, weekName: newWeek }).unwrap()
+    } catch (err) {
+      console.error('Ошибка при создании недели:', err)
     }
-
-    return () => {
-      dispatch(weekChanged(null))
-    }
-  }, [dispatch, weeksData])
-
-  if (weeksError) {
-    return <ErrorComponent error={weeksError} />
   }
 
-  return (
-    <div className={style.container}>
-      <BackToPreviousLink href={routes.COURSES_PATH} />
+  const handleUpdateWeek = async (oldWeek: string, newWeek: string) => {
+    if (!groupID) return
+    try {
+      await updateWeek({
+        id: groupID,
+        oldWeekName: oldWeek,
+        newWeekName: newWeek,
+      }).unwrap()
+      setPickedWeek(newWeek)
+    } catch (err) {
+      console.error('Ошибка при обновлении недели:', err)
+    }
+  }
 
-      <ul className={style.list}>
-        {!weeksData
-          ? Array.from({ length: 7 }).map((_, index) => (
-              <li key={index}>
-                <Skeleton className={style.skeleton} />
-              </li>
-            ))
-          : weeksData.map((week, index) => (
-              <li key={index}>
-                <WeeksButton
-                  text={week}
-                  onClick={() => {
-                    dispatch(weekChanged(week))
-                  }}
-                  isActive={pickedWeek === week}
-                />
-              </li>
-            ))}
-      </ul>
-    </div>
+  const handleDeleteWeek = async (week: string) => {
+    if (!groupID) return
+    try {
+      await deleteWeek({ id: groupID, weekName: week }).unwrap()
+    } catch (err) {
+      console.error('Ошибка при удалении недели:', err)
+    }
+  }
+
+  useEffect(() => {
+    if (!processedWeeks?.length) return
+    if (pickedWeek && processedWeeks.includes(pickedWeek)) return
+
+    setPickedWeek(
+      processedWeeks.includes(formattedCurrentWeek) && groupList.length === 1
+        ? formattedCurrentWeek
+        : processedWeeks[0],
+    )
+  }, [processedWeeks, groupList, pickedWeek, setPickedWeek])
+
+  return (
+    <ul className={style.list}>
+      {!processedWeeks
+        ? Array.from({ length: 7 }).map((_, index) => (
+            <li key={index}>
+              <Skeleton className={style.skeleton} />
+            </li>
+          ))
+        : processedWeeks.map((week, index) => (
+            <li className={style.listItem} key={index}>
+              <EditableItem
+                value={week}
+                crudHandlers={
+                  week === 'odd' || week === 'even'
+                    ? null
+                    : {
+                        onUpdate: handleUpdateWeek,
+                        onDelete: handleDeleteWeek,
+                      }
+                }
+                type="week"
+                min={formattedCurrentWeek}
+              >
+                <WeeksButton onClick={() => setPickedWeek(week)} isActive={pickedWeek === week}>
+                  {getWeekValue(week)}
+                </WeeksButton>
+              </EditableItem>
+            </li>
+          ))}
+
+      {accessToken && groupList.length === 1 && (
+        <li>
+          <AddItem onAdd={handleCreateWeek} type="week">
+            Добавить неделю
+          </AddItem>
+        </li>
+      )}
+    </ul>
   )
 }

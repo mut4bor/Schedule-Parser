@@ -1,88 +1,145 @@
-export interface IRefreshSchedule {
-  message: string
-}
-
 export interface IName {
   group: string
   _id: string
-  index: number
-}
-
-export interface IGroup extends IName {
-  educationType: string
-  faculty: string
-  course: string
-  createdAt: string
-  updatedAt: string
-  __v: number
 }
 
 export interface IFaculties {
   [educationType: string]: string[]
 }
 
-export interface ISchedule {
-  [week: string]: {
-    [day: string]: {
-      [time: string]: string
-    }
-  }
+export interface ITeacher {
+  firstName: string
+  middleName: string
+  lastName: string
+  title?: string
 }
 
-export type StatusType = 'owner' | 'admin' | 'user'
-
-export interface ApiRegisterRequest {
-  phone_number: string
-  password: string
+export interface ILesson {
+  time: string
+  classroom: string
+  teacher: ITeacher
+  subject: string
+  lessonType: string
+  _id: string
 }
 
-export interface ApiRegisterResponse {
-  success: boolean
-  message: string
-  phone_number: string
+export type IDay = ILesson[]
+export type IWeek = IDay[]
+export type ISchedule = Map<string, IWeek>
+
+export interface IGroup {
+  educationType: string
+  faculty: string
+  course: string
+  group: string
+  dates: ISchedule
+  createdAt: string
+  updatedAt: string
+  __v: number
+  _id: string
 }
 
-export interface ApiLoginRequest {
-  phone_number: string
-  password: string
+// --- Education Types ---
+export interface CreateEducationTypeDTO {
+  educationType: string
 }
 
-export interface ApiLoginResponse {
-  success: boolean
-  message: string
+export interface UpdateEducationTypeDTO {
+  oldEducationType: string
+  newEducationType: string
 }
 
-export interface ApiLogoutResponse {
-  success: boolean
-  message: string
+// --- Faculties ---
+export interface CreateFacultyDTO {
+  educationType: string
+  faculty: string
 }
 
-export interface ApiGetProfileInfoSuccessResponse {
-  success: true
-  phone_number: string
-  first_name: string
-  last_name: string
-  email: string
-  status: StatusType
+export interface UpdateFacultyDTO {
+  educationType: string
+  oldFaculty: string
+  newFaculty: string
 }
 
-export interface ApiGetProfileInfoErrorResponse {
-  success: false
-  message: string
+export interface DeleteFacultyDTO {
+  educationType: string
+  faculty: string
 }
 
-export type ApiGetProfileInfoResponse =
-  | ApiGetProfileInfoSuccessResponse
-  | ApiGetProfileInfoErrorResponse
-
-export interface ApiChangeProfileInfoRequest {
-  first_name: string
-  last_name: string
-  email: string
-  phone_number: string
+// --- Courses ---
+export interface CreateCourseDTO {
+  educationType: string
+  faculty: string
+  course: string
 }
 
-export interface ApiChangeProfileInfoResponse {
-  success: boolean
-  message: string
+export interface UpdateCourseDTO {
+  educationType: string
+  faculty: string
+  oldCourse: string
+  newCourse: string
+}
+
+export interface DeleteCourseDTO {
+  educationType: string
+  faculty: string
+  course: string
+}
+
+// --- Groups ---
+export interface CreateGroupDTO {
+  educationType: string
+  faculty: string
+  course: string
+  group: string
+}
+
+export interface UpdateGroupDTO {
+  educationType?: string
+  faculty?: string
+  course?: string
+  group?: string
+}
+
+// --- Weeks ---
+export interface AddWeekDTO {
+  id: string
+  weekName: string
+}
+
+export interface UpdateWeekDTO {
+  id: string
+  oldWeekName: string
+  newWeekName: string
+}
+
+export interface DeleteWeekDTO {
+  id: string
+  weekName: string
+}
+
+export interface CreateLessonDTO {
+  id: string
+  weekName: string
+  dayIndex: number
+  time: string
+}
+
+export interface UpdateLessonDTO {
+  id: string
+  weekName: string
+  dayIndex: number
+  lessonId: string
+  time?: string
+  classroom?: string
+  teacher?: ITeacher
+  subject?: string
+  lessonType?: string
+}
+
+export interface DeleteLessonDTO {
+  id: string
+  weekName: string
+  dayIndex: number
+  lessonId: string
 }

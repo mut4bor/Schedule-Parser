@@ -1,10 +1,13 @@
 import * as style from './style.module.scss'
-import { RefreshDateProps } from './types'
 import { format } from 'date-fns'
 import { toZonedTime } from 'date-fns-tz'
 import { Skeleton } from '@/shared/ui'
 
-export const RefreshDate = ({ date }: RefreshDateProps) => {
+interface Props {
+  date: string | undefined
+}
+
+export const RefreshDate = ({ date }: Props) => {
   if (!date) {
     return <Skeleton className={style.skeleton} />
   }

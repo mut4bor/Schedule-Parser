@@ -1,59 +1,51 @@
-export interface CellAddress {
-  c: number
-  r: number
+import { Document, ObjectId } from 'mongoose'
+
+export interface ITeacher {
+  firstName: string
+  middleName: string
+  lastName: string
+  title?: string
 }
 
-export interface MergedCell {
-  s: CellAddress
-  e: CellAddress
+export interface ILesson {
+  time: string
+  classroom: string
+  teacher: ITeacher
+  subject: string
+  lessonType: string
+  _id?: ObjectId
 }
 
-export type CellValue = string | number | boolean | null
+export type IDay = ILesson[]
+export type IWeek = IDay[]
 
-export interface IColumnLetter {
-  [columnLetter: string]: CellValue
-}
+export type ISchedule = Map<string, IWeek>
 
-export interface ISheet {
-  [rowNumber: string]: IColumnLetter
-}
-
-export interface IUnparsedJson {
-  [sheetName: string]: ISheet
-}
-
-export type IWeekRange = string[]
-
-export interface ITime {
-  [time: string]: string
-}
-
-export interface IDay {
-  [day: string]: ITime
-}
-
-export interface IDate {
-  [week: string]: IDay
-}
-
-export interface IGroup {
+export interface IGroup extends Document {
   educationType: string
   faculty: string
   course: string
   group: string
-  index?: number
-  dates: IDate
+  dates: ISchedule
 }
 
-export interface IGroupNames {
-  [groupName: string]: string[]
+export interface User {
+  id: string
+  email: string
+  password: string
+  role: 'admin' | 'user'
 }
 
-export interface IPathMap {
-  [fileName: string]: {
-    educationType: string
-    faculty: string
-    course: string
-    fileName: string
+export interface JwtPayload {
+  userId: string
+  email: string
+  role: string
+}
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: JwtPayload
+    }
   }
 }

@@ -1,3 +1,3 @@
-@import './styles/nullStyle';
-@import './styles/font';
-@import './styles/style';
+@use './styles/nullStyle' as *;
+@use './styles/font' as *;
+@use './styles/style' as *;

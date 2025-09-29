@@ -8,9 +8,9 @@ export const FavoritePage = () => {
 
   useEffect(() => {
     if (!!favoriteGroup) {
-      navigate(`/groupID/${favoriteGroup}`)
+      navigate(`/groups/${favoriteGroup}`, { replace: true })
     }
-  }, [favoriteGroup])
+  }, [favoriteGroup, navigate])
 
   return (
     !favoriteGroup && (

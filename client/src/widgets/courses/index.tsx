@@ -2,50 +2,100 @@ import * as style from './style.module.scss'
 import { Skeleton } from '@/shared/ui'
 import { CourseButton } from '@/entities/courses'
 import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import {
-  useAppDispatch,
-  useAppSelector,
   useGetCoursesQuery,
-  courseChanged,
+  useCreateCourseMutation,
+  useUpdateCourseMutation,
+  useDeleteCourseMutation,
+  useAppSelector,
 } from '@/shared/redux'
 import routes from '@/shared/routes'
-import { ErrorComponent } from '@/widgets/error'
+import { AddItem } from '@/widgets/add-item'
+import { EditableItem } from '../editable-item'
 
 export const Courses = () => {
   const navigate = useNavigate()
-  const dispatch = useAppDispatch()
-  const { educationType, faculty, course } = useAppSelector(
-    (store) => store.navigation,
-  )
+  const { educationType, faculty, course } = useParams()
 
-  useEffect(() => {
-    if (!educationType || !faculty) {
-      navigate(routes.BASE_URL)
-    }
-  }, [educationType, faculty])
+  const accessToken = useAppSelector((store) => store.auth.accessToken)
 
   const searchParams = new URLSearchParams({
     educationType: educationType ?? '',
     faculty: faculty ?? '',
   }).toString()
 
-  const { data: coursesData, error: coursesError } = useGetCoursesQuery(
-    searchParams,
-    {
-      skip: !educationType || !faculty,
-    },
-  )
+  const { data: coursesData } = useGetCoursesQuery(searchParams, {
+    skip: !educationType || !faculty,
+  })
 
   useEffect(() => {
-    if (!!coursesData) {
-      dispatch(courseChanged(!!course ? course : coursesData[0]))
+    if (
+      coursesData?.length === 0 ||
+      !educationType ||
+      educationType === 'undefined' ||
+      !faculty ||
+      faculty === 'undefined'
+    ) {
+      navigate(routes.BASE_URL)
     }
-  }, [coursesData])
+  }, [coursesData, educationType, faculty, navigate])
 
-  if (coursesError) {
-    return <ErrorComponent error={coursesError} />
+  const [createCourse] = useCreateCourseMutation()
+  const [updateCourse] = useUpdateCourseMutation()
+  const [deleteCourse] = useDeleteCourseMutation()
+
+  const handleCreateCourse = async (newCourse: string) => {
+    if (!newCourse || !educationType || !faculty) return
+    try {
+      await createCourse({
+        educationType,
+        faculty,
+        course: newCourse,
+      }).unwrap()
+    } catch (err) {
+      console.error('Ошибка при создании курса:', err)
+    }
   }
+
+  const handleUpdateCourse = async (oldCourse: string, newCourse: string) => {
+    if (!educationType || !faculty) return
+
+    try {
+      await updateCourse({
+        educationType,
+        faculty,
+        oldCourse,
+        newCourse,
+      }).unwrap()
+    } catch (err) {
+      console.error('Ошибка при обновлении курса:', err)
+    }
+  }
+
+  const handleDeleteCourse = async (course: string) => {
+    if (!educationType || !faculty) return
+
+    try {
+      await deleteCourse({
+        educationType,
+        faculty,
+        course,
+      }).unwrap()
+    } catch (err) {
+      console.error('Ошибка при удалении курса:', err)
+    }
+  }
+
+  useEffect(() => {
+    if (!coursesData?.length) return
+
+    if (course && coursesData.includes(course)) return
+
+    navigate(`/educationTypes/${educationType}/faculties/${faculty}/courses/${coursesData[0]}`, {
+      replace: true,
+    })
+  }, [course, coursesData, educationType, faculty, navigate])
 
   return (
     <ul className={style.list}>
@@ -57,9 +107,25 @@ export const Courses = () => {
           ))
         : coursesData.map((course, index) => (
             <li className={style.listElement} key={index}>
-              <CourseButton course={course} />
+              <EditableItem
+                value={course}
+                type="number"
+                min={1}
+                max={6}
+                crudHandlers={{
+                  onUpdate: (_, newValue) => handleUpdateCourse(course, newValue),
+                  onDelete: () => handleDeleteCourse(course),
+                }}
+              >
+                <CourseButton course={course} />
+              </EditableItem>
             </li>
           ))}
+      {accessToken && (
+        <AddItem type="number" min={1} max={6} onAdd={handleCreateCourse}>
+          Добавить курс
+        </AddItem>
+      )}
     </ul>
   )
 }

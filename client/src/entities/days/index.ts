@@ -1,1 +1,1 @@
-export * from './ui'
+export { DaysButton } from './days-button'

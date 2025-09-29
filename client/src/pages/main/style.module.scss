@@ -1,13 +1,20 @@
-@import '@/shared/vars/vars';
+@use '@/shared/vars/vars' as *;
 
 @media (min-width: $pageWidth320) {
-  .container {
+  .container,
+  .list {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    width: 100%;
+  }
+
+  .container {
     margin: 0 auto;
-    padding: $containerPaddingTopMobile $containerPaddingX $containerPaddingBottomMobile;
+    padding: $containerPaddingTopMobile $containerPaddingX
+      $containerPaddingBottomMobile;
     max-width: $containerWidth;
+    min-height: calc(100svh - $headerHeight);
   }
 }
 

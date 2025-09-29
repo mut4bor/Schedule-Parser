@@ -6,6 +6,5 @@ const getEnvVar = (key: string) => {
 }
 
 const API_URL = getEnvVar('VITE_API_URL')
-const X_ADMIN_PASSWORD = getEnvVar('VITE_X_ADMIN_PASSWORD')
 
-export { API_URL, X_ADMIN_PASSWORD }
+export { API_URL }

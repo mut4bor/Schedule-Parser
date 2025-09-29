@@ -1,21 +1,17 @@
-@import '@/shared/vars/vars';
+@use '@/shared/vars/vars' as *;
 
 @media (min-width: $pageWidth320) {
-  .container {
-    display: flex;
-    position: relative;
-    flex-direction: row;
-    gap: 1rem;
-  }
   .list {
     display: flex;
     position: relative;
     flex-direction: row;
+    align-items: center;
     gap: 1rem;
     border-radius: 0.5rem;
-    padding: 0 0 0.5rem;
+    padding: 0.5rem 0;
     overflow-x: auto;
   }
+
   .skeleton {
     width: 11rem;
     height: 3rem;

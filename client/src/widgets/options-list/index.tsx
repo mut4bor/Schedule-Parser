@@ -1,12 +1,13 @@
 import * as style from './style.module.scss'
-import { OptionsProps } from './types'
 import { useEffect, useState } from 'react'
 import { Radiobox } from '@/shared/ui'
 
-export const OptionsList = ({
-  groupID,
-  isOptionsListVisible,
-}: OptionsProps) => {
+interface Props {
+  groupID: string
+  isOptionsListVisible: boolean
+}
+
+export const OptionsList = ({ groupID, isOptionsListVisible }: Props) => {
   const [isRadioboxChecked, setIsRadioboxChecked] = useState(false)
 
   const favoriteGroup = localStorage.getItem('favorite-group')
@@ -15,7 +16,7 @@ export const OptionsList = ({
     if (favoriteGroup === groupID) {
       setIsRadioboxChecked(true)
     }
-  }, [groupID])
+  }, [groupID, favoriteGroup])
 
   useEffect(() => {
     if (isRadioboxChecked) {
@@ -25,7 +26,7 @@ export const OptionsList = ({
     if (!isRadioboxChecked && favoriteGroup === groupID) {
       localStorage.removeItem('favorite-group')
     }
-  }, [isRadioboxChecked, groupID])
+  }, [isRadioboxChecked, groupID, favoriteGroup])
 
   return (
     <ul

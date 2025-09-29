@@ -1,77 +1,147 @@
 import * as style from './style.module.scss'
-import { FacultyProps } from './types'
 import { Skeleton } from '@/shared/ui'
-import routes from '@/shared/routes'
-import {
-  useAppDispatch,
-  educationTypeChanged,
-  facultyChanged,
-  courseChanged,
-} from '@/shared/redux'
 import { FacultyLink } from '@/entities/faculty'
 import { Fragment } from 'react'
+import { EditableItem } from '@/widgets/editable-item'
+import { AddItem } from '../add-item'
+import { useAppSelector } from '@/shared/redux'
 
 const Pipe = () => {
   return <span className={style.pipe}></span>
 }
 
-export const Faculty = ({ data, columnsAmount }: FacultyProps) => {
-  const dispatch = useAppDispatch()
+type CrudHandlers = {
+  onUpdateEducationType: (oldType: string, newType: string) => Promise<void>
+  onDeleteEducationType: (educationType: string) => Promise<void>
+  onCreateFaculty: (educationType: string, faculty: string) => Promise<void>
+  onUpdateFaculty: (
+    educationType: string,
+    oldFaculty: string,
+    newFaculty: string,
+  ) => Promise<void>
+  onDeleteFaculty: (educationType: string, faculty: string) => Promise<void>
+}
 
+interface Props {
+  data?: {
+    educationType: string
+    faculties: string[]
+  }
+  columnsAmount?: number
+  crudHandlers?: CrudHandlers
+}
+
+export const Faculty = ({ data, columnsAmount, crudHandlers }: Props) => {
   const { educationType, faculties } = data || {}
 
-  const handleLinkClick = (faculty: string) => {
-    if (educationType) {
-      dispatch(educationTypeChanged(educationType))
-    }
-
-    dispatch(facultyChanged(faculty))
-    dispatch(courseChanged(null))
-  }
-
-  const skeletonLenght = columnsAmount
+  const skeletonLength = columnsAmount
     ? columnsAmount > 0
       ? columnsAmount
       : 1
     : 4
 
+  const accessToken = useAppSelector((store) => store.auth.accessToken)
+
   return (
-    <div className={style.container}>
+    <li className={style.container}>
       <div className={style.heading}>
-        {!data ? (
+        {!educationType || !faculties ? (
           <Skeleton />
         ) : (
-          <h2 className={style.educationType}>{educationType}</h2>
+          <div className={style.educationTypeHeader}>
+            <EditableItem
+              value={educationType}
+              crudHandlers={
+                crudHandlers
+                  ? {
+                      onUpdate: (oldValue, newValue) =>
+                        crudHandlers.onUpdateEducationType(oldValue, newValue),
+                      onDelete: (value) =>
+                        crudHandlers.onDeleteEducationType(value),
+                    }
+                  : undefined
+              }
+              className={style.educationType}
+            >
+              <h2 className={style.educationType}>{educationType}</h2>
+            </EditableItem>
+          </div>
         )}
       </div>
 
-      <div className={style.content}>
-        {!data || !educationType || !faculties
-          ? Array.from({ length: skeletonLenght }).map((_, index, array) => (
-              <Fragment key={`skeleton-${index}`}>
-                <div className={style.skeletonContainer}>
-                  <ul className={style.skeletonList}>
-                    {Array.from({ length: 3 }).map((_, index) => (
-                      <li key={index}>
-                        <Skeleton />
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                {index < array.length - 1 && <Pipe />}
-              </Fragment>
-            ))
-          : faculties.map((faculty, index, array) => (
-              <Fragment key={`faculty-link-${index}`}>
-                <FacultyLink
-                  faculty={faculty}
-                  href={routes.COURSES_PATH}
-                  handleLinkClick={() => handleLinkClick(faculty)}
-                />
+      <ul className={style.content}>
+        {!data || !educationType || !faculties ? (
+          Array.from({ length: skeletonLength }).map((_, index, array) => (
+            <Fragment key={`skeleton-${index}`}>
+              <div className={style.skeletonContainer}>
+                <ul className={style.skeletonList}>
+                  {Array.from({ length: 3 }).map((_, index) => (
+                    <li key={index}>
+                      <Skeleton />
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              {index < array.length - 1 && <Pipe />}
+            </Fragment>
+          ))
+        ) : (
+          <>
+            {faculties.map((faculty, index, array) => (
+              <Fragment key={`faculty-${index}`}>
+                <li className={style.facultyItem}>
+                  <EditableItem
+                    value={faculty}
+                    crudHandlers={
+                      crudHandlers
+                        ? {
+                            onUpdate: (oldValue, newValue) =>
+                              crudHandlers.onUpdateFaculty(
+                                educationType,
+                                oldValue,
+                                newValue,
+                              ),
+                            onDelete: (value) =>
+                              crudHandlers.onDeleteFaculty(
+                                educationType,
+                                value,
+                              ),
+                          }
+                        : undefined
+                    }
+                    className={style.facultyWithActions}
+                  >
+                    <FacultyLink
+                      faculty={faculty}
+                      href={`/educationTypes/${educationType}/faculties/${faculty}/courses`}
+                    />
+                  </EditableItem>
+                </li>
                 {index < array.length - 1 && <Pipe />}
               </Fragment>
             ))}
-      </div>
-    </div>
+
+            {accessToken && crudHandlers && (
+              <Fragment>
+                {faculties.length > 0 && <Pipe />}
+                <div>
+                  <AddItem
+                    onAdd={async (newValue) => {
+                      if (!educationType) return
+                      await crudHandlers.onCreateFaculty(
+                        educationType,
+                        newValue,
+                      )
+                    }}
+                  >
+                    Добавить факультет
+                  </AddItem>
+                </div>
+              </Fragment>
+            )}
+          </>
+        )}
+      </ul>
+    </li>
   )
 }

@@ -1,4 +1,4 @@
-@import '@/shared/vars/vars';
+@use '@/shared/vars/vars' as *;
 
 @media (min-width: $pageWidth320) {
   .container {
@@ -6,10 +6,18 @@
     flex-direction: column;
     gap: 0.5rem;
     margin: 0 auto;
-    padding: $containerPaddingTopMobile $containerPaddingX
+    padding: $containerPaddingTopMobile - 0.5rem $containerPaddingX
       $containerPaddingBottomMobile;
     max-width: $containerWidth;
-    min-height: 100svh;
+    min-height: calc(100svh - $headerHeight);
+  }
+
+  .weeksContainer {
+    display: flex;
+    position: relative;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
   }
 
   .content {
@@ -22,33 +30,58 @@
     flex-direction: row;
     border-radius: 0.5rem;
     background: $darkGray;
-  }
-
-  .schedule {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    gap: 1rem;
-    padding: 1rem;
-  }
-
-  .headingContainer {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    gap: 1rem;
+    width: 100%;
   }
 
   .options {
     display: flex;
     position: relative;
   }
+
+  .skeleton {
+    height: 3.6rem;
+  }
+
+  .groupSelect {
+    width: 200px;
+  }
+
+  .list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    border-radius: 0.5rem;
+    background: $darkGray;
+    padding: 1rem;
+  }
+
+  .listElement {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    min-width: 13rem;
+  }
+
+  .groups {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    overflow-x: auto;
+  }
 }
 @media (min-width: $pageWidth768) {
   .container {
-    padding: $containerPaddingTop $containerPaddingX $containerPaddingBottom;
+    padding: $containerPaddingTop - 0.5rem $containerPaddingX
+      $containerPaddingBottom;
   }
-  .schedule {
-    padding: 2rem 2rem 1rem;
+
+  .list {
+    padding: 2rem;
+  }
+
+  .listElement {
+    min-width: 13rem;
   }
 }

@@ -1,11 +1,10 @@
 const routes = {
   BASE_URL: '/',
-  COURSES_PATH: '/courses',
-  GROUP_ID_PATH: '/groupID/:groupID',
+  COURSES_PATH: '/educationTypes/:educationType/faculties/:faculty/courses',
+  GROUP_PATH:
+    '/educationTypes/:educationType/faculties/:faculty/courses/:course/groups/:groupID',
   FAVORITE_PATH: '/favorite',
-  TEACHER_SEARCH_PATH: '/teacher',
-  TEACHER_ID_PATH: '/teacher/teacherID',
-  REFRESH_PATH: '/refresh',
+  LOGIN_PATH: '/login',
 }
 
 export default routes
