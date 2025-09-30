@@ -10,7 +10,7 @@ const app = express()
 const HOST_PORT = env.PORT || 3000
 
 const corsOptions: CorsOptions = {
-  origin: env.NODE_ENV === 'production' ? env.PRODUCTION_DOMAIN : 'http://localhost:5173',
+  origin: [env.PRODUCTION_DOMAIN, 'http://localhost:5173', 'http://localhost:4173'],
   credentials: true,
 }
 
