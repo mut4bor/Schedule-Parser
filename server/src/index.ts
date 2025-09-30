@@ -39,6 +39,6 @@ mongoose
       console.log(`🚀 Server running on port ${HOST_PORT}...`)
     })
   })
-  .catch(() => {
-    console.log('❌ Connection to database failed')
+  .catch((err) => {
+    console.log('❌ Connection to database failed', err)
   })
