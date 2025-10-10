@@ -1,3 +1,5 @@
+@use 'sass:color';
+
 $pageWidth320: 320px;
 $pageWidth425: 425px;
 $pageWidth768: 768px;
@@ -29,7 +31,3 @@ $containerPaddingTop: calc($headerHeight + $containerBasicPadding);
 $containerPaddingTopMobile: calc($headerHeightMobile + $containerBasicPadding);
 $containerPaddingBottom: $containerBasicPadding;
 $containerPaddingBottomMobile: 1rem;
-
-@function opacity($color, $percent) {
-  @return rgba($color, calc($percent));
-}

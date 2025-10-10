@@ -73,42 +73,74 @@ export const LessonListItemAdmin = ({ lesson, onUpdate }: Props) => {
           </button>
         )}
       </div>
+
       {isModalOpen && (
         <Modal onClose={() => setIsModalOpen(false)}>
-          <h2>Редактирование урока</h2>
+          <h2 className={style.modalTitle}>Редактирование урока</h2>
           <form className={style.editForm} onSubmit={handleSave}>
-            <label>
+            <label className={style.editLabel}>
               Предмет:
-              <input name="subject" defaultValue={lesson.subject} />
+              <input name="subject" className={style.editInput} defaultValue={lesson.subject} />
             </label>
-            <label>
+            <label className={style.editLabel}>
               Тип:
-              <input name="lessonType" defaultValue={lesson.lessonType ?? ''} />
+              <input
+                name="lessonType"
+                className={style.editInput}
+                defaultValue={lesson.lessonType ?? ''}
+              />
             </label>
-            <label>
+            <label className={style.editLabel}>
               Титул преподавателя:
-              <input name="teacherTitle" defaultValue={lesson.teacher.title ?? ''} />
+              <input
+                name="teacherTitle"
+                className={style.editInput}
+                defaultValue={lesson.teacher.title ?? ''}
+              />
             </label>
-            <label>
+            <label className={style.editLabel}>
               Фамилия преподавателя:
-              <input name="teacherLastName" defaultValue={lesson.teacher.lastName ?? ''} />
+              <input
+                name="teacherLastName"
+                className={style.editInput}
+                defaultValue={lesson.teacher.lastName ?? ''}
+              />
             </label>
-            <label>
+            <label className={style.editLabel}>
               Имя преподавателя:
-              <input name="teacherFirstName" defaultValue={lesson.teacher.firstName ?? ''} />
+              <input
+                name="teacherFirstName"
+                className={style.editInput}
+                defaultValue={lesson.teacher.firstName ?? ''}
+              />
             </label>
-            <label>
+            <label className={style.editLabel}>
               Отчество преподавателя:
-              <input name="teacherMiddleName" defaultValue={lesson.teacher.middleName ?? ''} />
+              <input
+                name="teacherMiddleName"
+                className={style.editInput}
+                defaultValue={lesson.teacher.middleName ?? ''}
+              />
             </label>
-            <label>
+            <label className={style.editLabel}>
               Аудитория:
-              <input name="classroom" defaultValue={lesson.classroom ?? ''} />
+              <input
+                name="classroom"
+                className={style.editInput}
+                defaultValue={lesson.classroom ?? ''}
+              />
             </label>
 
             <div className={style.formButtons}>
-              <button type="submit">Сохранить</button>
-              <button type="button" onClick={() => setIsModalOpen(false)}>
+              <button type="submit" className={style.submitButton}>
+                Сохранить
+              </button>
+
+              <button
+                type="button"
+                className={style.cancelButton}
+                onClick={() => setIsModalOpen(false)}
+              >
                 Отмена
               </button>
             </div>

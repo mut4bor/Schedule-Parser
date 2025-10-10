@@ -18,7 +18,7 @@
     display: grid;
     grid-template-columns: auto auto auto repeat(var(--groups-count), minmax(20rem, 1fr));
     border-radius: 0.8rem;
-    background: opacity($white, 0.1);
+    background: rgba($white, 0.1);
     width: 100%;
     overflow-x: auto;
   }
@@ -27,7 +27,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 1px solid opacity($white, 0.1);
+    border: 1px solid rgba($white, 0.1);
     padding: 0.8rem 1rem;
     color: $white;
     font-size: 1.4rem;
@@ -35,7 +35,7 @@
   }
 
   .scheduleHeadCell {
-    background: opacity($white, 0.1);
+    background: rgba($white, 0.1);
     padding: 1rem 1.2rem;
     color: $white;
     font-weight: 600;
@@ -44,7 +44,7 @@
   }
 
   .dayCell {
-    background: opacity($white, 0.05);
+    background: rgba($white, 0.05);
     color: $white;
     font-weight: 600;
     font-size: 1.5rem;
@@ -52,13 +52,13 @@
   }
 
   .timeCell {
-    background: opacity($white, 0.05);
+    background: rgba($white, 0.05);
     font-weight: 500;
     white-space: nowrap;
   }
 
   .weekCell {
-    color: opacity($white, 0.7);
+    color: rgba($white, 0.7);
     font-style: italic;
     white-space: nowrap;
   }
@@ -68,7 +68,7 @@
   }
 
   .emptyCell {
-    color: opacity($white, 0.5);
+    color: rgba($white, 0.5);
   }
 
   .addWeekButton {

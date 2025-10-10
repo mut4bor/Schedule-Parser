@@ -33,22 +33,22 @@
 
   .label {
     margin-bottom: 0.2rem;
-    color: opacity($white, 0.85);
+    color: rgba($white, 0.85);
     font-size: 1.6rem;
   }
 
   .input {
     transition: 0.15s;
     outline: none;
-    border: 1px solid opacity($white, 0.3);
+    border: 1px solid rgba($white, 0.3);
     border-radius: 0.4rem;
-    background: opacity($white, 0.15);
+    background: rgba($white, 0.15);
     padding: 0.8rem 1rem;
     color: $white;
     font-size: 1.6rem;
 
     &::placeholder {
-      color: opacity($white, 0.6);
+      color: rgba($white, 0.6);
     }
     &:focus {
       border-color: $accentColor;
@@ -68,12 +68,12 @@
 
     &:disabled {
       cursor: not-allowed;
-      background: opacity($white, 0.5);
+      background: rgba($white, 0.5);
     }
 
     @media (hover: hover) {
       &:hover:not(:disabled) {
-        background: color.change($accentColor, $lightness: -8%);
+        background: color.scale($accentColor, $lightness: -8%);
       }
     }
   }
