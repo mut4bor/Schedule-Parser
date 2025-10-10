@@ -1,9 +1,5 @@
-@use 'sass:color';
 @use '@/shared/vars/vars' as *;
-
-@function alpha($color, $alpha) {
-  @return color.change($color, $alpha: $alpha);
-}
+@use 'sass:color';
 
 @media (min-width: $pageWidth320) {
   .container {
@@ -37,22 +33,22 @@
 
   .label {
     margin-bottom: 0.2rem;
-    color: alpha($white, 0.85);
+    color: opacity($white, 0.85);
     font-size: 1.6rem;
   }
 
   .input {
     transition: 0.15s;
     outline: none;
-    border: 1px solid alpha($white, 0.3);
+    border: 1px solid opacity($white, 0.3);
     border-radius: 0.4rem;
-    background: alpha($white, 0.15);
+    background: opacity($white, 0.15);
     padding: 0.8rem 1rem;
     color: $white;
     font-size: 1.6rem;
 
     &::placeholder {
-      color: alpha($white, 0.6);
+      color: opacity($white, 0.6);
     }
     &:focus {
       border-color: $accentColor;
@@ -69,13 +65,15 @@
     padding: 0.8rem 0;
     color: $white;
     font-size: 1.6rem;
+
     &:disabled {
       cursor: not-allowed;
-      background: alpha($white, 0.5);
+      background: opacity($white, 0.5);
     }
+
     @media (hover: hover) {
       &:hover:not(:disabled) {
-        background: color.adjust($accentColor, $lightness: -8%);
+        background: color.change($accentColor, $lightness: -8%);
       }
     }
   }

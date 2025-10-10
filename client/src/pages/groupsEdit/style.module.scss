@@ -1,4 +1,5 @@
 @use '@/shared/vars/vars' as *;
+@use 'sass:color';
 
 @media (min-width: $pageWidth320) {
   .container {
@@ -51,7 +52,7 @@
     color: $white;
 
     &:hover {
-      background: lighten($accentColor, 10%);
+      background: color.change($accentColor, $lightness: 10%);
     }
   }
 }

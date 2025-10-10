@@ -6,7 +6,7 @@
     flex: 1 0 auto;
     transition: 0.15s ease-in-out;
     border-radius: 0.5rem;
-    background: $white10Alpha;
+    background: opacity($white, 0.1);
     padding: 0 2rem;
     width: 100%;
     min-width: 10rem;

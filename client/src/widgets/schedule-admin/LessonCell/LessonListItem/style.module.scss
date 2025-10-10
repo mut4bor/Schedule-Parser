@@ -61,7 +61,7 @@
     display: flex;
     align-items: center;
     border-radius: 0.5rem;
-    background: $white10Alpha;
+    background: opacity($white, 0.1);
     padding: 0.6rem 1.125rem;
     width: 100%;
     color: $white;
@@ -83,7 +83,7 @@
     background: $accentColor;
 
     &.empty {
-      background: $white10Alpha;
+      background: opacity($white, 0.1);
       min-width: 7rem;
     }
   }
@@ -146,7 +146,7 @@
     aspect-ratio: 1;
     width: 2rem;
     height: 2rem;
-    color: $white70Alpha;
+    color: opacity($white, 0.7);
     font-size: 2rem;
     line-height: 2rem;
 
@@ -174,7 +174,7 @@
       transition: 0.2s ease-in-out;
       border: 2px solid transparent;
       border-radius: 0.5rem;
-      background: $white10Alpha;
+      background: opacity($white, 0.1);
       padding: 0.6rem 1rem;
       width: 100%;
       color: $white;
@@ -182,7 +182,7 @@
 
       &:focus {
         border: 2px solid $accentColor;
-        background: $white15Alpha;
+        background: opacity($white, 0.15);
       }
     }
   }
@@ -211,9 +211,9 @@
       }
 
       &:last-child {
-        border: 1px solid $white30Alpha;
+        border: 1px solid opacity($white, 0.3);
         background-color: transparent;
-        color: $white70Alpha;
+        color: opacity($white, 0.7);
 
         &:hover {
           border-color: $accentColor;

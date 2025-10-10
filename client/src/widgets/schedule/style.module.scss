@@ -60,7 +60,7 @@
     display: flex;
     align-items: center;
     border-radius: 0.5rem;
-    background: $white10Alpha;
+    background: opacity($white, 0.1);
     width: 100%;
     color: $white;
   }
@@ -92,7 +92,7 @@
     background: $accentColor;
 
     &.empty {
-      background: $white10Alpha;
+      background: opacity($white, 0.1);
       min-width: 7rem;
     }
   }

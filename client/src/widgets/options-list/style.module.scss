@@ -10,7 +10,7 @@
   z-index: 1;
   transition: 0.15s ease-in-out;
   box-shadow: 0 0 5rem 0.5rem rgba(0, 0, 0, 0.5);
-  border: 0.1rem solid $white10Alpha;
+  border: 0.1rem solid opacity($white, 0.1);
   border-radius: 0.5rem;
   background: $accentColor;
   padding: 1rem;

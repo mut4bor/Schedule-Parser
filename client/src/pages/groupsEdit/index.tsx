@@ -64,10 +64,7 @@ export const GroupsEditPage = () => {
             />
 
             <button
-              onClick={() => {
-                const joined = groupList.join(',')
-                navigate(`${routes.GROUPS_EDIT_PATH}/${joined}`)
-              }}
+              onClick={() => navigate(`${routes.GROUPS_EDIT_PATH}/${groupList.join(',')}`)}
               className={style.doneButton}
             >
               Готово

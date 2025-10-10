@@ -8,7 +8,7 @@
     left: 0;
     align-items: center;
     z-index: 3;
-    border-top: 0.1rem solid $white10Alpha;
+    border-top: 0.1rem solid opacity($white, 0.1);
     background: $darkGray;
     padding: 1rem 0;
     width: 100%;
