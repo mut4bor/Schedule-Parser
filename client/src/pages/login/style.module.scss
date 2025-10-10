@@ -1,7 +1,8 @@
+@use 'sass:color';
 @use '@/shared/vars/vars' as *;
 
 @function alpha($color, $alpha) {
-  @return rgba(red($color), green($color), blue($color), $alpha);
+  @return color.change($color, $alpha: $alpha);
 }
 
 @media (min-width: $pageWidth320) {
@@ -10,8 +11,7 @@
     flex-direction: column;
     gap: 0.5rem;
     margin: 0 auto;
-    padding: $containerPaddingTopMobile - 0.5rem $containerPaddingX
-      $containerPaddingBottomMobile;
+    padding: $containerPaddingTopMobile - 0.5rem $containerPaddingX $containerPaddingBottomMobile;
     max-width: $containerWidth;
     min-height: calc(100svh - $headerHeight);
   }
@@ -75,7 +75,7 @@
     }
     @media (hover: hover) {
       &:hover:not(:disabled) {
-        background: darken($accentColor, 8%);
+        background: color.adjust($accentColor, $lightness: -8%);
       }
     }
   }
@@ -90,8 +90,7 @@
 
 @media (min-width: $pageWidth768) {
   .container {
-    padding: $containerPaddingTop - 0.5rem $containerPaddingX
-      $containerPaddingBottom;
+    padding: $containerPaddingTop - 0.5rem $containerPaddingX $containerPaddingBottom;
   }
   .form {
     padding: 2.5rem 2.5rem;

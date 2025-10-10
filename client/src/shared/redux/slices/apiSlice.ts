@@ -15,7 +15,7 @@ import {
   UpdateFacultyDTO,
   UpdateCourseDTO,
   UpdateEducationTypeDTO,
-  AddWeekDTO,
+  CreateWeekDTO,
   UpdateWeekDTO,
   DeleteWeekDTO,
   DeleteFacultyDTO,
@@ -82,7 +82,16 @@ const apiSlice = createApi({
 
   baseQuery: baseQueryWithAuth,
 
-  tagTypes: ['EducationTypes', 'Faculties', 'Courses', 'Groups', 'Names', 'Weeks', 'Schedule'],
+  tagTypes: [
+    'EducationTypes',
+    'Faculties',
+    'Courses',
+    'Groups',
+    'Names',
+    'Weeks',
+    'Schedule',
+    'GroupsSchedule',
+  ],
 
   endpoints: (builder) => ({
     login: builder.mutation<{ accessToken: string }, { username: string; password: string }>({
@@ -262,14 +271,18 @@ const apiSlice = createApi({
       query: ({ groupID, week }) => `/${groupsPath}/${groupID}/weeks/${week}`,
       providesTags: ['Schedule'],
     }),
+    getGroupsSchedulesByID: builder.query<IGroup[], string[]>({
+      query: (groupIDs) => `/${groupsPath}/${groupIDs.join(',')}/schedule`,
+      providesTags: ['GroupsSchedule'],
+    }),
 
-    addWeekToGroup: builder.mutation<{ message: string }, AddWeekDTO>({
+    createWeekInGroup: builder.mutation<{ message: string }, CreateWeekDTO>({
       query: ({ id, weekName }) => ({
         url: `/${groupsPath}/${id}/weeks`,
         method: 'POST',
         body: { weekName },
       }),
-      invalidatesTags: ['Weeks'],
+      invalidatesTags: ['Weeks', 'GroupsSchedule'],
     }),
     updateWeekInGroup: builder.mutation<{ message: string }, UpdateWeekDTO>({
       query: ({ id, oldWeekName, newWeekName }) => ({
@@ -277,14 +290,14 @@ const apiSlice = createApi({
         method: 'PUT',
         body: { oldWeekName, newWeekName },
       }),
-      invalidatesTags: ['Weeks'],
+      invalidatesTags: ['Weeks', 'GroupsSchedule'],
     }),
     deleteWeekFromGroup: builder.mutation<{ message: string }, DeleteWeekDTO>({
       query: ({ id, weekName }) => ({
         url: `/${groupsPath}/${id}/weeks/${weekName}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Weeks'],
+      invalidatesTags: ['Weeks', 'GroupsSchedule'],
     }),
 
     createLessonInDay: builder.mutation<{ message: string }, CreateLessonDTO>({
@@ -293,7 +306,7 @@ const apiSlice = createApi({
         method: 'POST',
         body,
       }),
-      invalidatesTags: ['Schedule'],
+      invalidatesTags: ['Schedule', 'GroupsSchedule'],
     }),
 
     updateLessonInDay: builder.mutation<{ message: string }, UpdateLessonDTO>({
@@ -302,7 +315,7 @@ const apiSlice = createApi({
         method: 'PUT',
         body,
       }),
-      invalidatesTags: ['Schedule'],
+      invalidatesTags: ['Schedule', 'GroupsSchedule'],
     }),
 
     deleteLessonFromDay: builder.mutation<{ message: string }, DeleteLessonDTO>({
@@ -310,7 +323,7 @@ const apiSlice = createApi({
         url: `/${groupsPath}/${id}/weeks/${weekName}/days/${dayIndex}/lessons/${lessonId}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Schedule'],
+      invalidatesTags: ['Schedule', 'GroupsSchedule'],
     }),
 
     // --- Names ---
@@ -360,7 +373,8 @@ export const {
   useDeleteGroupByIDMutation,
   useGetWeeksByIDQuery,
   useGetWeekScheduleByIDQuery,
-  useAddWeekToGroupMutation,
+  useGetGroupsSchedulesByIDQuery,
+  useCreateWeekInGroupMutation,
   useUpdateWeekInGroupMutation,
   useDeleteWeekFromGroupMutation,
   useCreateLessonInDayMutation,

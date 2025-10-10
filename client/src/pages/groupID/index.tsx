@@ -2,11 +2,10 @@ import * as style from './style.module.scss'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { WeeksList } from '@/widgets/weeks-list'
 import { Sibebar } from '@/widgets/sidebar'
-import { useAppSelector, useGetGroupByIDQuery, useGetGroupNamesQuery } from '@/shared/redux'
-import { useState, useEffect, useReducer } from 'react'
+import { useGetGroupByIDQuery } from '@/shared/redux'
+import { useState, useEffect } from 'react'
 import { useSwipeable } from 'react-swipeable'
 import { BackToPreviousLink } from '@/entities/navigation'
-import { MultiSelect } from '@/entities/multi-select'
 import { getWeekDates } from '@/widgets/sidebar/utils'
 import { Skeleton } from '@/shared/ui'
 import { DaysButton } from '@/entities/days'
@@ -33,30 +32,12 @@ const CreateTapStopPropagationHandler = () =>
     },
   })
 
-const groupListReducer = (state: string[], action: { type: string; payload?: string }) => {
-  switch (action.type) {
-    case 'ADD':
-      return action.payload && !state.includes(action.payload) ? [...state, action.payload] : state
-    case 'REMOVE':
-      return action.payload ? state.filter((id) => id !== action.payload) : state
-    case 'SET':
-      return action.payload ? [action.payload] : []
-    default:
-      return state
-  }
-}
-
 export const GroupIDPage = () => {
   const location = useLocation()
-  const accessToken = useAppSelector((store) => store.auth.accessToken)
 
   const { educationType, faculty, course, groupID = '' } = useParams()
 
   const navigate = useNavigate()
-
-  const { data: groupNamesData } = useGetGroupNamesQuery()
-
-  const [groupList, dispatchGroupList] = useReducer(groupListReducer, [groupID])
 
   const [pickedWeek, setPickedWeek] = useState<string>('')
   const [pickedDayIndex, setPickedDayIndex] = useState<DayIndex>(DayIndex.None)
@@ -80,8 +61,8 @@ export const GroupIDPage = () => {
 
   const daysListStopPropagationHandler = CreateTapStopPropagationHandler()
 
-  const { data: groupData } = useGetGroupByIDQuery(groupList[0], {
-    skip: !groupID || !groupList[0],
+  const { data: groupData } = useGetGroupByIDQuery(groupID, {
+    skip: !groupID,
   })
 
   useEffect(() => {
@@ -111,7 +92,7 @@ export const GroupIDPage = () => {
           href={`/educationTypes/${educationType ?? groupData?.educationType}/faculties/${faculty ?? groupData?.faculty}/courses/${course ?? groupData?.course}`}
         />
 
-        <WeeksList pickedWeek={pickedWeek} setPickedWeek={setPickedWeek} groupList={groupList} />
+        <WeeksList pickedWeek={pickedWeek} setPickedWeek={setPickedWeek} />
       </div>
 
       <div className={style.content} {...contentSwipeHandler}>
@@ -122,22 +103,6 @@ export const GroupIDPage = () => {
             {...daysListStopPropagationHandler}
           >
             <ul className={style.list}>
-              {accessToken && groupNamesData && (
-                <div className={style.groupSelect}>
-                  <MultiSelect
-                    defaultValue={groupID}
-                    options={groupNamesData.map((item) => ({
-                      value: item._id,
-                      label: item.group,
-                    }))}
-                    onChange={(selectedIds: string[]) => {
-                      dispatchGroupList({ type: 'SET', payload: '' })
-                      selectedIds.forEach((id) => dispatchGroupList({ type: 'ADD', payload: id }))
-                    }}
-                  />
-                </div>
-              )}
-
               {!week.length
                 ? Array.from({ length: 6 }).map((_, index) => (
                     <li className={style.listElement} key={index}>
@@ -160,15 +125,7 @@ export const GroupIDPage = () => {
           </Sibebar>
 
           <div className={style.groups}>
-            {groupList.map((groupID) => (
-              <GroupInfo
-                groupID={groupID}
-                pickedWeek={pickedWeek}
-                pickedDayIndex={pickedDayIndex}
-                groupList={groupList}
-                key={groupID}
-              />
-            ))}
+            <GroupInfo groupID={groupID} pickedWeek={pickedWeek} pickedDayIndex={pickedDayIndex} />
           </div>
         </div>
       </div>

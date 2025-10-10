@@ -1,5 +1,6 @@
 import * as style from './style.module.scss'
 import {
+  HeaderGroupsEditLink,
   HeaderHeading,
   HeaderInput,
   HeaderLogoutButton,
@@ -68,6 +69,7 @@ export const Header = () => {
             </div>
 
             <HeaderFavoriteLink />
+            <HeaderGroupsEditLink />
             {accessToken && <HeaderLogoutButton />}
           </div>
         </div>

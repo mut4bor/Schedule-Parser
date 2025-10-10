@@ -23,9 +23,7 @@ const formatWeekRange = (weekValue: string) => {
   ISOweekEnd.setDate(ISOweekStart.getDate() + 5)
 
   const formatDate = (d: Date) =>
-    `${String(d.getDate()).padStart(2, '0')}.${String(
-      d.getMonth() + 1,
-    ).padStart(2, '0')}`
+    `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}`
 
   return `${formatDate(ISOweekStart)} - ${formatDate(ISOweekEnd)}`
 }
@@ -37,9 +35,7 @@ const getWeekValue = (value: string) => {
 }
 
 const getWeekNumber = (date: Date): { year: number; week: number } => {
-  const tmp = new Date(
-    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()),
-  )
+  const tmp = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
   const dayNum = tmp.getUTCDay() || 7
   tmp.setUTCDate(tmp.getUTCDate() + 4 - dayNum)
   const yearStart = new Date(Date.UTC(tmp.getUTCFullYear(), 0, 1))
@@ -52,10 +48,7 @@ const parseWeek = (w: string) => {
   return { year: Number(year), week: Number(weekStr) }
 }
 
-const useProcessedWeeks = (
-  weeksData: string[] | undefined,
-  groupList: string[],
-) => {
+const useProcessedWeeks = (weeksData: string[] | undefined) => {
   return useMemo(() => {
     if (!weeksData) return undefined
 
@@ -63,7 +56,6 @@ const useProcessedWeeks = (
 
     const filtered = weeksData.filter((week) => {
       if (week === 'even' || week === 'odd') return true
-      if (groupList.length !== 1) return false
 
       const candidate = parseWeek(week)
       if (
@@ -96,7 +88,7 @@ const useProcessedWeeks = (
     })
 
     return sorted
-  }, [weeksData, groupList])
+  }, [weeksData])
 }
 
 export { getWeekNumber, getWeekValue, parseWeek, useProcessedWeeks }

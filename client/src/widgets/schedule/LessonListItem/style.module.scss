@@ -39,15 +39,10 @@
 
   .editList {
     display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
+    flex-direction: column;
+    flex-wrap: nowrap;
     gap: 0.5rem;
     padding-left: 1rem;
-
-    &.isColumned {
-      flex-direction: column;
-      flex-wrap: nowrap;
-    }
   }
 
   .editListItem {

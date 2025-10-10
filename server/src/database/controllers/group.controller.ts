@@ -106,6 +106,28 @@ const getWeekScheduleByID = async (req: Request, res: Response) => {
   }
 }
 
+const getGroupsSchedulesByID = async (req: Request, res: Response) => {
+  try {
+    const { ids } = req.params
+
+    if (!ids) {
+      return res.status(400).json({ message: 'IDs are required' })
+    }
+
+    const groups = await Group.find({ _id: { $in: ids.split(',') } })
+
+    if (!groups) {
+      return res.status(404).json({ message: 'Group not found' })
+    }
+
+    res.status(200).json(groups)
+  } catch (error) {
+    res.status(500).json({
+      message: error instanceof Error ? error.message : 'An unknown error occurred',
+    })
+  }
+}
+
 const createGroup = async (req: Request, res: Response) => {
   try {
     const { educationType, faculty, course, group } = req.body
@@ -447,6 +469,7 @@ export {
   getGroupById,
   getWeeksByID,
   getWeekScheduleByID,
+  getGroupsSchedulesByID,
   createGroup,
   updateGroupById,
   deleteGroupById,

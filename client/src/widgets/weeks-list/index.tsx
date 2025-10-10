@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { WeeksButton } from '@/entities/weeks'
 import {
   useGetWeeksByIDQuery,
-  useAddWeekToGroupMutation,
+  useCreateWeekInGroupMutation,
   useUpdateWeekInGroupMutation,
   useDeleteWeekFromGroupMutation,
   useAppSelector,
@@ -20,10 +20,9 @@ const formattedCurrentWeek = `${currentWeek.year}-W${currentWeek.week}`
 interface Props {
   pickedWeek: string
   setPickedWeek: (week: string) => void
-  groupList: string[]
 }
 
-export const WeeksList = ({ pickedWeek, setPickedWeek, groupList }: Props) => {
+export const WeeksList = ({ pickedWeek, setPickedWeek }: Props) => {
   const accessToken = useAppSelector((store) => store.auth.accessToken)
 
   const { groupID } = useParams()
@@ -31,16 +30,16 @@ export const WeeksList = ({ pickedWeek, setPickedWeek, groupList }: Props) => {
     skip: !groupID,
   })
 
-  const processedWeeks = useProcessedWeeks(weeksData, groupList)
+  const processedWeeks = useProcessedWeeks(weeksData)
 
-  const [addWeek] = useAddWeekToGroupMutation()
+  const [createWeek] = useCreateWeekInGroupMutation()
   const [updateWeek] = useUpdateWeekInGroupMutation()
   const [deleteWeek] = useDeleteWeekFromGroupMutation()
 
   const handleCreateWeek = async (newWeek: string) => {
     if (!newWeek || !groupID) return
     try {
-      await addWeek({ id: groupID, weekName: newWeek }).unwrap()
+      await createWeek({ id: groupID, weekName: newWeek }).unwrap()
     } catch (err) {
       console.error('Ошибка при создании недели:', err)
     }
@@ -74,11 +73,9 @@ export const WeeksList = ({ pickedWeek, setPickedWeek, groupList }: Props) => {
     if (pickedWeek && processedWeeks.includes(pickedWeek)) return
 
     setPickedWeek(
-      processedWeeks.includes(formattedCurrentWeek) && groupList.length === 1
-        ? formattedCurrentWeek
-        : processedWeeks[0],
+      processedWeeks.includes(formattedCurrentWeek) ? formattedCurrentWeek : processedWeeks[0],
     )
-  }, [processedWeeks, groupList, pickedWeek, setPickedWeek])
+  }, [processedWeeks, pickedWeek, setPickedWeek])
 
   return (
     <ul className={style.list}>
@@ -110,7 +107,7 @@ export const WeeksList = ({ pickedWeek, setPickedWeek, groupList }: Props) => {
             </li>
           ))}
 
-      {accessToken && groupList.length === 1 && (
+      {accessToken && (
         <li>
           <AddItem onAdd={handleCreateWeek} type="week">
             Добавить неделю

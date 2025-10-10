@@ -1,9 +1,6 @@
 import * as style from './style.module.scss'
 import { Schedule } from '@/widgets/schedule'
-import {
-  useGetGroupByIDQuery,
-  useUpdateGroupByIDMutation,
-} from '@/shared/redux'
+import { useGetGroupByIDQuery, useUpdateGroupByIDMutation } from '@/shared/redux'
 import { useState } from 'react'
 import { useSwipeable } from 'react-swipeable'
 import { RefreshDate } from '@/widgets/refresh-date'
@@ -23,15 +20,9 @@ interface Props {
   groupID: string
   pickedWeek: string
   pickedDayIndex: number
-  groupList: string[]
 }
 
-export const GroupInfo = ({
-  groupID,
-  pickedWeek,
-  pickedDayIndex,
-  groupList,
-}: Props) => {
+export const GroupInfo = ({ groupID, pickedWeek, pickedDayIndex }: Props) => {
   const [isOptionsListVisible, setIsOptionsListVisible] = useState(false)
 
   const toggleOptionsList = () => setIsOptionsListVisible((prev) => !prev)
@@ -83,12 +74,7 @@ export const GroupInfo = ({
         />
       </div>
 
-      <Schedule
-        groupID={groupID}
-        pickedDayIndex={pickedDayIndex}
-        pickedWeek={pickedWeek}
-        groupList={groupList}
-      />
+      <Schedule groupID={groupID} pickedDayIndex={pickedDayIndex} pickedWeek={pickedWeek} />
 
       <RefreshDate date={groupData?.updatedAt} />
     </div>

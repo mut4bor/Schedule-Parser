@@ -13,6 +13,7 @@ import {
   deleteLessonFromDay,
   updateLessonInDay,
   createLessonInDay,
+  getGroupsSchedulesByID,
 } from '@/database/controllers/group.controller.js'
 
 import {
@@ -86,6 +87,7 @@ router.get(groupsPath, getAllGroups)
 router.get(`${groupsPath}/:id`, getGroupById)
 router.get(`${groupsPath}/:id/weeks`, getWeeksByID)
 router.get(`${groupsPath}/:id/weeks/:week`, getWeekScheduleByID)
+router.get(`${groupsPath}/:ids/schedule`, getGroupsSchedulesByID)
 router.post(groupsPath, createGroup)
 router.put(`${groupsPath}/:id`, updateGroupById)
 router.delete(`${groupsPath}/:id`, deleteGroupById)

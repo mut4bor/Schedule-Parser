@@ -12,21 +12,14 @@ interface AddItemProps {
   className?: string
 }
 
-export const AddItem = ({
-  children,
-  onAdd,
-  type,
-  min,
-  max,
-  className,
-}: AddItemProps) => {
+export const AddItem = ({ children, onAdd, type, min, max, className }: AddItemProps) => {
   const [isAdding, setIsAdding] = useState(false)
 
   const accessToken = useAppSelector((store) => store.auth.accessToken)
 
-  // if (!accessToken) {
-  //   return null
-  // }
+  if (!accessToken) {
+    return null
+  }
 
   return (
     <div className={`${style.container} ${className}`}>
@@ -43,9 +36,7 @@ export const AddItem = ({
           max={max}
         />
       ) : (
-        <AdminAddButton onClick={() => setIsAdding(true)}>
-          {children}
-        </AdminAddButton>
+        <AdminAddButton onClick={() => setIsAdding(true)}>{children}</AdminAddButton>
       )}
     </div>
   )

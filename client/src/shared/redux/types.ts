@@ -25,7 +25,7 @@ export interface ILesson {
 
 export type IDay = ILesson[]
 export type IWeek = IDay[]
-export type ISchedule = Map<string, IWeek>
+export type ISchedule = { [key: string]: IWeek }
 
 export interface IGroup {
   educationType: string
@@ -102,7 +102,7 @@ export interface UpdateGroupDTO {
 }
 
 // --- Weeks ---
-export interface AddWeekDTO {
+export interface CreateWeekDTO {
   id: string
   weekName: string
 }

@@ -1,4 +1,5 @@
 export { HeaderFavoriteLink } from './header-favorite-link'
+export { HeaderGroupsEditLink } from './header-groups-edit-link'
 export { HeaderHeading } from './header-heading'
 export { HeaderInput } from './header-input'
 export { HeaderLogoutButton } from './header-logout-button'

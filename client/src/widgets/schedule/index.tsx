@@ -17,15 +17,9 @@ interface Props {
   groupID: string
   pickedDayIndex: number
   pickedWeek: string | null
-  groupList: string[]
 }
 
-export const Schedule = ({
-  groupID,
-  pickedDayIndex,
-  pickedWeek,
-  groupList,
-}: Props) => {
+export const Schedule = ({ groupID, pickedDayIndex, pickedWeek }: Props) => {
   const accessToken = useAppSelector((store) => store.auth.accessToken)
 
   const { data: scheduleData } = useGetWeekScheduleByIDQuery(
@@ -42,8 +36,7 @@ export const Schedule = ({
   const [updateLesson] = useUpdateLessonInDayMutation()
   const [deleteLesson] = useDeleteLessonFromDayMutation()
 
-  const isScheduleData =
-    !!scheduleData && pickedDayIndex !== -1 && !!scheduleData[pickedDayIndex]
+  const isScheduleData = !!scheduleData && pickedDayIndex !== -1 && !!scheduleData[pickedDayIndex]
 
   const handleCreateLesson = async (time: string) => {
     if (!groupID || !pickedWeek || pickedDayIndex === -1) return
@@ -59,15 +52,10 @@ export const Schedule = ({
     }
   }
 
-  const handleUpdateLesson = async (
-    lessonId: string,
-    newLesson: Partial<ILesson>,
-  ) => {
+  const handleUpdateLesson = async (lessonId: string, newLesson: Partial<ILesson>) => {
     if (!scheduleData || !pickedWeek || pickedDayIndex === -1) return
     try {
-      const oldLesson = scheduleData[pickedDayIndex].find(
-        (lesson) => lesson._id === lessonId,
-      )
+      const oldLesson = scheduleData[pickedDayIndex].find((lesson) => lesson._id === lessonId)
 
       if (!oldLesson) return
 
@@ -125,7 +113,6 @@ export const Schedule = ({
                 lesson={lesson}
                 onUpdate={handleUpdateLesson}
                 onDelete={handleDeleteLesson}
-                groupList={groupList}
                 key={index}
               />
             ))}

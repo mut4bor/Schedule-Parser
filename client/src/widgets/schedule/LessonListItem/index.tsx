@@ -8,15 +8,9 @@ interface Props {
   lesson: ILesson
   onDelete: (id: string) => Promise<void>
   onUpdate: (id: string, newLesson: Partial<ILesson>) => Promise<void>
-  groupList: string[]
 }
 
-export const LessonListItem = ({
-  lesson,
-  onDelete,
-  onUpdate,
-  groupList,
-}: Props) => {
+export const LessonListItem = ({ lesson, onDelete, onUpdate }: Props) => {
   const accessToken = useAppSelector((store) => store.auth.accessToken)
   const [isCollapsed, setIsCollapsed] = useState(true)
 
@@ -50,33 +44,26 @@ export const LessonListItem = ({
         </EditableItem>
 
         {accessToken && (
-          <button
-            className={style.toggleBtn}
-            onClick={() => setIsCollapsed((prev) => !prev)}
-          >
+          <button className={style.toggleBtn} onClick={() => setIsCollapsed((prev) => !prev)}>
             {isCollapsed ? '▼' : '▲'}
           </button>
         )}
       </div>
 
       {!isCollapsed && accessToken && (
-        <ul
-          className={`${style.editList} ${groupList.length === 1 ? style.isColumned : ''}`}
-        >
+        <ul className={style.editList}>
           {[
             {
               label: 'Время',
               value: lesson.time,
               type: 'time',
-              update: (newValue: string) =>
-                onUpdate(lesson._id, { time: newValue }),
+              update: (newValue: string) => onUpdate(lesson._id, { time: newValue }),
               delete: () => onUpdate(lesson._id, { time: '' }),
             },
             {
               label: 'Предмет',
               value: lesson.subject,
-              update: (newValue: string) =>
-                onUpdate(lesson._id, { subject: newValue }),
+              update: (newValue: string) => onUpdate(lesson._id, { subject: newValue }),
               delete: () => onUpdate(lesson._id, { subject: '' }),
             },
             {
@@ -154,16 +141,12 @@ export const LessonListItem = ({
               <div className={style.editContainer}>
                 <EditableItem
                   value={field.value}
-                  type={
-                    (field?.type as 'text' | 'date' | 'week' | 'time') ?? 'text'
-                  }
+                  type={(field?.type as 'text' | 'date' | 'week' | 'time') ?? 'text'}
                   crudHandlers={{
                     onUpdate: async (_, newValue) => field.update(newValue),
                   }}
                 >
-                  <p
-                    className={`${style.editValue} ${!field.value ? style.empty : ''}`}
-                  >
+                  <p className={`${style.editValue} ${!field.value ? style.empty : ''}`}>
                     {field.value}
                   </p>
                 </EditableItem>
