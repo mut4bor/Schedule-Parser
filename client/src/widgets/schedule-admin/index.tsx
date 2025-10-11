@@ -1,14 +1,18 @@
 import * as style from './style.module.scss'
 import { ILesson } from '@/shared/redux/types'
-import { useUpdateLessonInDayMutation } from '@/shared/redux'
 import {
+  useUpdateLessonInDayMutation,
   useCreateLessonInDayMutation,
+  useDeleteLessonFromDayMutation,
   useGetGroupsSchedulesByIDQuery,
-} from '@/shared/redux/slices/apiSlice'
+} from '@/shared/redux'
+
 import { CSSProperties, Fragment, useMemo } from 'react'
 import { LessonCell } from './LessonCell'
 import { Combination } from './types'
 import { collectAllCombinations, dayNames } from './utils'
+import { getWeekValue } from '../weeks-list/utils'
+import { Link } from 'react-router-dom'
 
 interface Props {
   groupsIDs: string
@@ -23,6 +27,7 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
 
   const [createLesson] = useCreateLessonInDayMutation()
   const [updateLesson] = useUpdateLessonInDayMutation()
+  const [deleteLesson] = useDeleteLessonFromDayMutation()
 
   const allCombinations = useMemo(
     () => (groupsData ? collectAllCombinations(groupsData) : []),
@@ -84,6 +89,24 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
     }
   }
 
+  const handleDeleteLesson = async (
+    groupID: string,
+    weekName: string,
+    dayIndex: number,
+    lessonId: string,
+  ) => {
+    try {
+      await deleteLesson({
+        id: groupID,
+        weekName,
+        dayIndex,
+        lessonId,
+      }).unwrap()
+    } catch (err) {
+      console.error('Ошибка при удалении урока:', err)
+    }
+  }
+
   return (
     <div className={style.scheduleTableWrapper}>
       <div
@@ -93,13 +116,15 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
         <div className={`${style.scheduleCell} ${style.scheduleHeadCell}`}>День недели</div>
         <div className={`${style.scheduleCell} ${style.scheduleHeadCell}`}>Время</div>
         <div className={`${style.scheduleCell} ${style.scheduleHeadCell}`}>Неделя</div>
-        {groupsData?.map((g) => (
-          <div
-            key={g._id}
+        {groupsData?.map((group) => (
+          <Link
+            key={group._id}
+            to={`/groups/${group._id}`}
+            target="_blank"
             className={`${style.scheduleCell} ${style.scheduleHeadCell} ${style.groupHeadCell}`}
           >
-            {g.group}
-          </div>
+            {group.group}
+          </Link>
         ))}
 
         {dayNames.map((_, dayIndex) => {
@@ -141,7 +166,7 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
                         )}
 
                         <div className={`${style.scheduleCell} ${style.weekCell}`}>
-                          {combo.weekName}
+                          {getWeekValue(combo.weekName)}
                         </div>
 
                         {groupsData?.map((group) => (
@@ -151,6 +176,7 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
                             combo={combo}
                             dayIndex={dayIndex}
                             onUpdate={handleUpdateLesson}
+                            onDelete={handleDeleteLesson}
                             onAdd={handleCreateLesson}
                           />
                         ))}

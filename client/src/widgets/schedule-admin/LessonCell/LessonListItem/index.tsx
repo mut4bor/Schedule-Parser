@@ -2,6 +2,7 @@ import { useState } from 'react'
 import * as style from './style.module.scss'
 import { ILesson } from '@/shared/redux/types'
 import { useAppSelector } from '@/shared/redux'
+import { EditDeleteActions } from '@/entities/admin'
 
 const Modal = ({ children, onClose }: { children: React.ReactNode; onClose: () => void }) => {
   return (
@@ -19,9 +20,10 @@ const Modal = ({ children, onClose }: { children: React.ReactNode; onClose: () =
 interface Props {
   lesson: ILesson | undefined
   onUpdate: (id: string, newLesson: Partial<ILesson>) => Promise<void>
+  onDelete?: (id: string) => Promise<void>
 }
 
-export const LessonListItemAdmin = ({ lesson, onUpdate }: Props) => {
+export const LessonListItemAdmin = ({ lesson, onUpdate, onDelete }: Props) => {
   const accessToken = useAppSelector((store) => store.auth.accessToken)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -68,9 +70,12 @@ export const LessonListItemAdmin = ({ lesson, onUpdate }: Props) => {
         </p>
 
         {accessToken && (
-          <button className={style.toggleBtn} onClick={() => setIsModalOpen(true)}>
-            ✏️
-          </button>
+          <div>
+            <EditDeleteActions
+              onEdit={() => setIsModalOpen(true)}
+              onDelete={!!onDelete ? () => onDelete(lesson._id) : null}
+            />
+          </div>
         )}
       </div>
 

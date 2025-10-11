@@ -5,12 +5,10 @@ import {
   useUpdateLessonInDayMutation,
   useDeleteLessonFromDayMutation,
   useAppSelector,
-} from '@/shared/redux'
-import { AddItem } from '@/widgets/add-item'
-import {
   useCreateLessonInDayMutation,
   useGetWeekScheduleByIDQuery,
-} from '@/shared/redux/slices/apiSlice'
+} from '@/shared/redux'
+import { AddItem } from '@/widgets/add-item'
 import { LessonListItem } from './LessonListItem'
 
 interface Props {

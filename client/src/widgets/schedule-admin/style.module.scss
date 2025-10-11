@@ -18,7 +18,7 @@
     display: grid;
     grid-template-columns: auto auto auto repeat(var(--groups-count), minmax(20rem, 1fr));
     border-radius: 0.8rem;
-    background: rgba($white, 0.1);
+    background: rgba($white, 0.05);
     width: 100%;
     overflow-x: auto;
   }
@@ -27,7 +27,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 1px solid rgba($white, 0.1);
+    border: 1px solid rgba($white, 0.05);
     padding: 0.8rem 1rem;
     color: $white;
     font-size: 1.4rem;
@@ -44,7 +44,6 @@
   }
 
   .dayCell {
-    background: rgba($white, 0.05);
     color: $white;
     font-weight: 600;
     font-size: 1.5rem;
@@ -52,14 +51,12 @@
   }
 
   .timeCell {
-    background: rgba($white, 0.05);
     font-weight: 500;
     white-space: nowrap;
   }
 
   .weekCell {
-    color: rgba($white, 0.7);
-    font-style: italic;
+    color: $white;
     white-space: nowrap;
   }
 

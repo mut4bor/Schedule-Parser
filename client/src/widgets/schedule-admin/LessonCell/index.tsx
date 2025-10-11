@@ -9,6 +9,7 @@ export const LessonCell = ({
   combo,
   dayIndex,
   onUpdate,
+  onDelete,
   onAdd,
 }: {
   group: any
@@ -21,6 +22,7 @@ export const LessonCell = ({
     lessonId: string,
     newLesson: Partial<ILesson>,
   ) => Promise<void>
+  onDelete: (groupId: string, weekName: string, dayIndex: number, lessonId: string) => Promise<void>
   onAdd: (groupId: string, weekName: string, dayIndex: number, time: string) => Promise<void>
 }) => {
   const lesson = group.dates?.[combo.weekName]?.[dayIndex]?.find(
@@ -35,6 +37,11 @@ export const LessonCell = ({
           lesson={lesson}
           onUpdate={(lessonId, newLesson) =>
             onUpdate(group._id, combo.weekName, dayIndex, lessonId, newLesson)
+          }
+          onDelete={
+            combo.weekName !== 'even' && combo.weekName !== 'odd'
+              ? (lessonId) => onDelete(group._id, combo.weekName, dayIndex, lessonId)
+              : undefined
           }
         />
       ) : (
