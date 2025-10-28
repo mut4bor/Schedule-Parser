@@ -1,53 +1,78 @@
 import * as style from './style.module.scss'
 import { ILesson } from '@/shared/redux/types'
-import { Combination } from '../types'
 import { LessonListItemAdmin } from './LessonListItem'
 import { AddItem } from '@/widgets/add-item'
 
 export const LessonCell = ({
   group,
-  combo,
+  weekName,
   dayIndex,
   onUpdate,
   onDelete,
   onAdd,
 }: {
-  group: any
-  combo: Combination
+  group: {
+    groupName: string
+    groupID: string
+    lesson: ILesson
+  }
+  weekName: string
   dayIndex: number
-  onUpdate: (
-    groupId: string,
-    weekName: string,
-    dayIndex: number,
-    lessonId: string,
-    newLesson: Partial<ILesson>,
-  ) => Promise<void>
-  onDelete: (groupId: string, weekName: string, dayIndex: number, lessonId: string) => Promise<void>
-  onAdd: (groupId: string, weekName: string, dayIndex: number, time: string) => Promise<void>
+  onUpdate: ({
+    groupID,
+    weekName,
+    dayIndex,
+    lessonId,
+    newLesson,
+  }: {
+    groupID: string
+    weekName: string
+    dayIndex: number
+    lessonId: string
+    newLesson: Partial<ILesson>
+  }) => Promise<void>
+  onDelete: ({
+    groupID,
+    weekName,
+    dayIndex,
+    lessonId,
+  }: {
+    groupID: string
+    weekName: string
+    dayIndex: number
+    lessonId: string
+  }) => Promise<void>
+  onAdd: ({
+    groupID,
+    weekName,
+    dayIndex,
+    time,
+  }: {
+    groupID: string
+    weekName: string
+    dayIndex: number
+    time: string
+  }) => Promise<void>
 }) => {
-  const lesson = group.dates?.[combo.weekName]?.[dayIndex]?.find(
-    (l: ILesson) => l.time === combo.time,
-  )
-
   return (
     <div className={`${style.scheduleCell} ${style.lessonCell}`}>
-      {lesson ? (
+      {group.lesson ? (
         <LessonListItemAdmin
-          key={lesson._id}
-          lesson={lesson}
+          key={group.lesson._id}
+          lesson={group.lesson}
           onUpdate={(lessonId, newLesson) =>
-            onUpdate(group._id, combo.weekName, dayIndex, lessonId, newLesson)
+            onUpdate({ groupID: group.groupID, weekName, dayIndex, lessonId, newLesson })
           }
           onDelete={
-            combo.weekName !== 'even' && combo.weekName !== 'odd'
-              ? (lessonId) => onDelete(group._id, combo.weekName, dayIndex, lessonId)
+            weekName !== 'even' && weekName !== 'odd'
+              ? (lessonId) => onDelete({ groupID: group.groupID, weekName, dayIndex, lessonId })
               : undefined
           }
         />
       ) : (
         <AddItem
           type="time"
-          onAdd={(newTime) => onAdd(group._id, combo.weekName, dayIndex, newTime)}
+          onAdd={(newTime) => onAdd({ groupID: group.groupID, weekName, dayIndex, time: newTime })}
         >
           Добавить
         </AddItem>

@@ -39,6 +39,18 @@ export interface IGroup {
   _id: string
 }
 
+export interface IGroupsSchedule {
+  weekName: 'even' | 'odd' | string
+  dates: {
+    time: string // ключ = время пары
+    lessons: {
+      groupName: string
+      groupID: string
+      lesson: ILesson
+    }[]
+  }[][]
+}
+
 // --- Education Types ---
 export interface CreateEducationTypeDTO {
   educationType: string

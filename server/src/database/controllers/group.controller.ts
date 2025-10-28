@@ -106,6 +106,18 @@ const getWeekScheduleByID = async (req: Request, res: Response) => {
   }
 }
 
+interface IGroupsSchedule {
+  weekName: 'even' | 'odd' | string
+  dates: {
+    time: string // ключ = время пары
+    lessons: {
+      groupName: string
+      groupID: string
+      lesson: ILesson | null
+    }[]
+  }[][] // [день][слот времени]
+}
+
 const getGroupsSchedulesByID = async (req: Request, res: Response) => {
   try {
     const { ids } = req.params
@@ -114,14 +126,61 @@ const getGroupsSchedulesByID = async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'IDs are required' })
     }
 
-    const groups = await Group.find({ _id: { $in: ids.split(',') } })
+    const idArray = ids.split(',')
+    const groups = await Group.find({ _id: { $in: idArray } }).lean()
 
-    if (!groups) {
-      return res.status(404).json({ message: 'Group not found' })
+    if (!groups || groups.length === 0) {
+      return res.status(404).json({ message: 'Groups not found' })
     }
 
-    res.status(200).json(groups)
+    const schedules: IGroupsSchedule[] = []
+
+    for (const group of groups) {
+      const { _id: groupID, group: groupName, dates } = group
+
+      // const test = group.
+
+      // dates — Map('weekName' -> IWeek)
+      for (const [weekName, weekData] of Object.entries(dates || {})) {
+        let targetWeek = schedules.find((w) => w.weekName === weekName)
+
+        if (!targetWeek) {
+          targetWeek = { weekName, dates: [] }
+          schedules.push(targetWeek)
+        }
+
+        weekData.forEach((day: ILesson[], dayIndex: number) => {
+          if (!targetWeek!.dates[dayIndex]) {
+            targetWeek!.dates[dayIndex] = []
+          }
+
+          const currentDay = targetWeek!.dates[dayIndex]
+
+          for (const lesson of day) {
+            const lessonTime: string = lesson.time || 'unknown'
+
+            // Ищем, есть ли уже запись по этому времени
+            let timeSlot = currentDay.find((slot) => slot.time === lessonTime)
+
+            if (!timeSlot) {
+              timeSlot = { time: lessonTime, lessons: [] }
+              currentDay.push(timeSlot)
+            }
+
+            // Добавляем информацию о группе и уроке
+            timeSlot.lessons.push({
+              groupName,
+              lesson,
+              groupID: String(groupID),
+            })
+          }
+        })
+      }
+    }
+
+    res.status(200).json(schedules)
   } catch (error) {
+    console.error(error)
     res.status(500).json({
       message: error instanceof Error ? error.message : 'An unknown error occurred',
     })

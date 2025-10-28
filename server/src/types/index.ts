@@ -1,15 +1,10 @@
+import { IClassroom } from '@/database/models/classroom.model.js'
+import { ITeacher } from '@/database/models/teacher.model.js'
 import { Document, ObjectId } from 'mongoose'
-
-export interface ITeacher {
-  firstName: string
-  middleName: string
-  lastName: string
-  title?: string
-}
 
 export interface ILesson {
   time: string
-  classroom: string
+  classroom: IClassroom
   teacher: ITeacher
   subject: string
   lessonType: string

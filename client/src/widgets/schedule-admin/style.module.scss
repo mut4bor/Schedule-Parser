@@ -40,7 +40,6 @@
     color: $white;
     font-weight: 600;
     font-size: 1.4rem;
-    white-space: nowrap;
   }
 
   .dayCell {
@@ -52,12 +51,10 @@
 
   .timeCell {
     font-weight: 500;
-    white-space: nowrap;
   }
 
   .weekCell {
     color: $white;
-    white-space: nowrap;
   }
 
   .lessonCell {

@@ -6,13 +6,12 @@ import {
   useDeleteLessonFromDayMutation,
   useGetGroupsSchedulesByIDQuery,
 } from '@/shared/redux'
-
 import { CSSProperties, Fragment, useMemo } from 'react'
 import { LessonCell } from './LessonCell'
-import { Combination } from './types'
-import { collectAllCombinations, dayNames } from './utils'
 import { getWeekValue } from '../weeks-list/utils'
 import { Link } from 'react-router-dom'
+
+const dayNames = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота']
 
 interface Props {
   groupsIDs: string
@@ -21,62 +20,103 @@ interface Props {
 export const ScheduleAdmin = ({ groupsIDs }: Props) => {
   const groupsIdsArray = groupsIDs.split(',')
 
-  const { data: groupsData } = useGetGroupsSchedulesByIDQuery(groupsIdsArray, {
+  const { data: scheduleData } = useGetGroupsSchedulesByIDQuery(groupsIdsArray, {
     skip: !groupsIdsArray.length,
   })
+
+  const uniqueGroups = useMemo(() => {
+    if (!scheduleData) return []
+
+    const groupsSet = new Map<string, string>()
+
+    scheduleData.forEach((week) => {
+      week.dates.forEach((day) => {
+        day.forEach((timeSlot) => {
+          timeSlot.lessons.forEach((lessonItem) => {
+            groupsSet.set(lessonItem.groupID, lessonItem.groupName)
+          })
+        })
+      })
+    })
+
+    return Array.from(groupsSet, ([id, name]) => ({ id, name }))
+  }, [scheduleData])
 
   const [createLesson] = useCreateLessonInDayMutation()
   const [updateLesson] = useUpdateLessonInDayMutation()
   const [deleteLesson] = useDeleteLessonFromDayMutation()
 
-  const allCombinations = useMemo(
-    () => (groupsData ? collectAllCombinations(groupsData) : []),
-    [groupsData],
-  )
-
-  const dayGroups = useMemo(() => {
-    const groups: Record<number, Combination[]> = {}
-    dayNames.forEach((_, idx) => {
-      groups[idx] = allCombinations.filter((c) => c.dayIndex === idx)
-    })
-    return groups
-  }, [allCombinations])
-
-  const handleCreateLesson = async (
-    groupID: string,
-    weekName: string,
-    dayIndex: number,
-    time: string,
-  ) => {
+  const handleCreateLesson = async ({
+    groupID,
+    weekName,
+    dayIndex,
+    time,
+  }: {
+    groupID: string
+    weekName: string
+    dayIndex: number
+    time: string
+  }) => {
     if (!groupID) return
     try {
-      await createLesson({ id: groupID, weekName, dayIndex, time }).unwrap()
+      await createLesson({
+        id: groupID,
+        weekName,
+        dayIndex,
+        time,
+      }).unwrap()
     } catch (err) {
       console.error('Ошибка при создании урока:', err)
     }
   }
 
-  const handleUpdateLesson = async (
-    groupID: string,
-    weekName: string,
-    dayIndex: number,
-    lessonId: string,
-    newLesson: Partial<ILesson>,
-  ) => {
-    if (!groupsData) return
+  const handleUpdateLesson = async ({
+    groupID,
+    weekName,
+    dayIndex,
+    lessonId,
+    newLesson,
+  }: {
+    groupID: string
+    weekName: string
+    dayIndex: number
+    lessonId: string
+    newLesson: Partial<ILesson>
+  }) => {
+    if (!scheduleData) return
+
     try {
-      const oldLesson = groupsData
-        .find((g) => g._id === groupID)
-        ?.dates[weekName][dayIndex].find((l) => l._id === lessonId)
+      const week = scheduleData.find((w) => w.weekName === weekName)
+      if (!week) return
+
+      // dates — это двумерный массив, нужно пройти по всем подмассивам
+      const dayArray = week.dates[dayIndex]
+      if (!dayArray) return
+
+      // Найдём нужный урок по lessonId
+      let oldLesson: ILesson | null = null
+
+      for (const day of dayArray) {
+        const lessonData = day.lessons.find((l) => l.lesson._id === lessonId)
+        if (lessonData) {
+          oldLesson = lessonData.lesson
+          break
+        }
+      }
 
       if (!oldLesson) return
 
+      // Обновляем урок
       const updatedLesson: ILesson = {
         ...oldLesson,
         ...newLesson,
-        teacher: { ...oldLesson.teacher, ...newLesson.teacher },
+        teacher: {
+          ...oldLesson.teacher,
+          ...newLesson.teacher,
+        },
       }
 
+      // Отправляем обновление
       await updateLesson({
         id: groupID,
         weekName,
@@ -89,12 +129,17 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
     }
   }
 
-  const handleDeleteLesson = async (
-    groupID: string,
-    weekName: string,
-    dayIndex: number,
-    lessonId: string,
-  ) => {
+  const handleDeleteLesson = async ({
+    groupID,
+    weekName,
+    dayIndex,
+    lessonId,
+  }: {
+    groupID: string
+    weekName: string
+    dayIndex: number
+    lessonId: string
+  }) => {
     try {
       await deleteLesson({
         id: groupID,
@@ -111,79 +156,86 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
     <div className={style.scheduleTableWrapper}>
       <div
         className={style.scheduleTable}
-        style={{ '--groups-count': groupsData?.length || 1 } as CSSProperties}
+        style={{ '--groups-count': uniqueGroups.length } as CSSProperties}
       >
+        {/* Заголовки */}
+        <div className={`${style.scheduleCell} ${style.scheduleHeadCell}`}>Неделя</div>
         <div className={`${style.scheduleCell} ${style.scheduleHeadCell}`}>День недели</div>
         <div className={`${style.scheduleCell} ${style.scheduleHeadCell}`}>Время</div>
-        <div className={`${style.scheduleCell} ${style.scheduleHeadCell}`}>Неделя</div>
-        {groupsData?.map((group) => (
+        {uniqueGroups.map((group) => (
           <Link
-            key={group._id}
-            to={`/groups/${group._id}`}
+            key={group.id}
+            to={`/groups/${group.id}`}
             target="_blank"
             className={`${style.scheduleCell} ${style.scheduleHeadCell} ${style.groupHeadCell}`}
           >
-            {group.group}
+            {group.name}
           </Link>
         ))}
 
-        {dayNames.map((_, dayIndex) => {
-          const dayCombos = dayGroups[dayIndex]
-
-          const times = [
-            ...new Set(dayCombos.map((c) => c.time).sort((a, b) => a.localeCompare(b))),
-          ]
-
-          const totalRows = times.reduce(
-            (sum, t) => sum + dayCombos.filter((c) => c.time === t).length,
-            0,
-          )
+        {/* Тело */}
+        {scheduleData?.map((week, weekIndex) => {
+          // Считаем общее количество строк = сумма всех time slots
+          const weekRowCount = week.dates.reduce((acc, day) => acc + day.length, 0)
 
           return (
-            <Fragment key={dayIndex}>
-              {times.map((time, timeIdx) => (
-                <Fragment key={`${dayIndex}-${time}`}>
-                  {dayCombos
-                    .filter((c) => c.time === time)
-                    .map((combo, comboIdx, timeCombosArray) => (
-                      <Fragment key={`${dayIndex}-${combo.time}-${combo.weekName}`}>
-                        {timeIdx === 0 && comboIdx === 0 && (
-                          <div
-                            className={`${style.scheduleCell} ${style.dayCell}`}
-                            style={{ gridRow: `span ${totalRows}` }}
-                          >
-                            {dayNames[dayIndex]}
-                          </div>
-                        )}
+            <Fragment key={weekIndex}>
+              {/* 🌿 Неделя */}
+              <div
+                className={`${style.scheduleCell} ${style.weekCell}`}
+                style={{ gridRow: `span ${weekRowCount}` }}
+              >
+                {getWeekValue(week.weekName)}
+              </div>
 
-                        {comboIdx === 0 && (
-                          <div
-                            className={`${style.scheduleCell} ${style.timeCell}`}
-                            style={{ gridRow: `span ${timeCombosArray.length}` }}
-                          >
-                            {time}
-                          </div>
-                        )}
+              {week.dates.map((day, dayIndex) => {
+                // Количество строк = количество time slots в дне
+                const dayRowCount = day.length
 
-                        <div className={`${style.scheduleCell} ${style.weekCell}`}>
-                          {getWeekValue(combo.weekName)}
+                return (
+                  <Fragment key={dayIndex}>
+                    {/* 📅 День недели */}
+                    <div
+                      className={`${style.scheduleCell} ${style.dayCell}`}
+                      style={{ gridRow: `span ${dayRowCount}` }}
+                    >
+                      {dayNames[dayIndex]}
+                    </div>
+
+                    {day.map((timeSlot, timeIndex) => (
+                      <Fragment key={timeIndex}>
+                        {/* ⏰ Время - одна строка */}
+                        <div className={`${style.scheduleCell} ${style.timeCell}`}>
+                          {timeSlot.time}
                         </div>
 
-                        {groupsData?.map((group) => (
-                          <LessonCell
-                            key={`${group._id}-${combo.weekName}-${dayIndex}-${combo.time}`}
-                            group={group}
-                            combo={combo}
-                            dayIndex={dayIndex}
-                            onUpdate={handleUpdateLesson}
-                            onDelete={handleDeleteLesson}
-                            onAdd={handleCreateLesson}
-                          />
-                        ))}
+                        {/* 👥 Ячейки для каждой группы */}
+                        {uniqueGroups.map((group) => {
+                          const groupLesson = timeSlot.lessons.find(
+                            (lesson) => lesson.groupID === group.id,
+                          )
+
+                          if (!groupLesson) {
+                            return <div className={style.scheduleCell} key={group.id}></div>
+                          }
+
+                          return (
+                            <LessonCell
+                              key={group.id}
+                              group={groupLesson}
+                              weekName={week.weekName}
+                              dayIndex={dayIndex}
+                              onUpdate={handleUpdateLesson}
+                              onDelete={handleDeleteLesson}
+                              onAdd={handleCreateLesson}
+                            />
+                          )
+                        })}
                       </Fragment>
                     ))}
-                </Fragment>
-              ))}
+                  </Fragment>
+                )
+              })}
             </Fragment>
           )
         })}

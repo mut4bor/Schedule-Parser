@@ -14,6 +14,8 @@ export const LessonListItem = ({ lesson, onDelete, onUpdate }: Props) => {
   const accessToken = useAppSelector((store) => store.auth.accessToken)
   const [isCollapsed, setIsCollapsed] = useState(true)
 
+  console.log(lesson)
+
   return (
     <li className={style.lessonListItem}>
       <div className={style.lessonHeader}>
@@ -26,10 +28,10 @@ export const LessonListItem = ({ lesson, onDelete, onUpdate }: Props) => {
           <p className={style.text}>
             {lesson.time} - {lesson.subject}
             {lesson.lessonType && ` (${lesson.lessonType})`}
-            {(lesson.teacher.title ||
-              lesson.teacher.lastName ||
-              lesson.teacher.firstName ||
-              lesson.teacher.middleName) && (
+            {(lesson.teacher?.title ||
+              lesson.teacher?.lastName ||
+              lesson.teacher?.firstName ||
+              lesson.teacher?.middleName) && (
               <>
                 {lesson.teacher.title && `, ${lesson.teacher.title}`}
                 {lesson.teacher.lastName && ` ${lesson.teacher.lastName}`}

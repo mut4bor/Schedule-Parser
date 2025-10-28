@@ -1,23 +1,13 @@
 import mongoose, { Schema } from 'mongoose'
 import { IGroup, ILesson } from '@/types/index.js'
 
-const teacherSchema = new Schema(
-  {
-    firstName: { type: String, required: false },
-    middleName: { type: String, required: false },
-    lastName: { type: String, required: false },
-    title: { type: String },
-  },
-  { _id: false },
-)
-
 const lessonSchema = new Schema<ILesson>(
   {
-    time: { type: String, required: false },
-    classroom: { type: String, required: false },
-    teacher: { type: teacherSchema, required: false },
-    subject: { type: String, required: false },
-    lessonType: { type: String, required: false },
+    time: { type: String, required: true },
+    classroom: { type: Schema.Types.ObjectId, ref: 'Classroom', required: true },
+    teacher: { type: Schema.Types.ObjectId, ref: 'Teacher', required: true },
+    subject: { type: String, required: true },
+    lessonType: { type: String, required: true },
   },
   { _id: true },
 )
@@ -48,8 +38,7 @@ const groupSchema = new Schema<IGroup>(
       type: Map,
       of: {
         type: [[lessonSchema]],
-        required: true,
-        default: [],
+        default: null,
       },
       default: {},
       required: true,

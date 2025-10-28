@@ -27,6 +27,7 @@ import {
   UpdateLessonDTO,
   IWeek,
   CreateLessonDTO,
+  IGroupsSchedule,
 } from '../types'
 import { logout, setAccessToken } from './authSlice'
 import { RootState } from '../store'
@@ -271,7 +272,7 @@ const apiSlice = createApi({
       query: ({ groupID, week }) => `/${groupsPath}/${groupID}/weeks/${week}`,
       providesTags: ['Schedule'],
     }),
-    getGroupsSchedulesByID: builder.query<IGroup[], string[]>({
+    getGroupsSchedulesByID: builder.query<IGroupsSchedule[], string[]>({
       query: (groupIDs) => `/${groupsPath}/${groupIDs.join(',')}/schedule`,
       providesTags: ['GroupsSchedule'],
     }),
