@@ -4,7 +4,7 @@ import { IGroup, ILesson } from '@/types/index.js'
 const lessonSchema = new Schema<ILesson>(
   {
     time: { type: String, required: true },
-    classroom: { type: Schema.Types.ObjectId, ref: 'Classroom', required: true },
+    classroom: { type: String, required: true },
     teacher: { type: Schema.Types.ObjectId, ref: 'Teacher', required: true },
     subject: { type: String, required: true },
     lessonType: { type: String, required: true },
@@ -16,32 +16,48 @@ const groupSchema = new Schema<IGroup>(
   {
     educationType: {
       type: String,
-      default: '',
-      required: [true, 'Please enter educationType'],
+      default: null,
+      validate: {
+        validator: function (v) {
+          return v === null || v.trim().length > 0
+        },
+        message: 'Тип образования не может быть пустым',
+      },
     },
     faculty: {
       type: String,
-      default: '',
-      required: [true, 'Please enter faculty'],
+      default: null,
+      validate: {
+        validator: function (v) {
+          return v === null || v.trim().length > 0
+        },
+        message: 'Факультет не может быть пустым',
+      },
     },
     course: {
       type: String,
-      default: '',
-      required: [true, 'Please enter course'],
+      default: null,
+      validate: {
+        validator: function (v) {
+          return v === null || v.trim().length > 0
+        },
+        message: 'Курс не может быть пустым',
+      },
     },
-    group: {
+    groupName: {
       type: String,
-      default: '',
-      required: [true, 'Please enter group number'],
+      default: null,
+      validate: {
+        validator: function (v) {
+          return v === null || v.trim().length > 0
+        },
+        message: 'Группа не может быть пустой',
+      },
     },
     dates: {
       type: Map,
-      of: {
-        type: [[lessonSchema]],
-        default: null,
-      },
+      of: [[lessonSchema]],
       default: {},
-      required: true,
     },
   },
   { timestamps: true },

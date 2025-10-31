@@ -15,10 +15,10 @@ const users = [
 const login = async (req: Request, res: Response) => {
   const { username, password } = req.body
   const user = users.find((u) => u.username === username)
-  if (!user) return res.status(401).json({ message: 'Invalid credentials' })
+  if (!user) return res.status(401).json({ message: 'Неверные учетные данные' })
 
   const isValid = bcrypt.compareSync(password, user.password)
-  if (!isValid) return res.status(401).json({ message: 'Invalid credentials' })
+  if (!isValid) return res.status(401).json({ message: 'Неверные учетные данные' })
 
   const accessToken = jwt.sign({ id: user.id, username: user.username }, env.JWT_SECRET, { expiresIn: '1h' })
   const refreshToken = jwt.sign({ id: user.id, username: user.username }, REFRESH_SECRET, { expiresIn: '7d' })
@@ -44,10 +44,10 @@ const logout = async (req: Request, res: Response) => {
 
 const refresh = async (req: Request, res: Response) => {
   const token = req.cookies?.refreshToken
-  if (!token) return res.status(401).json({ message: 'No refresh token' })
+  if (!token) return res.status(401).json({ message: 'Нет токена обновления' })
 
   jwt.verify(token, REFRESH_SECRET, (err: any, user: any) => {
-    if (err) return res.status(403).json({ message: 'Invalid refresh token' })
+    if (err) return res.status(403).json({ message: 'Неверный токен обновления' })
 
     const accessToken = jwt.sign({ id: user.id, username: user.username }, env.JWT_SECRET, {
       expiresIn: '1h',

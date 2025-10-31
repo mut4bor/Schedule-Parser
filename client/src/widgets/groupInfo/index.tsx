@@ -51,18 +51,18 @@ export const GroupInfo = ({ groupID, pickedWeek, pickedDayIndex }: Props) => {
       <div className={style.headingContainer}>
         <div>
           <EditableItem
-            value={groupData?.group ?? ''}
+            value={groupData?.groupName ?? ''}
             crudHandlers={{
               onUpdate: async (_, newValue) => {
                 if (!groupID) return
                 await updateGroup({
                   id: groupID,
-                  data: { group: newValue },
+                  data: { groupName: newValue },
                 }).unwrap()
               },
             }}
           >
-            <GroupHeading>{groupData?.group}</GroupHeading>
+            <GroupHeading>{groupData?.groupName}</GroupHeading>
           </EditableItem>
         </div>
 

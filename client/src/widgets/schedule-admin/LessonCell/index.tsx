@@ -1,80 +1,87 @@
 import * as style from './style.module.scss'
-import { ILesson } from '@/shared/redux/types'
+import { CreateLessonDTO, DeleteLessonDTO, ILesson, UpdateLessonDTO } from '@/shared/redux/types'
 import { LessonListItemAdmin } from './LessonListItem'
 import { AddItem } from '@/widgets/add-item'
+import { ModalInput } from '@/widgets/modal-input'
+import { ModalForm } from '@/widgets/modal-form'
+import { useState } from 'react'
+import { Modal } from '@/widgets/modal'
+
+interface Props {
+  group: {
+    id: string
+    name: string
+  }
+  weekName: string
+  dayIndex: number
+  lesson: ILesson
+
+  onAdd: (args: CreateLessonDTO) => Promise<void>
+
+  onUpdate: (args: UpdateLessonDTO) => Promise<void>
+
+  onDelete: (args: DeleteLessonDTO) => Promise<void>
+}
 
 export const LessonCell = ({
   group,
   weekName,
   dayIndex,
+  lesson,
+  onAdd,
   onUpdate,
   onDelete,
-  onAdd,
-}: {
-  group: {
-    groupName: string
-    groupID: string
-    lesson: ILesson
+}: Props) => {
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    const formData = new FormData(e.target as HTMLFormElement)
+    const time = formData.get('time') as string
+    const classroom = formData.get('classroom') as string
+    const teacherID = formData.get('teacherID') as string
+    const subject = formData.get('subject') as string
+    const lessonType = formData.get('lessonType') as string
+
+    await onAdd({
+      id: group.id,
+      weekName,
+      dayIndex,
+      time,
+      classroom,
+      teacherID,
+      subject,
+      lessonType,
+    })
+    setIsModalOpen(false)
   }
-  weekName: string
-  dayIndex: number
-  onUpdate: ({
-    groupID,
-    weekName,
-    dayIndex,
-    lessonId,
-    newLesson,
-  }: {
-    groupID: string
-    weekName: string
-    dayIndex: number
-    lessonId: string
-    newLesson: Partial<ILesson>
-  }) => Promise<void>
-  onDelete: ({
-    groupID,
-    weekName,
-    dayIndex,
-    lessonId,
-  }: {
-    groupID: string
-    weekName: string
-    dayIndex: number
-    lessonId: string
-  }) => Promise<void>
-  onAdd: ({
-    groupID,
-    weekName,
-    dayIndex,
-    time,
-  }: {
-    groupID: string
-    weekName: string
-    dayIndex: number
-    time: string
-  }) => Promise<void>
-}) => {
+
+  const handleCancel = () => {
+    setIsModalOpen(false)
+  }
+
   return (
     <div className={`${style.scheduleCell} ${style.lessonCell}`}>
-      {group.lesson ? (
+      {!!lesson ? (
         <LessonListItemAdmin
-          key={group.lesson._id}
-          lesson={group.lesson}
-          onUpdate={(lessonId, newLesson) =>
-            onUpdate({ groupID: group.groupID, weekName, dayIndex, lessonId, newLesson })
-          }
+          key={lesson._id}
+          group={group}
+          weekName={weekName}
+          dayIndex={dayIndex}
+          lesson={lesson}
+          onUpdate={(args) => onUpdate({ ...args, ...group })}
           onDelete={
-            weekName !== 'even' && weekName !== 'odd'
-              ? (lessonId) => onDelete({ groupID: group.groupID, weekName, dayIndex, lessonId })
-              : undefined
+            weekName !== 'even' && weekName !== 'odd' ? (args) => onDelete({ ...args }) : undefined
           }
         />
       ) : (
-        <AddItem
-          type="time"
-          onAdd={(newTime) => onAdd({ groupID: group.groupID, weekName, dayIndex, time: newTime })}
-        >
-          Добавить
+        <AddItem addButtonLabel="Добавить" isAdding={isModalOpen} setIsAdding={setIsModalOpen}>
+          <Modal onClose={handleCancel}>
+            <ModalForm onSubmit={handleSave} onCancel={handleCancel}>
+              <ModalInput label="Время:" name="time" defaultValue="" type="time" />
+            </ModalForm>
+          </Modal>
         </AddItem>
       )}
     </div>

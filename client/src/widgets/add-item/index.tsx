@@ -1,42 +1,27 @@
 import * as style from './style.module.scss'
-import { useState } from 'react'
-import { InlineEdit, AdminAddButton } from '@/entities/admin'
-import { useAppSelector } from '@/shared/redux'
+import { AdminAddButton } from '@/entities/admin'
 
 interface AddItemProps {
+  addButtonLabel: React.ReactNode
   children: React.ReactNode
-  onAdd: (value: string) => Promise<void>
-  type?: 'text' | 'number' | 'date' | 'week' | 'time'
-  min?: number
-  max?: number
   className?: string
+  isAdding: boolean
+  setIsAdding: (isAdding: boolean) => void
 }
 
-export const AddItem = ({ children, onAdd, type, min, max, className }: AddItemProps) => {
-  const [isAdding, setIsAdding] = useState(false)
-
-  const accessToken = useAppSelector((store) => store.auth.accessToken)
-
-  if (!accessToken) {
-    return null
-  }
-
+export const AddItem = ({
+  addButtonLabel,
+  children,
+  className,
+  isAdding,
+  setIsAdding,
+}: AddItemProps) => {
   return (
     <div className={`${style.container} ${className}`}>
       {isAdding ? (
-        <InlineEdit
-          initialValue=""
-          onSave={async (newValue) => {
-            await onAdd(newValue)
-            setIsAdding(false)
-          }}
-          onCancel={() => setIsAdding(false)}
-          type={type}
-          min={min}
-          max={max}
-        />
+        children
       ) : (
-        <AdminAddButton onClick={() => setIsAdding(true)}>{children}</AdminAddButton>
+        <AdminAddButton onClick={() => setIsAdding(true)}>{addButtonLabel}</AdminAddButton>
       )}
     </div>
   )

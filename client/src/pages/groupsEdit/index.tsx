@@ -39,7 +39,7 @@ export const GroupsEditPage = () => {
   const selectOptions =
     groupNamesData?.map((item) => ({
       value: item._id,
-      label: item.group,
+      label: item.groupName,
     })) || []
 
   const handleChange = useCallback((selectedIds: string[]) => {

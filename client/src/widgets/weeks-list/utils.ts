@@ -43,20 +43,6 @@ const useProcessedWeeks = (weeksData: string[] | undefined) => {
 
     const now = getWeekNumber(new Date())
 
-    const filtered = weeksData.filter((week) => {
-      if (week === 'even' || week === 'odd') return true
-
-      const candidate = parseWeek(week)
-      if (
-        candidate.year > now.year ||
-        (candidate.year === now.year && candidate.week >= now.week)
-      ) {
-        return true
-      }
-
-      return false
-    })
-
     const isCurrent = (w: string) => {
       if (w === 'even' || w === 'odd') return false
       const candidate = parseWeek(w)
@@ -70,7 +56,7 @@ const useProcessedWeeks = (weeksData: string[] | undefined) => {
       return 3
     }
 
-    const sorted = filtered.sort((a, b) => {
+    const sorted = weeksData.sort((a, b) => {
       if (isCurrent(a) && !isCurrent(b)) return -1
       if (!isCurrent(a) && isCurrent(b)) return 1
       return priority(a) - priority(b)

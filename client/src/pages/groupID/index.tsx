@@ -103,7 +103,7 @@ export const GroupIDPage = () => {
             {...daysListStopPropagationHandler}
           >
             <ul className={style.list}>
-              {!week.length
+              {!week
                 ? Array.from({ length: 6 }).map((_, index) => (
                     <li className={style.listElement} key={index}>
                       <Skeleton className={style.skeleton} />

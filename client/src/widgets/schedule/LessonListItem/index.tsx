@@ -14,8 +14,6 @@ export const LessonListItem = ({ lesson, onDelete, onUpdate }: Props) => {
   const accessToken = useAppSelector((store) => store.auth.accessToken)
   const [isCollapsed, setIsCollapsed] = useState(true)
 
-  console.log(lesson)
-
   return (
     <li className={style.lessonListItem}>
       <div className={style.lessonHeader}>

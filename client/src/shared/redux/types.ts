@@ -1,5 +1,5 @@
 export interface IName {
-  group: string
+  groupName: string
   _id: string
 }
 
@@ -12,9 +12,10 @@ export interface ITeacher {
   middleName: string
   lastName: string
   title?: string
+  _id: string
 }
 
-export interface ILesson {
+export type ILesson = {
   time: string
   classroom: string
   teacher: ITeacher
@@ -31,7 +32,7 @@ export interface IGroup {
   educationType: string
   faculty: string
   course: string
-  group: string
+  groupName: string
   dates: ISchedule
   createdAt: string
   updatedAt: string
@@ -103,14 +104,14 @@ export interface CreateGroupDTO {
   educationType: string
   faculty: string
   course: string
-  group: string
+  groupName: string
 }
 
 export interface UpdateGroupDTO {
   educationType?: string
   faculty?: string
   course?: string
-  group?: string
+  groupName?: string
 }
 
 // --- Weeks ---
@@ -135,6 +136,10 @@ export interface CreateLessonDTO {
   weekName: string
   dayIndex: number
   time: string
+  classroom: string
+  teacherID: ITeacher['_id']
+  subject: string
+  lessonType: string
 }
 
 export interface UpdateLessonDTO {
@@ -144,7 +149,7 @@ export interface UpdateLessonDTO {
   lessonId: string
   time?: string
   classroom?: string
-  teacher?: ITeacher
+  teacherID?: ITeacher['_id']
   subject?: string
   lessonType?: string
 }

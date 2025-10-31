@@ -26,7 +26,7 @@ export const HeaderSearchResult = ({ namesData, isSearchInputFocused }: Props) =
         {isNamesData &&
           namesData.map((item, index) => (
             <Link className={style.link} to={`/groups/${item._id}`} replace key={index}>
-              {item.group}
+              {item.groupName}
             </Link>
           ))}
       </div>

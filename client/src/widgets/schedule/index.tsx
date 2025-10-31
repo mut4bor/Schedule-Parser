@@ -1,6 +1,6 @@
 import * as style from './style.module.scss'
 import { Skeleton } from '@/shared/ui'
-import { ILesson } from '@/shared/redux/types'
+import { UpdateLessonDTO } from '@/shared/redux/types'
 import {
   useUpdateLessonInDayMutation,
   useDeleteLessonFromDayMutation,
@@ -10,6 +10,10 @@ import {
 } from '@/shared/redux'
 import { AddItem } from '@/widgets/add-item'
 import { LessonListItem } from './LessonListItem'
+import { Modal } from '../modal'
+import { ModalForm } from '../modal-form'
+import { ModalInput } from '../modal-input'
+import { useState } from 'react'
 
 interface Props {
   groupID: string
@@ -36,42 +40,51 @@ export const Schedule = ({ groupID, pickedDayIndex, pickedWeek }: Props) => {
 
   const isScheduleData = !!scheduleData && pickedDayIndex !== -1 && !!scheduleData[pickedDayIndex]
 
-  const handleCreateLesson = async (time: string) => {
+  const handleCreateLesson = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    const formData = new FormData(e.target as HTMLFormElement)
+    const time = formData.get('time') as string
+    const classroom = formData.get('classroom') as string
+    const teacherID = formData.get('teacherID') as string
+    const subject = formData.get('subject') as string
+    const lessonType = formData.get('lessonType') as string
+
     if (!groupID || !pickedWeek || pickedDayIndex === -1) return
+
     try {
       await createLesson({
         id: groupID,
         weekName: pickedWeek,
         dayIndex: pickedDayIndex,
         time,
+        classroom,
+        teacherID,
+        subject,
+        lessonType,
       }).unwrap()
     } catch (err) {
       console.error('Ошибка при создании урока:', err)
     }
   }
 
-  const handleUpdateLesson = async (lessonId: string, newLesson: Partial<ILesson>) => {
+  const handleUpdateLesson = async (
+    lessonId: string,
+    newLesson: Omit<UpdateLessonDTO, 'id' | 'weekName' | 'dayIndex' | 'lessonId'>,
+  ) => {
     if (!scheduleData || !pickedWeek || pickedDayIndex === -1) return
     try {
       const oldLesson = scheduleData[pickedDayIndex].find((lesson) => lesson._id === lessonId)
 
       if (!oldLesson) return
 
-      const updatedLesson: ILesson = {
-        ...oldLesson,
-        ...newLesson,
-        teacher: {
-          ...oldLesson.teacher,
-          ...newLesson.teacher,
-        },
-      }
-
       await updateLesson({
         id: groupID,
         weekName: pickedWeek,
         dayIndex: pickedDayIndex,
         lessonId,
-        ...updatedLesson,
+        ...oldLesson,
+        ...newLesson,
       }).unwrap()
     } catch (err) {
       console.error('Ошибка при обновлении урока:', err)
@@ -90,6 +103,12 @@ export const Schedule = ({ groupID, pickedDayIndex, pickedWeek }: Props) => {
     } catch (err) {
       console.error('Ошибка при удалении урока:', err)
     }
+  }
+
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const handleCancel = () => {
+    setIsModalOpen(false)
   }
 
   return (
@@ -116,8 +135,12 @@ export const Schedule = ({ groupID, pickedDayIndex, pickedWeek }: Props) => {
             ))}
 
       {accessToken && isScheduleData && pickedWeek && (
-        <AddItem type="time" onAdd={handleCreateLesson}>
-          Добавить пару
+        <AddItem addButtonLabel="Добавить пару" isAdding={isModalOpen} setIsAdding={setIsModalOpen}>
+          <Modal onClose={handleCancel}>
+            <ModalForm onSubmit={handleCreateLesson} onCancel={handleCancel}>
+              <ModalInput label="Добавить пару:" name="time" defaultValue="" type="time" />
+            </ModalForm>
+          </Modal>
         </AddItem>
       )}
     </ul>

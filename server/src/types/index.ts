@@ -1,15 +1,14 @@
-import { IClassroom } from '@/database/models/classroom.model.js'
 import { ITeacher } from '@/database/models/teacher.model.js'
 import { Document, ObjectId } from 'mongoose'
 
-export interface ILesson {
+export type ILesson = {
   time: string
-  classroom: IClassroom
+  classroom: string
   teacher: ITeacher
   subject: string
   lessonType: string
   _id?: ObjectId
-}
+} | null
 
 export type IDay = ILesson[]
 export type IWeek = IDay[]
@@ -17,10 +16,10 @@ export type IWeek = IDay[]
 export type ISchedule = Map<string, IWeek>
 
 export interface IGroup extends Document {
-  educationType: string
-  faculty: string
-  course: string
-  group: string
+  educationType: string | null
+  faculty: string | null
+  course: string | null
+  groupName: string | null
   dates: ISchedule
 }
 

@@ -1,7 +1,7 @@
 import * as style from './style.module.scss'
 import { Skeleton } from '@/shared/ui'
 import { CourseButton } from '@/entities/courses'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
   useGetCoursesQuery,
@@ -13,6 +13,9 @@ import {
 import routes from '@/shared/routes'
 import { AddItem } from '@/widgets/add-item'
 import { EditableItem } from '../editable-item'
+import { ModalForm } from '../modal-form'
+import { Modal } from '../modal'
+import { ModalInput } from '../modal-input'
 
 export const Courses = () => {
   const navigate = useNavigate()
@@ -26,32 +29,37 @@ export const Courses = () => {
   }).toString()
 
   const { data: coursesData } = useGetCoursesQuery(searchParams, {
+    selectFromResult: ({ data }) => ({
+      data: data?.filter((course) => course !== null && course !== undefined),
+    }),
     skip: !educationType || !faculty,
   })
 
   useEffect(() => {
-    if (
-      coursesData?.length === 0 ||
-      !educationType ||
-      educationType === 'undefined' ||
-      !faculty ||
-      faculty === 'undefined'
-    ) {
+    if (!educationType || educationType === 'undefined' || !faculty || faculty === 'undefined') {
       navigate(routes.BASE_URL)
     }
   }, [coursesData, educationType, faculty, navigate])
+
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const [createCourse] = useCreateCourseMutation()
   const [updateCourse] = useUpdateCourseMutation()
   const [deleteCourse] = useDeleteCourseMutation()
 
-  const handleCreateCourse = async (newCourse: string) => {
-    if (!newCourse || !educationType || !faculty) return
+  const handleCreateCourse = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    const formData = new FormData(e.target as HTMLFormElement)
+    const course = formData.get('course') as string
+
+    if (!course || !educationType || !faculty) return
+
     try {
       await createCourse({
         educationType,
         faculty,
-        course: newCourse,
+        course,
       }).unwrap()
     } catch (err) {
       console.error('Ошибка при создании курса:', err)
@@ -87,6 +95,10 @@ export const Courses = () => {
     }
   }
 
+  const handleCancel = () => {
+    setIsModalOpen(false)
+  }
+
   useEffect(() => {
     if (!coursesData?.length) return
 
@@ -96,6 +108,8 @@ export const Courses = () => {
       replace: true,
     })
   }, [course, coursesData, educationType, faculty, navigate])
+
+  console.log('coursesData', coursesData)
 
   return (
     <ul className={style.list}>
@@ -121,9 +135,14 @@ export const Courses = () => {
               </EditableItem>
             </li>
           ))}
+
       {accessToken && (
-        <AddItem type="number" min={1} max={6} onAdd={handleCreateCourse}>
-          Добавить курс
+        <AddItem addButtonLabel="Добавить курс" isAdding={isModalOpen} setIsAdding={setIsModalOpen}>
+          <Modal onClose={handleCancel}>
+            <ModalForm onSubmit={handleCreateCourse} onCancel={handleCancel}>
+              <ModalInput label="Добавить курс:" name="course" defaultValue="" type="number" />
+            </ModalForm>
+          </Modal>
         </AddItem>
       )}
     </ul>

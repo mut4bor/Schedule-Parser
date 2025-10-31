@@ -2,18 +2,19 @@ import * as style from './style.module.scss'
 import { Faculty } from '@/widgets/faculty'
 import {
   useGetFacultiesQuery,
-  useCreateFacultyMutation,
-  useUpdateFacultyMutation,
-  useDeleteFacultyMutation,
   useCreateEducationTypeMutation,
-  useUpdateEducationTypeMutation,
-  useDeleteEducationTypeMutation,
   useAppSelector,
 } from '@/shared/redux'
 import { AddItem } from '@/widgets/add-item'
+import { Modal } from '@/widgets/modal'
+import { ModalInput } from '@/widgets/modal-input'
+import { ModalForm } from '@/widgets/modal-form'
+import { useState } from 'react'
 
 export const MainPage = () => {
   const accessToken = useAppSelector((store) => store.auth.accessToken)
+
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const {
     data: facultiesData,
@@ -22,99 +23,24 @@ export const MainPage = () => {
   } = useGetFacultiesQuery()
 
   const [createEducationType] = useCreateEducationTypeMutation()
-  const [updateEducationType] = useUpdateEducationTypeMutation()
-  const [deleteEducationType] = useDeleteEducationTypeMutation()
 
-  const [createFaculty] = useCreateFacultyMutation()
-  const [updateFaculty] = useUpdateFacultyMutation()
-  const [deleteFaculty] = useDeleteFacultyMutation()
+  const handleCreateEducationType = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
 
-  const handleCreateEducationType = async (newType: string) => {
-    if (!newType) return
     try {
+      const formData = new FormData(e.target as HTMLFormElement)
+      const educationType = formData.get('educationType') as string
       await createEducationType({
-        educationType: newType,
-      }).unwrap()
+        educationType: educationType,
+      })
     } catch (err) {
       console.error('Ошибка при создании типа образования:', err)
       throw err
     }
   }
 
-  const handleUpdateEducationType = async (
-    oldType: string,
-    newType: string,
-  ) => {
-    try {
-      await updateEducationType({
-        oldEducationType: oldType,
-        newEducationType: newType,
-      }).unwrap()
-    } catch (err) {
-      console.error('Ошибка при обновлении типа образования:', err)
-      throw err
-    }
-  }
-
-  const handleDeleteEducationType = async (educationType: string) => {
-    try {
-      await deleteEducationType(educationType).unwrap()
-    } catch (err) {
-      console.error('Ошибка при удалении типа образования:', err)
-      throw err
-    }
-  }
-
-  const handleCreateFaculty = async (
-    educationType: string,
-    faculty: string,
-  ) => {
-    try {
-      await createFaculty({
-        educationType,
-        faculty,
-      }).unwrap()
-    } catch (err) {
-      console.error('Ошибка при создании факультета:', err)
-      throw err
-    }
-  }
-
-  const handleUpdateFaculty = async (
-    educationType: string,
-    oldFaculty: string,
-    newFaculty: string,
-  ) => {
-    try {
-      await updateFaculty({
-        educationType,
-        oldFaculty,
-        newFaculty,
-      }).unwrap()
-    } catch (err) {
-      console.error('Ошибка при обновлении факультета:', err)
-      throw err
-    }
-  }
-
-  const handleDeleteFaculty = async (
-    educationType: string,
-    faculty: string,
-  ) => {
-    try {
-      await deleteFaculty({ educationType, faculty }).unwrap()
-    } catch (err) {
-      console.error('Ошибка при удалении факультета:', err)
-      throw err
-    }
-  }
-
-  const crudHandlers = {
-    onUpdateEducationType: handleUpdateEducationType,
-    onDeleteEducationType: handleDeleteEducationType,
-    onCreateFaculty: handleCreateFaculty,
-    onUpdateFaculty: handleUpdateFaculty,
-    onDeleteFaculty: handleDeleteFaculty,
+  const handleCancel = () => {
+    setIsModalOpen(false)
   }
 
   return (
@@ -138,18 +64,22 @@ export const MainPage = () => {
                   return aIndex - bIndex
                 })
                 .map(([educationType, faculties], key) => (
-                  <Faculty
-                    key={key}
-                    data={{ educationType, faculties }}
-                    crudHandlers={crudHandlers}
-                  />
+                  <Faculty key={key} data={{ educationType, faculties }} />
                 ))}
         </ul>
       )}
 
       {accessToken && (
-        <AddItem onAdd={handleCreateEducationType}>
-          Добавить тип обучения
+        <AddItem
+          addButtonLabel="Добавить тип обучения"
+          isAdding={isModalOpen}
+          setIsAdding={setIsModalOpen}
+        >
+          <Modal onClose={handleCancel}>
+            <ModalForm onSubmit={handleCreateEducationType} onCancel={handleCancel}>
+              <ModalInput label="Добавить тип обучения:" name="educationType" defaultValue="" />
+            </ModalForm>
+          </Modal>
         </AddItem>
       )}
     </div>

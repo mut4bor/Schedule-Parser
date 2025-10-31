@@ -1,5 +1,5 @@
 import * as style from './style.module.scss'
-import { ILesson } from '@/shared/redux/types'
+import { CreateLessonDTO, DeleteLessonDTO, ILesson, UpdateLessonDTO } from '@/shared/redux/types'
 import {
   useUpdateLessonInDayMutation,
   useCreateLessonInDayMutation,
@@ -46,107 +46,25 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
   const [updateLesson] = useUpdateLessonInDayMutation()
   const [deleteLesson] = useDeleteLessonFromDayMutation()
 
-  const handleCreateLesson = async ({
-    groupID,
-    weekName,
-    dayIndex,
-    time,
-  }: {
-    groupID: string
-    weekName: string
-    dayIndex: number
-    time: string
-  }) => {
-    if (!groupID) return
+  const handleCreateLesson = async (args: CreateLessonDTO) => {
     try {
-      await createLesson({
-        id: groupID,
-        weekName,
-        dayIndex,
-        time,
-      }).unwrap()
+      await createLesson({ ...args }).unwrap()
     } catch (err) {
       console.error('Ошибка при создании урока:', err)
     }
   }
 
-  const handleUpdateLesson = async ({
-    groupID,
-    weekName,
-    dayIndex,
-    lessonId,
-    newLesson,
-  }: {
-    groupID: string
-    weekName: string
-    dayIndex: number
-    lessonId: string
-    newLesson: Partial<ILesson>
-  }) => {
-    if (!scheduleData) return
-
+  const handleUpdateLesson = async (args: UpdateLessonDTO) => {
     try {
-      const week = scheduleData.find((w) => w.weekName === weekName)
-      if (!week) return
-
-      // dates — это двумерный массив, нужно пройти по всем подмассивам
-      const dayArray = week.dates[dayIndex]
-      if (!dayArray) return
-
-      // Найдём нужный урок по lessonId
-      let oldLesson: ILesson | null = null
-
-      for (const day of dayArray) {
-        const lessonData = day.lessons.find((l) => l.lesson._id === lessonId)
-        if (lessonData) {
-          oldLesson = lessonData.lesson
-          break
-        }
-      }
-
-      if (!oldLesson) return
-
-      // Обновляем урок
-      const updatedLesson: ILesson = {
-        ...oldLesson,
-        ...newLesson,
-        teacher: {
-          ...oldLesson.teacher,
-          ...newLesson.teacher,
-        },
-      }
-
-      // Отправляем обновление
-      await updateLesson({
-        id: groupID,
-        weekName,
-        dayIndex,
-        lessonId,
-        ...updatedLesson,
-      }).unwrap()
+      await updateLesson({ ...args }).unwrap()
     } catch (err) {
       console.error('Ошибка при обновлении урока:', err)
     }
   }
 
-  const handleDeleteLesson = async ({
-    groupID,
-    weekName,
-    dayIndex,
-    lessonId,
-  }: {
-    groupID: string
-    weekName: string
-    dayIndex: number
-    lessonId: string
-  }) => {
+  const handleDeleteLesson = async (args: DeleteLessonDTO) => {
     try {
-      await deleteLesson({
-        id: groupID,
-        weekName,
-        dayIndex,
-        lessonId,
-      }).unwrap()
+      await deleteLesson({ ...args }).unwrap()
     } catch (err) {
       console.error('Ошибка при удалении урока:', err)
     }
@@ -222,12 +140,13 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
                           return (
                             <LessonCell
                               key={group.id}
-                              group={groupLesson}
+                              group={group}
                               weekName={week.weekName}
                               dayIndex={dayIndex}
+                              lesson={groupLesson.lesson}
+                              onAdd={handleCreateLesson}
                               onUpdate={handleUpdateLesson}
                               onDelete={handleDeleteLesson}
-                              onAdd={handleCreateLesson}
                             />
                           )
                         })}

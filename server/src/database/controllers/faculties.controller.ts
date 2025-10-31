@@ -1,7 +1,6 @@
 import { Group } from '@/database/models/group.model.js'
 import { getFilterParams } from '@/utils/getFilterParams.js'
 import { Request, Response } from 'express'
-import { datesMap } from './helpers.js'
 
 const getFaculties = async (req: Request, res: Response) => {
   try {
@@ -13,16 +12,18 @@ const getFaculties = async (req: Request, res: Response) => {
 
     if (records.length === 0) {
       res.status(404).json({
-        message: 'No unique courses found for the specified criteria.',
+        message: 'Не найдено уникальных факультетов для указанных критериев.',
       })
       return
     }
 
     const result = records.reduce(
       (acc, { educationType, faculty }) => {
+        if (!educationType) return acc
         if (!acc[educationType]) {
           acc[educationType] = new Set()
         }
+        if (!faculty) return acc
         acc[educationType].add(faculty)
         return acc
       },
@@ -37,11 +38,9 @@ const getFaculties = async (req: Request, res: Response) => {
 
     res.status(200).json(finalResult)
   } catch (error) {
-    if (error instanceof Error) {
-      res.status(500).json({ message: error.message })
-    } else {
-      res.status(500).json({ message: 'An unknown error occurred' })
-    }
+    res.status(500).json({
+      message: error instanceof Error ? error.message : 'Неизвестная ошибка',
+    })
   }
 }
 
@@ -50,11 +49,9 @@ const getAllFaculties = async (req: Request, res: Response) => {
     const faculties = await Group.distinct('faculty', getFilterParams(req))
     res.status(200).json(faculties)
   } catch (error) {
-    if (error instanceof Error) {
-      res.status(500).json({ message: error.message })
-    } else {
-      res.status(500).json({ message: 'An unknown error occurred' })
-    }
+    res.status(500).json({
+      message: error instanceof Error ? error.message : 'Неизвестная ошибка',
+    })
   }
 }
 
@@ -64,29 +61,27 @@ const createFaculty = async (req: Request, res: Response) => {
 
     if (!educationType || !faculty) {
       return res.status(400).json({
-        message: 'educationType, faculty, course, and group are required',
+        message: 'Тип образования, факультет и курс обязательны',
       })
     }
 
     const newGroup = new Group({
       educationType,
       faculty,
-      course: 'course',
-      group: 'group',
-      dates: datesMap,
+      course: null,
+      group: null,
+      dates: {},
     })
 
     await newGroup.save()
     res.status(201).json({
-      message: 'Faculty created successfully',
+      message: 'Факультет создан успешно',
       group: newGroup,
     })
   } catch (error) {
-    if (error instanceof Error) {
-      res.status(500).json({ message: error.message })
-    } else {
-      res.status(500).json({ message: 'An unknown error occurred' })
-    }
+    res.status(500).json({
+      message: error instanceof Error ? error.message : 'Неизвестная ошибка',
+    })
   }
 }
 
@@ -96,22 +91,20 @@ const updateFaculty = async (req: Request, res: Response) => {
 
     if (!educationType || !oldFaculty || !newFaculty) {
       return res.status(400).json({
-        message: 'educationType, oldFaculty и newFaculty обязательны',
+        message: 'Тип образования, старый факультет и новый факультет обязательны',
       })
     }
 
     const result = await Group.updateMany({ educationType, faculty: oldFaculty }, { faculty: newFaculty })
 
     res.status(200).json({
-      message: 'Faculty updated successfully',
+      message: 'Факультет обновлен успешно',
       modifiedCount: result.modifiedCount,
     })
   } catch (error) {
-    if (error instanceof Error) {
-      res.status(500).json({ message: error.message })
-    } else {
-      res.status(500).json({ message: 'An unknown error occurred' })
-    }
+    res.status(500).json({
+      message: error instanceof Error ? error.message : 'Неизвестная ошибка',
+    })
   }
 }
 
@@ -120,25 +113,23 @@ const deleteFaculty = async (req: Request, res: Response) => {
     const { educationType, faculty } = req.params
 
     if (!educationType || !faculty) {
-      return res.status(400).json({ message: 'educationType и faculty обязательны' })
+      return res.status(400).json({ message: 'Тип образования и факультет обязательны' })
     }
 
     const result = await Group.deleteMany({ educationType, faculty })
 
     if (result.deletedCount === 0) {
-      return res.status(404).json({ message: 'Faculty not found' })
+      return res.status(404).json({ message: 'Факультет не найден' })
     }
 
     res.status(200).json({
-      message: 'Faculty deleted successfully',
+      message: 'Факультет удален успешно',
       deletedCount: result.deletedCount,
     })
   } catch (error) {
-    if (error instanceof Error) {
-      res.status(500).json({ message: error.message })
-    } else {
-      res.status(500).json({ message: 'An unknown error occurred' })
-    }
+    res.status(500).json({
+      message: error instanceof Error ? error.message : 'Неизвестная ошибка',
+    })
   }
 }
 
@@ -147,17 +138,15 @@ const getGroupsByFaculty = async (req: Request, res: Response) => {
     const { faculty } = req.params
 
     if (!faculty) {
-      return res.status(400).json({ message: 'Faculty is required' })
+      return res.status(400).json({ message: 'Факультет обязателен' })
     }
 
     const groups = await Group.find({ faculty }, { dates: 0 })
     res.status(200).json(groups)
   } catch (error) {
-    if (error instanceof Error) {
-      res.status(500).json({ message: error.message })
-    } else {
-      res.status(500).json({ message: 'An unknown error occurred' })
-    }
+    res.status(500).json({
+      message: error instanceof Error ? error.message : 'Неизвестная ошибка',
+    })
   }
 }
 

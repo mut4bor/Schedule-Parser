@@ -1,34 +1,7 @@
 @use '@/shared/vars/vars' as *;
 @use 'sass:color';
 
-.lessonListItem {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  width: 100%;
-}
-
-.lessonHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-}
-
-.text {
-  display: flex;
-  align-items: center;
-  color: $white;
-  font-size: 1.6rem;
-}
-
-.modalContent {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-}
-
-.editForm {
+.form {
   display: flex;
   flex-direction: column;
   gap: 2rem;

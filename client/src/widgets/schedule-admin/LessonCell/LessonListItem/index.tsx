@@ -1,29 +1,32 @@
-import { useState } from 'react'
 import * as style from './style.module.scss'
-import { ILesson } from '@/shared/redux/types'
+import { DeleteLessonDTO, ILesson, UpdateLessonDTO } from '@/shared/redux/types'
+import { useState } from 'react'
 import { useAppSelector } from '@/shared/redux'
 import { EditDeleteActions } from '@/entities/admin'
-
-const Modal = ({ children, onClose }: { children: React.ReactNode; onClose: () => void }) => {
-  return (
-    <div className={style.modalBackdrop} onClick={onClose}>
-      <div className={style.modalContent} onClick={(e) => e.stopPropagation()}>
-        <button className={style.modalCloseBtn} onClick={onClose}>
-          ✖
-        </button>
-        {children}
-      </div>
-    </div>
-  )
-}
+import { Modal } from '@/widgets/modal'
+import { ModalInput } from '@/widgets/modal-input'
+import { ModalForm } from '@/widgets/modal-form'
 
 interface Props {
-  lesson: ILesson | undefined
-  onUpdate: (id: string, newLesson: Partial<ILesson>) => Promise<void>
-  onDelete?: (id: string) => Promise<void>
+  group: {
+    id: string
+    name: string
+  }
+  weekName: string
+  dayIndex: number
+  lesson: ILesson
+  onUpdate: (args: UpdateLessonDTO) => Promise<void>
+  onDelete?: (args: DeleteLessonDTO) => Promise<void>
 }
 
-export const LessonListItemAdmin = ({ lesson, onUpdate, onDelete }: Props) => {
+export const LessonListItemAdmin = ({
+  group,
+  weekName,
+  dayIndex,
+  lesson,
+  onUpdate,
+  onDelete,
+}: Props) => {
   const accessToken = useAppSelector((store) => store.auth.accessToken)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -32,19 +35,26 @@ export const LessonListItemAdmin = ({ lesson, onUpdate, onDelete }: Props) => {
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
-    const updatedLesson: Partial<ILesson> = {
-      time: lesson.time,
-      subject: formData.get('subject') as string,
-      lessonType: formData.get('lessonType') as string,
-      classroom: formData.get('classroom') as string,
-      teacher: {
-        title: formData.get('teacherTitle') as string,
-        lastName: formData.get('teacherLastName') as string,
-        firstName: formData.get('teacherFirstName') as string,
-        middleName: formData.get('teacherMiddleName') as string,
-      },
+
+    try {
+      await onUpdate({
+        id: group.id,
+        weekName,
+        dayIndex,
+        lessonId: lesson._id,
+        subject: formData.get('subject') as string,
+        lessonType: formData.get('lessonType') as string,
+        classroom: formData.get('classroom') as string,
+        teacherID: formData.get('teacherID') as string,
+      })
+    } catch (err) {
+      console.error('Ошибка при создании урока:', err)
     }
-    await onUpdate(lesson._id, updatedLesson)
+
+    setIsModalOpen(false)
+  }
+
+  const handleCancel = () => {
     setIsModalOpen(false)
   }
 
@@ -54,18 +64,12 @@ export const LessonListItemAdmin = ({ lesson, onUpdate, onDelete }: Props) => {
         <p className={style.text}>
           {lesson.subject}
           {lesson.lessonType && ` (${lesson.lessonType})`}
-          {(lesson.teacher.title ||
-            lesson.teacher.lastName ||
-            lesson.teacher.firstName ||
-            lesson.teacher.middleName) && (
-            <>
-              {lesson.teacher.title && `, ${lesson.teacher.title}`}
-              {lesson.teacher.lastName && ` ${lesson.teacher.lastName}`}
-              {lesson.teacher.firstName && ` ${lesson.teacher.firstName.charAt(0).toUpperCase()}.`}
-              {lesson.teacher.middleName &&
-                ` ${lesson.teacher.middleName.charAt(0).toUpperCase()}.`}
-            </>
-          )}
+
+          {lesson.teacher.title && `, ${lesson.teacher.title}`}
+          {` ${lesson.teacher.lastName}`}
+          {` ${lesson.teacher.firstName.charAt(0).toUpperCase()}.`}
+          {` ${lesson.teacher.middleName.charAt(0).toUpperCase()}.`}
+
           {lesson.classroom && `, ${lesson.classroom}`}
         </p>
 
@@ -73,83 +77,53 @@ export const LessonListItemAdmin = ({ lesson, onUpdate, onDelete }: Props) => {
           <div>
             <EditDeleteActions
               onEdit={() => setIsModalOpen(true)}
-              onDelete={!!onDelete ? () => onDelete(lesson._id) : null}
+              onDelete={
+                !!onDelete
+                  ? () =>
+                      onDelete({
+                        id: group.id,
+                        weekName,
+                        dayIndex,
+                        lessonId: lesson._id,
+                      })
+                  : null
+              }
             />
           </div>
         )}
       </div>
 
       {isModalOpen && (
-        <Modal onClose={() => setIsModalOpen(false)}>
-          <h2 className={style.modalTitle}>Редактирование урока</h2>
-          <form className={style.editForm} onSubmit={handleSave}>
-            <label className={style.editLabel}>
-              Предмет:
-              <input name="subject" className={style.editInput} defaultValue={lesson.subject} />
-            </label>
-            <label className={style.editLabel}>
-              Тип:
-              <input
-                name="lessonType"
-                className={style.editInput}
-                defaultValue={lesson.lessonType ?? ''}
-              />
-            </label>
-            <label className={style.editLabel}>
-              Титул преподавателя:
-              <input
+        <Modal onClose={handleCancel}>
+          <div className={style.modalContent}>
+            <h2 className={style.modalTitle}>Редактирование урока</h2>
+
+            <ModalForm onSubmit={handleSave} onCancel={handleCancel}>
+              <ModalInput label="Предмет:" name="subject" defaultValue={lesson.subject} />
+              <ModalInput label="Тип:" name="lessonType" defaultValue={lesson.lessonType} />
+              <ModalInput
+                label="Титул преподавателя:"
                 name="teacherTitle"
-                className={style.editInput}
                 defaultValue={lesson.teacher.title ?? ''}
               />
-            </label>
-            <label className={style.editLabel}>
-              Фамилия преподавателя:
-              <input
+              <ModalInput
+                label="Фамилия преподавателя:"
                 name="teacherLastName"
-                className={style.editInput}
-                defaultValue={lesson.teacher.lastName ?? ''}
+                defaultValue={lesson.teacher.lastName}
               />
-            </label>
-            <label className={style.editLabel}>
-              Имя преподавателя:
-              <input
+              <ModalInput
+                label="Имя преподавателя:"
                 name="teacherFirstName"
-                className={style.editInput}
-                defaultValue={lesson.teacher.firstName ?? ''}
+                defaultValue={lesson.teacher.firstName}
               />
-            </label>
-            <label className={style.editLabel}>
-              Отчество преподавателя:
-              <input
+              <ModalInput
+                label="Отчество преподавателя:"
                 name="teacherMiddleName"
-                className={style.editInput}
-                defaultValue={lesson.teacher.middleName ?? ''}
+                defaultValue={lesson.teacher.middleName}
               />
-            </label>
-            <label className={style.editLabel}>
-              Аудитория:
-              <input
-                name="classroom"
-                className={style.editInput}
-                defaultValue={lesson.classroom ?? ''}
-              />
-            </label>
-
-            <div className={style.formButtons}>
-              <button type="submit" className={style.submitButton}>
-                Сохранить
-              </button>
-
-              <button
-                type="button"
-                className={style.cancelButton}
-                onClick={() => setIsModalOpen(false)}
-              >
-                Отмена
-              </button>
-            </div>
-          </form>
+              <ModalInput label="Аудитория:" name="classroom" defaultValue={lesson.classroom} />
+            </ModalForm>
+          </div>
         </Modal>
       )}
     </li>

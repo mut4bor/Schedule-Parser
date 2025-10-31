@@ -1,18 +1,18 @@
-import mongoose, { Schema, Document } from 'mongoose'
+import mongoose, { Schema } from 'mongoose'
 
-export interface ITeacher extends Document {
+export interface ITeacher {
   firstName: string
-  middleName?: string
+  middleName: string
   lastName: string
-  title?: string
+  title: string
 }
 
 const teacherSchema = new Schema<ITeacher>(
   {
     firstName: { type: String, required: true },
-    middleName: { type: String },
+    middleName: { type: String, required: true },
     lastName: { type: String, required: true },
-    title: { type: String },
+    title: { type: String, required: true },
   },
   { timestamps: true },
 )

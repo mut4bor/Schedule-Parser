@@ -1,6 +1,6 @@
 import * as style from './style.module.scss'
 import { getWeekNumber, getWeekValue, useProcessedWeeks } from './utils'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { WeeksButton } from '@/entities/weeks'
 import {
   useGetWeeksByIDQuery,
@@ -13,6 +13,9 @@ import { Skeleton } from '@/shared/ui'
 import { useParams } from 'react-router-dom'
 import { EditableItem } from '../editable-item'
 import { AddItem } from '../add-item'
+import { ModalForm } from '../modal-form'
+import { ModalInput } from '../modal-input'
+import { Modal } from '../modal'
 
 const currentWeek = getWeekNumber(new Date())
 const formattedCurrentWeek = `${currentWeek.year}-W${currentWeek.week}`
@@ -36,7 +39,14 @@ export const WeeksList = ({ pickedWeek, setPickedWeek }: Props) => {
   const [updateWeek] = useUpdateWeekInGroupMutation()
   const [deleteWeek] = useDeleteWeekFromGroupMutation()
 
-  const handleCreateWeek = async (newWeek: string) => {
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const handleCreateWeek = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    const formData = new FormData(e.target as HTMLFormElement)
+    const newWeek = formData.get('week') as string
+
     if (!newWeek || !groupID) return
     try {
       await createWeek({ id: groupID, weekName: newWeek }).unwrap()
@@ -66,6 +76,10 @@ export const WeeksList = ({ pickedWeek, setPickedWeek }: Props) => {
     } catch (err) {
       console.error('Ошибка при удалении недели:', err)
     }
+  }
+
+  const handleCancel = () => {
+    setIsModalOpen(false)
   }
 
   useEffect(() => {
@@ -109,8 +123,16 @@ export const WeeksList = ({ pickedWeek, setPickedWeek }: Props) => {
 
       {accessToken && (
         <li>
-          <AddItem onAdd={handleCreateWeek} type="week">
-            Добавить неделю
+          <AddItem
+            addButtonLabel="Добавить неделю"
+            isAdding={isModalOpen}
+            setIsAdding={setIsModalOpen}
+          >
+            <Modal onClose={handleCancel}>
+              <ModalForm onSubmit={handleCreateWeek} onCancel={handleCancel}>
+                <ModalInput label="Добавить неделю:" name="week" defaultValue="" type="week" />
+              </ModalForm>
+            </Modal>
           </AddItem>
         </li>
       )}
