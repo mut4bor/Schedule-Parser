@@ -1,7 +1,7 @@
 import * as style from './style.module.scss'
 import { DeleteLessonDTO, ILesson, UpdateLessonDTO } from '@/shared/redux/types'
 import { useState } from 'react'
-import { useAppSelector } from '@/shared/redux'
+import { useAppSelector } from '@/shared/redux/hooks'
 import { EditDeleteActions } from '@/entities/admin'
 import { Modal } from '@/widgets/modal'
 import { ModalInput } from '@/widgets/modal-input'

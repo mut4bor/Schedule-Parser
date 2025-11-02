@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { EditableItem } from '@/widgets/editable-item'
 import * as style from './style.module.scss'
 import { ILesson } from '@/shared/redux/types'
-import { useAppSelector } from '@/shared/redux'
+import { useAppSelector } from '@/shared/redux/hooks'
 
 interface Props {
   lesson: ILesson
@@ -26,20 +26,11 @@ export const LessonListItem = ({ lesson, onDelete, onUpdate }: Props) => {
           <p className={style.text}>
             {lesson.time} - {lesson.subject}
             {lesson.lessonType && ` (${lesson.lessonType})`}
-            {(lesson.teacher?.title ||
-              lesson.teacher?.lastName ||
-              lesson.teacher?.firstName ||
-              lesson.teacher?.middleName) && (
-              <>
-                {lesson.teacher.title && `, ${lesson.teacher.title}`}
-                {lesson.teacher.lastName && ` ${lesson.teacher.lastName}`}
-                {lesson.teacher.firstName &&
-                  ` ${lesson.teacher.firstName.charAt(0).toUpperCase()}.`}
-                {lesson.teacher.middleName &&
-                  ` ${lesson.teacher.middleName.charAt(0).toUpperCase()}.`}
-              </>
-            )}
-            {lesson.classroom && `, ${lesson.classroom}`}
+            {lesson.teacher.title && `, ${lesson.teacher.title}`}
+            {` ${lesson.teacher.lastName}`}
+            {` ${lesson.teacher.firstName.charAt(0).toUpperCase()}.`}
+            {` ${lesson.teacher.middleName.charAt(0).toUpperCase()}.`}
+            {`, ${lesson.classroom}`}
           </p>
         </EditableItem>
 

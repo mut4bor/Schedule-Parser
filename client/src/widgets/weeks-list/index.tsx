@@ -1,5 +1,5 @@
 import * as style from './style.module.scss'
-import { getWeekNumber, getWeekValue, useProcessedWeeks } from './utils'
+import { getWeekNumber, getWeekValue } from './utils'
 import { useEffect, useState } from 'react'
 import { WeeksButton } from '@/entities/weeks'
 import {
@@ -7,8 +7,8 @@ import {
   useCreateWeekInGroupMutation,
   useUpdateWeekInGroupMutation,
   useDeleteWeekFromGroupMutation,
-  useAppSelector,
-} from '@/shared/redux'
+} from '@/shared/redux/slices/api/groupsApi'
+import { useAppSelector } from '@/shared/redux/hooks'
 import { Skeleton } from '@/shared/ui'
 import { useParams } from 'react-router-dom'
 import { EditableItem } from '../editable-item'
@@ -29,11 +29,10 @@ export const WeeksList = ({ pickedWeek, setPickedWeek }: Props) => {
   const accessToken = useAppSelector((store) => store.auth.accessToken)
 
   const { groupID } = useParams()
+
   const { data: weeksData } = useGetWeeksByIDQuery(groupID ?? '', {
     skip: !groupID,
   })
-
-  const processedWeeks = useProcessedWeeks(weeksData)
 
   const [createWeek] = useCreateWeekInGroupMutation()
   const [updateWeek] = useUpdateWeekInGroupMutation()
@@ -83,23 +82,21 @@ export const WeeksList = ({ pickedWeek, setPickedWeek }: Props) => {
   }
 
   useEffect(() => {
-    if (!processedWeeks?.length) return
-    if (pickedWeek && processedWeeks.includes(pickedWeek)) return
+    if (!weeksData?.length) return
+    if (pickedWeek && weeksData.includes(pickedWeek)) return
 
-    setPickedWeek(
-      processedWeeks.includes(formattedCurrentWeek) ? formattedCurrentWeek : processedWeeks[0],
-    )
-  }, [processedWeeks, pickedWeek, setPickedWeek])
+    setPickedWeek(weeksData.includes(formattedCurrentWeek) ? formattedCurrentWeek : weeksData[0])
+  }, [weeksData, pickedWeek, setPickedWeek])
 
   return (
     <ul className={style.list}>
-      {!processedWeeks
+      {!weeksData
         ? Array.from({ length: 7 }).map((_, index) => (
             <li key={index}>
               <Skeleton className={style.skeleton} />
             </li>
           ))
-        : processedWeeks.map((week, index) => (
+        : weeksData.map((week, index) => (
             <li className={style.listItem} key={index}>
               <EditableItem
                 value={week}

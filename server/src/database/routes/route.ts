@@ -43,6 +43,13 @@ import {
 import { getGroupNames, getGroupNamesThatMatchWithReqParams } from '@/database/controllers/name.controller.js'
 import { authMiddleware } from '@/middleware/authMiddleware.js'
 import { login, refresh, logout } from '../controllers/auth.controller.js'
+import {
+  getAllTeachers,
+  createTeacher,
+  updateTeacher,
+  deleteTeacher,
+  getTeacherById,
+} from '../controllers/teacher.controller.js'
 
 // --- Router ---
 const router = Router()
@@ -52,6 +59,7 @@ const facultyPath = `/faculty`
 const coursePath = `/course`
 const groupsPath = `/groups`
 const namesPath = `/names`
+const teachersPath = `/teachers`
 
 // --- Авторизация ---
 router.post('/login', login)
@@ -104,5 +112,12 @@ router.delete(`${groupsPath}/:id/weeks/:weekName/days/:dayIndex/lessons/:lessonI
 // --- Названия групп ---
 router.get(namesPath, getGroupNames)
 router.get(`${namesPath}/search`, getGroupNamesThatMatchWithReqParams)
+
+// --- Преподаватели ---
+router.get(teachersPath, getAllTeachers)
+router.get(`${teachersPath}/:id`, getTeacherById)
+router.post(teachersPath, createTeacher)
+router.put(teachersPath, updateTeacher)
+router.delete(`${teachersPath}/:id`, deleteTeacher)
 
 export { router }

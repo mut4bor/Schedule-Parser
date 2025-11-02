@@ -8,12 +8,13 @@ import { GroupIDPage } from './groupID'
 import { FavoritePage } from './favorite'
 import { GroupRedirectPage } from './groupRedirect'
 import { GroupsEditPage } from './groupsEdit'
+import { TeachersPage } from './teachers'
 import { LoginPage } from './login'
 
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import routes from '@/shared/routes'
-import { store } from '@/shared/redux'
+import { store } from '@/shared/redux/store'
 
 const routesArray = [
   { path: routes.BASE_URL, Component: MainPage },
@@ -29,6 +30,7 @@ const routesArray = [
   { path: `/groups/:groupID`, Component: GroupRedirectPage },
   { path: `${routes.GROUPS_EDIT_PATH}`, Component: GroupsEditPage },
   { path: `/${routes.GROUPS_EDIT_PATH}/:groupsIDs`, Component: GroupsEditPage },
+  { path: routes.TEACHERS_PATH, Component: TeachersPage },
   { path: routes.LOGIN_PATH, Component: LoginPage },
 ]
 

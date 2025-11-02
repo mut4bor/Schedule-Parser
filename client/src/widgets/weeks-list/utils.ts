@@ -1,4 +1,3 @@
-import { useMemo } from 'react'
 import {
   getISOWeek,
   getISOWeekYear,
@@ -37,33 +36,4 @@ const parseWeek = (week: string) => {
   return { year: getISOWeekYear(date), week: getISOWeek(date) }
 }
 
-const useProcessedWeeks = (weeksData: string[] | undefined) => {
-  return useMemo(() => {
-    if (!weeksData) return undefined
-
-    const now = getWeekNumber(new Date())
-
-    const isCurrent = (w: string) => {
-      if (w === 'even' || w === 'odd') return false
-      const candidate = parseWeek(w)
-      return candidate.year === now.year && candidate.week === now.week
-    }
-
-    const priority = (w: string) => {
-      if (isCurrent(w)) return 0
-      if (w === 'odd') return 1
-      if (w === 'even') return 2
-      return 3
-    }
-
-    const sorted = weeksData.sort((a, b) => {
-      if (isCurrent(a) && !isCurrent(b)) return -1
-      if (!isCurrent(a) && isCurrent(b)) return 1
-      return priority(a) - priority(b)
-    })
-
-    return sorted
-  }, [weeksData])
-}
-
-export { getWeekNumber, getWeekValue, parseWeek, useProcessedWeeks }
+export { getWeekNumber, getWeekValue, parseWeek }

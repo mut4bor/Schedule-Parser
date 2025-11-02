@@ -1,10 +1,11 @@
-import mongoose, { Schema } from 'mongoose'
+import mongoose, { Schema, ObjectId } from 'mongoose'
 
 export interface ITeacher {
   firstName: string
   middleName: string
   lastName: string
   title: string
+  _id: ObjectId
 }
 
 const teacherSchema = new Schema<ITeacher>(

@@ -1,6 +1,7 @@
 import * as style from './style.module.scss'
 import { useParams, useNavigate } from 'react-router-dom'
-import { useAppSelector, useGetGroupNamesQuery } from '@/shared/redux'
+import { useGetGroupNamesQuery } from '@/shared/redux/slices/api/namesApi'
+import { useAppSelector } from '@/shared/redux/hooks'
 import { useCallback, useReducer } from 'react'
 import routes from '@/shared/routes'
 import { MultiSelect } from '@/entities/multi-select'

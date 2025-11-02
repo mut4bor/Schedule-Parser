@@ -7,8 +7,10 @@ import {
   HeaderSearchResult,
 } from '@/entities/header'
 import { useState, useEffect } from 'react'
-import { useAppSelector, useGetGroupNamesThatMatchWithReqParamsQuery } from '@/shared/redux'
+import { useAppSelector } from '@/shared/redux/hooks'
+import { useGetGroupNamesThatMatchWithReqParamsQuery } from '@/shared/redux/slices/api/namesApi'
 import { HeaderFavoriteLink } from '@/entities/header/header-favorite-link'
+import { HeaderTeachersLink } from '@/entities/header/header-groups-teachers-link'
 
 export const Header = () => {
   const accessToken = useAppSelector((store) => store.auth.accessToken)
@@ -69,8 +71,13 @@ export const Header = () => {
             </div>
 
             <HeaderFavoriteLink />
-            <HeaderGroupsEditLink />
-            {accessToken && <HeaderLogoutButton />}
+            {accessToken && (
+              <>
+                <HeaderGroupsEditLink />
+                <HeaderTeachersLink />
+                <HeaderLogoutButton />
+              </>
+            )}
           </div>
         </div>
       </div>

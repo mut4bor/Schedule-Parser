@@ -1,11 +1,11 @@
 import * as style from './style.module.scss'
-import { CreateLessonDTO, DeleteLessonDTO, ILesson, UpdateLessonDTO } from '@/shared/redux/types'
+import { CreateLessonDTO, DeleteLessonDTO, UpdateLessonDTO } from '@/shared/redux/types'
 import {
   useUpdateLessonInDayMutation,
   useCreateLessonInDayMutation,
   useDeleteLessonFromDayMutation,
   useGetGroupsSchedulesByIDQuery,
-} from '@/shared/redux'
+} from '@/shared/redux/slices/api/groupsApi'
 import { CSSProperties, Fragment, useMemo } from 'react'
 import { LessonCell } from './LessonCell'
 import { getWeekValue } from '../weeks-list/utils'

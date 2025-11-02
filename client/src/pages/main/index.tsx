@@ -1,10 +1,8 @@
 import * as style from './style.module.scss'
 import { Faculty } from '@/widgets/faculty'
-import {
-  useGetFacultiesQuery,
-  useCreateEducationTypeMutation,
-  useAppSelector,
-} from '@/shared/redux'
+import { useCreateEducationTypeMutation } from '@/shared/redux/slices/api/educationTypesApi'
+import { useGetFacultiesQuery } from '@/shared/redux/slices/api/facultiesApi'
+import { useAppSelector } from '@/shared/redux/hooks'
 import { AddItem } from '@/widgets/add-item'
 import { Modal } from '@/widgets/modal'
 import { ModalInput } from '@/widgets/modal-input'

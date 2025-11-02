@@ -11,10 +11,12 @@ import {
   useCreateFacultyMutation,
   useUpdateFacultyMutation,
   useDeleteFacultyMutation,
+} from '@/shared/redux/slices/api/facultiesApi'
+import {
   useUpdateEducationTypeMutation,
   useDeleteEducationTypeMutation,
-  useAppSelector,
-} from '@/shared/redux'
+} from '@/shared/redux/slices/api/educationTypesApi'
+import { useAppSelector } from '@/shared/redux/hooks'
 
 const Pipe = () => {
   return <span className={style.pipe}></span>

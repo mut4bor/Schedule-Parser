@@ -4,16 +4,18 @@ import { UpdateLessonDTO } from '@/shared/redux/types'
 import {
   useUpdateLessonInDayMutation,
   useDeleteLessonFromDayMutation,
-  useAppSelector,
   useCreateLessonInDayMutation,
   useGetWeekScheduleByIDQuery,
-} from '@/shared/redux'
+} from '@/shared/redux/slices/api/groupsApi'
+import { useGetAllTeachersQuery } from '@/shared/redux/slices/api/teachersApi'
+import { useAppSelector } from '@/shared/redux/hooks'
 import { AddItem } from '@/widgets/add-item'
 import { LessonListItem } from './LessonListItem'
 import { Modal } from '../modal'
 import { ModalForm } from '../modal-form'
 import { ModalInput } from '../modal-input'
 import { useState } from 'react'
+import { ModalSelect } from '../modal-select'
 
 interface Props {
   groupID: string
@@ -34,6 +36,8 @@ export const Schedule = ({ groupID, pickedDayIndex, pickedWeek }: Props) => {
     },
   )
 
+  const { data: teachers } = useGetAllTeachersQuery()
+
   const [createLesson] = useCreateLessonInDayMutation()
   const [updateLesson] = useUpdateLessonInDayMutation()
   const [deleteLesson] = useDeleteLessonFromDayMutation()
@@ -47,8 +51,8 @@ export const Schedule = ({ groupID, pickedDayIndex, pickedWeek }: Props) => {
     const time = formData.get('time') as string
     const classroom = formData.get('classroom') as string
     const teacherID = formData.get('teacherID') as string
-    const subject = formData.get('subject') as string
     const lessonType = formData.get('lessonType') as string
+    const subject = formData.get('subject') as string
 
     if (!groupID || !pickedWeek || pickedDayIndex === -1) return
 
@@ -134,11 +138,23 @@ export const Schedule = ({ groupID, pickedDayIndex, pickedWeek }: Props) => {
               />
             ))}
 
-      {accessToken && isScheduleData && pickedWeek && (
+      {accessToken && isScheduleData && teachers && pickedWeek && (
         <AddItem addButtonLabel="Добавить пару" isAdding={isModalOpen} setIsAdding={setIsModalOpen}>
           <Modal onClose={handleCancel}>
             <ModalForm onSubmit={handleCreateLesson} onCancel={handleCancel}>
-              <ModalInput label="Добавить пару:" name="time" defaultValue="" type="time" />
+              <ModalInput label="Время:" name="time" defaultValue="" type="time" />
+              <ModalInput label="Аудитория:" name="classroom" defaultValue="" />
+              <ModalSelect
+                label="Преподаватель:"
+                name="teacherID"
+                defaultValue=""
+                options={teachers.map((teacher) => ({
+                  value: teacher._id,
+                  label: `${teacher.firstName} ${teacher.middleName} ${teacher.lastName}`,
+                }))}
+              />
+              <ModalInput label="Тип предмета:" name="lessonType" defaultValue="" />
+              <ModalInput label="Название предмета:" name="subject" defaultValue="" />
             </ModalForm>
           </Modal>
         </AddItem>

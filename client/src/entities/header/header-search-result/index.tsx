@@ -1,6 +1,6 @@
 import * as style from './style.module.scss'
 import { Link } from 'react-router-dom'
-import { IName } from '@/shared/redux'
+import { IName } from '@/shared/redux/types'
 
 interface Props {
   namesData?: IName[]

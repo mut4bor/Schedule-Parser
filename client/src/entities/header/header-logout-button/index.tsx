@@ -1,5 +1,5 @@
 import * as style from './style.module.scss'
-import { useLogoutMutation } from '@/shared/redux'
+import { useLogoutMutation } from '@/shared/redux/slices/api/authApi'
 
 export const HeaderLogoutButton = () => {
   const [logout] = useLogoutMutation()

@@ -4,7 +4,7 @@ import { Document, ObjectId } from 'mongoose'
 export type ILesson = {
   time: string
   classroom: string
-  teacher: ITeacher
+  teacher: ITeacher['_id']
   subject: string
   lessonType: string
   _id?: ObjectId

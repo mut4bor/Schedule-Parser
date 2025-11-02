@@ -2,12 +2,12 @@ import * as style from './style.module.scss'
 import { Skeleton } from '@/shared/ui'
 import { Link, useParams } from 'react-router-dom'
 import {
-  useGetGroupNamesQuery,
   useCreateGroupMutation,
   useUpdateGroupByIDMutation,
   useDeleteGroupByIDMutation,
-  useAppSelector,
-} from '@/shared/redux'
+} from '@/shared/redux/slices/api/groupsApi'
+import { useGetGroupNamesQuery } from '@/shared/redux/slices/api/namesApi'
+import { useAppSelector } from '@/shared/redux/hooks'
 import { AddItem } from '@/widgets/add-item'
 import { EditableItem } from '../editable-item'
 import { Modal } from '../modal'

@@ -8,8 +8,8 @@ import {
   useCreateCourseMutation,
   useUpdateCourseMutation,
   useDeleteCourseMutation,
-  useAppSelector,
-} from '@/shared/redux'
+} from '@/shared/redux/slices/api/coursesApi'
+import { useAppSelector } from '@/shared/redux/hooks'
 import routes from '@/shared/routes'
 import { AddItem } from '@/widgets/add-item'
 import { EditableItem } from '../editable-item'

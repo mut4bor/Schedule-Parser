@@ -1,11 +1,10 @@
 import * as style from './style.module.scss'
-import { useLoginMutation } from '@/shared/redux'
+import { useLoginMutation } from '@/shared/redux/slices/api/authApi'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 export const LoginPage = () => {
-  const [login, { data: loginData, error, isLoading, isSuccess }] =
-    useLoginMutation()
+  const [login, { data: loginData, error, isLoading, isSuccess }] = useLoginMutation()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [showSuccess, setShowSuccess] = useState(false)
@@ -58,11 +57,7 @@ export const LoginPage = () => {
             required
           />
         </div>
-        <button
-          className={style.submitButton}
-          type="submit"
-          disabled={isLoading}
-        >
+        <button className={style.submitButton} type="submit" disabled={isLoading}>
           {isLoading ? 'Загрузка...' : 'Войти'}
         </button>
         {error && <div className={style.errorMessage}>Произошла ошибка</div>}

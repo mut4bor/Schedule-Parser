@@ -2,9 +2,8 @@ import { Group } from '@/database/models/group.model.js'
 import { getDatesOfISOWeek } from '@/utils/getDatesOfISOWeek.js'
 import { getFilterParams } from '@/utils/getFilterParams.js'
 import { Request, Response } from 'express'
-import { dayPlaceholder } from './helpers.js'
+
 import { ILesson, IWeek } from '@/types/index.js'
-import { ITeacher } from '../models/teacher.model.js'
 
 const getAllGroups = async (req: Request, res: Response) => {
   try {
@@ -75,7 +74,7 @@ const getWeeksByID = async (req: Request, res: Response) => {
   }
 }
 
-const getWeekScheduleByID = async (req: Request, res: Response) => {
+const getWeekScheduleByID = async (req: Request<{ id: string; week: string }>, res: Response) => {
   try {
     const { id, week } = req.params
 
@@ -83,7 +82,10 @@ const getWeekScheduleByID = async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'ID and week are required' })
     }
 
-    const group = await Group.findById(id)
+    const group = await Group.findById(id).populate({
+      path: `dates.${week}.teacher`,
+      model: 'Teacher',
+    })
 
     if (!group) {
       return res.status(404).json({ message: 'Группа не найдена' })
@@ -279,7 +281,7 @@ const addWeekNameToGroup = async (req: Request, res: Response) => {
 
     const days = getDatesOfISOWeek(year, week)
 
-    const weekData: IWeek = days.map(() => dayPlaceholder)
+    const weekData: IWeek = days.map(() => [])
 
     group.dates.set(weekName, weekData)
 
@@ -364,21 +366,44 @@ const deleteWeekNameFromGroup = async (req: Request, res: Response) => {
 const createLessonInDay = async (req: Request, res: Response) => {
   try {
     const { id, weekName, dayIndex: day } = req.params
-    const { time, classroom, teacher, subject, lessonType } = req.body
+    const { time, classroom, teacherID, subject, lessonType } = req.body
 
-    if (!id || !weekName || day === undefined || day === '-1') {
-      return res.status(400).json({
-        message: 'ID группы, weekName и день обязательны',
-      })
+    // Проверяем каждый параметр из req.params
+    if (!id) {
+      return res.status(400).json({ message: 'Параметр id (ID группы) обязателен' })
     }
 
-    if (!time || !classroom || !teacher || !subject || !lessonType) {
-      return res.status(400).json({
-        message: 'Поля time, classroom, teacher, subject и lessonType обязательны',
-      })
+    if (!weekName) {
+      return res.status(400).json({ message: 'Параметр weekName (неделя) обязателен' })
+    }
+
+    if (day === undefined || day === '-1') {
+      return res.status(400).json({ message: 'Параметр day (день недели) обязателен' })
+    }
+
+    // Проверяем каждый параметр из req.body
+    if (!time) {
+      return res.status(400).json({ message: 'Поле time (время) обязательно' })
+    }
+
+    if (!classroom) {
+      return res.status(400).json({ message: 'Поле classroom (аудитория) обязательно' })
+    }
+
+    if (!teacherID) {
+      return res.status(400).json({ message: 'Поле teacher (преподаватель) обязательно' })
+    }
+
+    if (!subject) {
+      return res.status(400).json({ message: 'Поле subject (предмет) обязательно' })
+    }
+
+    if (!lessonType) {
+      return res.status(400).json({ message: 'Поле lessonType (тип занятия) обязательно' })
     }
 
     const dayIndex = parseInt(day, 10)
+
     if (isNaN(dayIndex)) {
       return res.status(400).json({ message: 'dayIndex должен быть числом' })
     }
@@ -398,15 +423,13 @@ const createLessonInDay = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'День не найден' })
     }
 
-    const newLesson: ILesson = {
+    dayData.push({
       time,
       classroom,
-      teacher,
+      teacher: teacherID,
       subject,
       lessonType,
-    }
-
-    dayData.push(newLesson)
+    })
     weekData[dayIndex] = dayData
 
     group.dates.set(weekName, weekData)
@@ -415,7 +438,6 @@ const createLessonInDay = async (req: Request, res: Response) => {
 
     return res.status(201).json({
       message: 'Урок создан успешно',
-      lesson: newLesson,
     })
   } catch (error) {
     console.error(error)
@@ -428,11 +450,29 @@ const createLessonInDay = async (req: Request, res: Response) => {
 const updateLessonInDay = async (req: Request, res: Response) => {
   try {
     const { id, weekName, dayIndex: day, lessonId } = req.params
-    const { classroom, teacher, subject, lessonType, time } = req.body
+    const { classroom, teacherID, subject, lessonType, time } = req.body
 
-    if (!id || !weekName || day === undefined || day === '-1' || !lessonId) {
+    if (!id) {
       return res.status(400).json({
-        message: 'ID группы, weekName, день и ID урока обязательны',
+        message: 'Параметр id (ID группы) обязателен',
+      })
+    }
+
+    if (!weekName) {
+      return res.status(400).json({
+        message: 'Параметр weekName обязателен',
+      })
+    }
+
+    if (day === undefined || day === '-1') {
+      return res.status(400).json({
+        message: 'Параметр day (день недели) обязателен и не должен быть -1',
+      })
+    }
+
+    if (!lessonId) {
+      return res.status(400).json({
+        message: 'Параметр lessonId (ID урока) обязателен',
       })
     }
 
@@ -471,16 +511,14 @@ const updateLessonInDay = async (req: Request, res: Response) => {
 
     const oldLesson = dayData[lessonIndex]
 
-    const updatedLesson: ILesson = {
+    dayData[lessonIndex] = {
       ...oldLesson,
       time,
       classroom,
-      teacher,
+      teacher: teacherID,
       subject,
       lessonType,
     }
-
-    dayData[lessonIndex] = updatedLesson
 
     weekData[dayIndex] = dayData
     group.dates.set(weekName, weekData)

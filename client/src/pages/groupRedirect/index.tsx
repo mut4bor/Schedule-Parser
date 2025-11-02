@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom'
-import { useGetGroupByIDQuery } from '@/shared/redux'
+import { useGetGroupByIDQuery } from '@/shared/redux/slices/api/groupsApi'
 import { useEffect } from 'react'
 
 export const GroupRedirectPage = () => {

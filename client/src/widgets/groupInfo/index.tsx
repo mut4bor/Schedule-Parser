@@ -1,6 +1,9 @@
 import * as style from './style.module.scss'
 import { Schedule } from '@/widgets/schedule'
-import { useGetGroupByIDQuery, useUpdateGroupByIDMutation } from '@/shared/redux'
+import {
+  useGetGroupByIDQuery,
+  useUpdateGroupByIDMutation,
+} from '@/shared/redux/slices/api/groupsApi'
 import { useState } from 'react'
 import { useSwipeable } from 'react-swipeable'
 import { RefreshDate } from '@/widgets/refresh-date'

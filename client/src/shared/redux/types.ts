@@ -1,3 +1,5 @@
+import { ITeacher } from './slices/api/teachersApi'
+
 export interface IName {
   groupName: string
   _id: string
@@ -5,14 +7,6 @@ export interface IName {
 
 export interface IFaculties {
   [educationType: string]: string[]
-}
-
-export interface ITeacher {
-  firstName: string
-  middleName: string
-  lastName: string
-  title?: string
-  _id: string
 }
 
 export type ILesson = {

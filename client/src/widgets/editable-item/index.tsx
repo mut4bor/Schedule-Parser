@@ -1,7 +1,7 @@
 import * as style from './style.module.scss'
 import { useState } from 'react'
 import { InlineEdit, EditDeleteActions } from '@/entities/admin'
-import { useAppSelector } from '@/shared/redux'
+import { useAppSelector } from '@/shared/redux/hooks'
 
 export type CrudHandlers = {
   onUpdate?: ((oldValue: string, newValue: string) => Promise<void>) | null
@@ -50,10 +50,7 @@ export const EditableItem = ({
   }
 
   const handleDelete = async () => {
-    if (
-      !crudHandlers?.onDelete ||
-      !window.confirm(`Вы уверены, что хотите удалить ${value}?`)
-    )
+    if (!crudHandlers?.onDelete || !window.confirm(`Вы уверены, что хотите удалить ${value}?`))
       return
     try {
       await crudHandlers.onDelete(value)
@@ -87,9 +84,7 @@ export const EditableItem = ({
           <div className={style.item}>{children}</div>
           {crudHandlers && (
             <EditDeleteActions
-              onEdit={
-                !!crudHandlers?.onUpdate ? () => setIsEditing(true) : null
-              }
+              onEdit={!!crudHandlers?.onUpdate ? () => setIsEditing(true) : null}
               onDelete={!!crudHandlers?.onDelete ? handleDelete : null}
             />
           )}
