@@ -58,7 +58,7 @@ export const groupsApi = baseApi.injectEndpoints({
       query: ({ groupID, week }) => `/groups/${groupID}/weeks/${week}`,
       providesTags: ['Schedule'],
     }),
-    getGroupsSchedulesByID: builder.query<IGroupsSchedule[], string[]>({
+    getGroupsSchedulesByID: builder.query<IGroupsSchedule, string[]>({
       query: (groupIDs) => `/groups/${groupIDs.join(',')}/schedule`,
       providesTags: ['GroupsSchedule'],
     }),

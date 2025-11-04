@@ -5,10 +5,6 @@ export interface IName {
   _id: string
 }
 
-export interface IFaculties {
-  [educationType: string]: string[]
-}
-
 export type ILesson = {
   time: string
   classroom: string
@@ -35,62 +31,18 @@ export interface IGroup {
 }
 
 export interface IGroupsSchedule {
-  weekName: 'even' | 'odd' | string
-  dates: {
-    time: string // ключ = время пары
-    lessons: {
-      groupName: string
-      groupID: string
-      lesson: ILesson
+  groups: { id: string; name: string }[]
+  weeks: {
+    weekName: string
+    days: {
+      dayName: string
+      dayIndex: number
+      timeSlots: {
+        time: string
+        lessons: (ILesson | null)[]
+      }[]
     }[]
-  }[][]
-}
-
-// --- Education Types ---
-export interface CreateEducationTypeDTO {
-  educationType: string
-}
-
-export interface UpdateEducationTypeDTO {
-  oldEducationType: string
-  newEducationType: string
-}
-
-// --- Faculties ---
-export interface CreateFacultyDTO {
-  educationType: string
-  faculty: string
-}
-
-export interface UpdateFacultyDTO {
-  educationType: string
-  oldFaculty: string
-  newFaculty: string
-}
-
-export interface DeleteFacultyDTO {
-  educationType: string
-  faculty: string
-}
-
-// --- Courses ---
-export interface CreateCourseDTO {
-  educationType: string
-  faculty: string
-  course: string
-}
-
-export interface UpdateCourseDTO {
-  educationType: string
-  faculty: string
-  oldCourse: string
-  newCourse: string
-}
-
-export interface DeleteCourseDTO {
-  educationType: string
-  faculty: string
-  course: string
+  }[]
 }
 
 // --- Groups ---

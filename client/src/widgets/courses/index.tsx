@@ -8,6 +8,8 @@ import {
   useCreateCourseMutation,
   useUpdateCourseMutation,
   useDeleteCourseMutation,
+  DeleteCourseDTO,
+  UpdateCourseDTO,
 } from '@/shared/redux/slices/api/coursesApi'
 import { useAppSelector } from '@/shared/redux/hooks'
 import routes from '@/shared/routes'
@@ -53,42 +55,34 @@ export const Courses = () => {
     const formData = new FormData(e.target as HTMLFormElement)
     const course = formData.get('course') as string
 
-    if (!course || !educationType || !faculty) return
+    if (!course || !faculty) return
 
     try {
       await createCourse({
-        educationType,
-        faculty,
-        course,
+        name: course,
+        facultyId: faculty,
       }).unwrap()
     } catch (err) {
       console.error('Ошибка при создании курса:', err)
     }
   }
 
-  const handleUpdateCourse = async (oldCourse: string, newCourse: string) => {
-    if (!educationType || !faculty) return
-
+  const handleUpdateCourse = async ({ id, name, facultyId }: UpdateCourseDTO) => {
     try {
       await updateCourse({
-        educationType,
-        faculty,
-        oldCourse,
-        newCourse,
+        id,
+        name,
+        facultyId,
       }).unwrap()
     } catch (err) {
       console.error('Ошибка при обновлении курса:', err)
     }
   }
 
-  const handleDeleteCourse = async (course: string) => {
-    if (!educationType || !faculty) return
-
+  const handleDeleteCourse = async ({ id }: DeleteCourseDTO) => {
     try {
       await deleteCourse({
-        educationType,
-        faculty,
-        course,
+        id,
       }).unwrap()
     } catch (err) {
       console.error('Ошибка при удалении курса:', err)
@@ -99,15 +93,15 @@ export const Courses = () => {
     setIsModalOpen(false)
   }
 
-  useEffect(() => {
-    if (!coursesData?.length) return
+  // useEffect(() => {
+  //   if (!coursesData?.length) return
 
-    if (course && coursesData.includes(course)) return
+  //   if (course && coursesData.includes(course)) return
 
-    navigate(`/educationTypes/${educationType}/faculties/${faculty}/courses/${coursesData[0]}`, {
-      replace: true,
-    })
-  }, [course, coursesData, educationType, faculty, navigate])
+  //   navigate(`/educationTypes/${educationType}/faculties/${faculty}/courses/${coursesData[0]}`, {
+  //     replace: true,
+  //   })
+  // }, [course, coursesData, educationType, faculty, navigate])
 
   console.log('coursesData', coursesData)
 
@@ -122,16 +116,21 @@ export const Courses = () => {
         : coursesData.map((course, index) => (
             <li className={style.listElement} key={index}>
               <EditableItem
-                value={course}
+                value={course.name}
                 type="number"
                 min={1}
                 max={6}
                 crudHandlers={{
-                  onUpdate: (_, newValue) => handleUpdateCourse(course, newValue),
-                  onDelete: () => handleDeleteCourse(course),
+                  onUpdate: (_, newValue) =>
+                    handleUpdateCourse({
+                      id: course._id,
+                      name: newValue,
+                      facultyId: faculty ?? '',
+                    }),
+                  onDelete: () => handleDeleteCourse({ id: course._id }),
                 }}
               >
-                <CourseButton course={course} />
+                <CourseButton course={course.name} />
               </EditableItem>
             </li>
           ))}

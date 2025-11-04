@@ -1,11 +1,15 @@
+import { Course } from '@/database/models/course.model.js'
 import { Group } from '@/database/models/group.model.js'
-import { getFilterParams } from '@/utils/getFilterParams.js'
+import { Schedule } from '@/database/models/schedule.model.js'
+import { Faculty } from '@/database/models/faculty.model.js'
 import { Request, Response } from 'express'
+import { getFilterParams } from '@/utils/getFilterParams.js'
 
 const getCourses = async (req: Request, res: Response) => {
   try {
-    const uniqueCourseNumbers = await Group.distinct('course', getFilterParams(req))
-    res.status(200).json(uniqueCourseNumbers)
+    const courses = await Course.find(getFilterParams(req))
+
+    res.status(200).json(courses)
   } catch (error) {
     res.status(500).json({
       message: error instanceof Error ? error.message : 'Неизвестная ошибка',
@@ -15,26 +19,48 @@ const getCourses = async (req: Request, res: Response) => {
 
 const createCourse = async (req: Request, res: Response) => {
   try {
-    const { educationType, faculty, course } = req.body
+    const { name, facultyId } = req.body
 
-    if (!educationType || !faculty || !course) {
+    if (!facultyId) {
       return res.status(400).json({
-        message: 'Тип образования, факультет и курс обязательны',
+        message: 'ID факультета обязателен',
       })
     }
 
-    const newGroup = new Group({
-      educationType,
-      faculty,
-      course,
-      groupName: null,
-      dates: {},
+    if (!name || !name.trim()) {
+      return res.status(400).json({
+        message: 'Название курса обязательно',
+      })
+    }
+
+    const faculty = await Faculty.findById(facultyId)
+
+    if (!faculty) {
+      return res.status(404).json({
+        message: 'Факультет не найден',
+      })
+    }
+
+    const existingCourse = await Course.findOne({
+      name: name.trim(),
+      faculty: facultyId,
     })
 
-    await newGroup.save()
+    if (existingCourse) {
+      return res.status(409).json({
+        message: 'Курс с таким названием уже существует для данного факультета',
+      })
+    }
+
+    const newCourse = new Course({
+      name: name.trim(),
+      faculty: facultyId,
+    })
+
+    await newCourse.save()
+
     res.status(201).json({
       message: 'Курс создан успешно',
-      groupName: newGroup,
     })
   } catch (error) {
     res.status(500).json({
@@ -45,25 +71,50 @@ const createCourse = async (req: Request, res: Response) => {
 
 const updateCourse = async (req: Request, res: Response) => {
   try {
-    const { educationType, faculty, oldCourse, newCourse } = req.body
+    const { id } = req.params
+    const { name, facultyId } = req.body
 
-    if (!educationType || !faculty) {
+    if (!name || !name.trim() || !facultyId) {
       return res.status(400).json({
-        message: 'Тип образования и факультет обязательны',
+        message: 'Название курса и ID факультета обязательны',
       })
     }
 
-    if (!oldCourse || !newCourse) {
-      return res.status(400).json({
-        message: 'Старый курс и новый курс обязательны',
+    const course = await Course.findById(id)
+
+    if (!course) {
+      return res.status(404).json({
+        message: 'Курс не найден',
       })
     }
 
-    const result = await Group.updateMany({ educationType, faculty, course: oldCourse }, { course: newCourse })
+    const faculty = await Faculty.findById(facultyId)
+
+    if (!faculty) {
+      return res.status(404).json({
+        message: 'Факультет не найден',
+      })
+    }
+
+    const existingCourse = await Course.findOne({
+      name: name.trim(),
+      faculty: facultyId,
+      _id: { $ne: id },
+    })
+
+    if (existingCourse) {
+      return res.status(409).json({
+        message: 'Курс с таким названием уже существует для данного факультета',
+      })
+    }
+
+    course.name = name.trim()
+    course.faculty = facultyId
+
+    await course.save()
 
     res.status(200).json({
       message: 'Курс обновлен успешно',
-      modifiedCount: result.modifiedCount,
     })
   } catch (error) {
     res.status(500).json({
@@ -74,21 +125,24 @@ const updateCourse = async (req: Request, res: Response) => {
 
 const deleteCourse = async (req: Request, res: Response) => {
   try {
-    const { educationType, faculty, course } = req.params
+    const { id } = req.params
 
-    if (!educationType || !faculty || !course) {
-      return res.status(400).json({ message: 'Тип образования, факультет и курс обязательны' })
+    const course = await Course.findById(id)
+    if (!course) {
+      return res.status(404).json({
+        message: 'Курс не найден',
+      })
     }
 
-    const result = await Group.deleteMany({ educationType, faculty, course })
+    const groups = await Group.find({ course: id })
+    const groupIds = groups.map((g) => g._id)
 
-    if (result.deletedCount === 0) {
-      return res.status(404).json({ message: 'Курс не найден' })
-    }
+    await Schedule.deleteMany({ group: { $in: groupIds } })
+    await Group.deleteMany({ course: id })
+    await Course.findByIdAndDelete(id)
 
     res.status(200).json({
-      message: 'Курс удален успешно',
-      deletedCount: result.deletedCount,
+      message: 'Курс и связанные данные удалены успешно',
     })
   } catch (error) {
     res.status(500).json({
@@ -97,21 +151,4 @@ const deleteCourse = async (req: Request, res: Response) => {
   }
 }
 
-const getGroupsByCourse = async (req: Request, res: Response) => {
-  try {
-    const { course } = req.params
-
-    if (!course) {
-      return res.status(400).json({ message: 'Курс обязателен' })
-    }
-
-    const groups = await Group.find({ course }, { dates: 0 })
-    res.status(200).json(groups)
-  } catch (error) {
-    res.status(500).json({
-      message: error instanceof Error ? error.message : 'Неизвестная ошибка',
-    })
-  }
-}
-
-export { getCourses, createCourse, updateCourse, deleteCourse, getGroupsByCourse }
+export { getCourses, createCourse, updateCourse, deleteCourse }

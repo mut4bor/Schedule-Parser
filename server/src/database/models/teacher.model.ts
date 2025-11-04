@@ -1,21 +1,29 @@
-import mongoose, { Schema, ObjectId } from 'mongoose'
+import mongoose, { Schema } from 'mongoose'
 
-export interface ITeacher {
-  firstName: string
-  middleName: string
-  lastName: string
-  title: string
-  _id: ObjectId
-}
-
-const teacherSchema = new Schema<ITeacher>(
+const teacherSchema = new Schema(
   {
-    firstName: { type: String, required: true },
-    middleName: { type: String, required: true },
-    lastName: { type: String, required: true },
-    title: { type: String, required: true },
+    firstName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    middleName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    lastName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    title: {
+      type: String,
+      required: true,
+      trim: true,
+    },
   },
   { timestamps: true },
 )
 
-export const Teacher = mongoose.model<ITeacher>('Teacher', teacherSchema)
+export const Teacher = mongoose.model('Teacher', teacherSchema)

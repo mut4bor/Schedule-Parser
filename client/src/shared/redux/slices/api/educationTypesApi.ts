@@ -1,13 +1,30 @@
 import { baseApi } from '../baseApi'
-import { CreateEducationTypeDTO, UpdateEducationTypeDTO, IGroup } from '@/shared/redux/types'
+
+export interface EducationType {
+  name: string
+  _id: string
+}
+
+export interface CreateEducationTypeDTO {
+  name: string
+}
+
+export interface UpdateEducationTypeDTO {
+  id: string
+  name: string
+}
+
+export interface DeleteEducationTypeDTO {
+  id: string
+}
 
 export const educationTypesApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getEducationTypes: builder.query<string[], void>({
+    getEducationTypes: builder.query<EducationType[], void>({
       query: () => `/education-types`,
       providesTags: ['EducationTypes'],
     }),
-    createEducationType: builder.mutation<IGroup, CreateEducationTypeDTO>({
+    createEducationType: builder.mutation<{ message: string }, CreateEducationTypeDTO>({
       query: (body) => ({
         url: `/education-types`,
         method: 'POST',
@@ -15,27 +32,20 @@ export const educationTypesApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['EducationTypes', 'Faculties', 'Courses', 'Groups', 'Names'],
     }),
-    updateEducationType: builder.mutation<
-      { message: string; modifiedCount: number },
-      UpdateEducationTypeDTO
-    >({
-      query: (body) => ({
-        url: `/education-types`,
+    updateEducationType: builder.mutation<{ message: string }, UpdateEducationTypeDTO>({
+      query: ({ id, name }) => ({
+        url: `/education-types/${id}`,
         method: 'PUT',
-        body,
+        body: { name },
       }),
       invalidatesTags: ['EducationTypes', 'Faculties', 'Courses', 'Groups', 'Names'],
     }),
-    deleteEducationType: builder.mutation<{ message: string; deletedCount: number }, string>({
-      query: (educationType) => ({
-        url: `/education-types/${educationType}`,
+    deleteEducationType: builder.mutation<{ message: string }, DeleteEducationTypeDTO>({
+      query: ({ id }) => ({
+        url: `/education-types/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['EducationTypes', 'Faculties', 'Courses', 'Groups', 'Names'],
-    }),
-    getGroupsByEducationType: builder.query<IGroup[], string>({
-      query: (educationType) => `/education-types/${educationType}/groups`,
-      providesTags: ['Groups'],
     }),
   }),
   overrideExisting: false,
@@ -46,5 +56,4 @@ export const {
   useCreateEducationTypeMutation,
   useUpdateEducationTypeMutation,
   useDeleteEducationTypeMutation,
-  useGetGroupsByEducationTypeQuery,
 } = educationTypesApi

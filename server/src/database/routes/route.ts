@@ -16,21 +16,13 @@ import {
   getGroupsSchedulesByID,
 } from '@/database/controllers/group.controller.js'
 
-import {
-  getCourses,
-  createCourse,
-  updateCourse,
-  deleteCourse,
-  getGroupsByCourse,
-} from '@/database/controllers/courses.controller.js'
+import { getCourses, createCourse, updateCourse, deleteCourse } from '@/database/controllers/courses.controller.js'
 
 import {
   getFaculties,
   createFaculty,
   updateFaculty,
   deleteFaculty,
-  getGroupsByFaculty,
-  getAllFaculties,
 } from '@/database/controllers/faculties.controller.js'
 
 import {
@@ -38,7 +30,6 @@ import {
   createEducationType,
   updateEducationType,
   deleteEducationType,
-  getGroupsByEducationType,
 } from '@/database/controllers/educationTypes.controller.js'
 import { getGroupNames, getGroupNamesThatMatchWithReqParams } from '@/database/controllers/name.controller.js'
 import { authMiddleware } from '@/middleware/authMiddleware.js'
@@ -71,24 +62,20 @@ router.use(authMiddleware)
 // --- Типы образования ---
 router.get(educationTypePath, getEducationTypes)
 router.post(educationTypePath, createEducationType)
-router.put(educationTypePath, updateEducationType)
-router.delete(`${educationTypePath}/:educationType`, deleteEducationType)
-router.get(`${educationTypePath}/:educationType/groups`, getGroupsByEducationType)
+router.put(`${educationTypePath}/:id`, updateEducationType)
+router.delete(`${educationTypePath}/:id`, deleteEducationType)
 
 // --- Факультеты ---
 router.get(facultyPath, getFaculties)
-router.get(`${facultyPath}/all`, getAllFaculties)
 router.post(facultyPath, createFaculty)
-router.put(facultyPath, updateFaculty)
-router.delete(`${facultyPath}/:educationType/:faculty`, deleteFaculty)
-router.get(`${facultyPath}/:faculty/groups`, getGroupsByFaculty)
+router.put(`${facultyPath}/:id`, updateFaculty)
+router.delete(`${facultyPath}/:id`, deleteFaculty)
 
 // --- Курсы ---
 router.get(coursePath, getCourses)
 router.post(coursePath, createCourse)
-router.put(coursePath, updateCourse)
-router.delete(`${coursePath}/:educationType/:faculty/:course`, deleteCourse)
-router.get(`${coursePath}/:course/groups`, getGroupsByCourse)
+router.put(`${coursePath}/:id`, updateCourse)
+router.delete(`${coursePath}/:id`, deleteCourse)
 
 // --- Группы ---
 router.get(groupsPath, getAllGroups)
@@ -117,7 +104,7 @@ router.get(`${namesPath}/search`, getGroupNamesThatMatchWithReqParams)
 router.get(teachersPath, getAllTeachers)
 router.get(`${teachersPath}/:id`, getTeacherById)
 router.post(teachersPath, createTeacher)
-router.put(teachersPath, updateTeacher)
+router.put(`${teachersPath}/:id`, updateTeacher)
 router.delete(`${teachersPath}/:id`, deleteTeacher)
 
 export { router }

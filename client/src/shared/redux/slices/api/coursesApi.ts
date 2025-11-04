@@ -1,15 +1,36 @@
 import { baseApi } from '../baseApi'
-import { IGroup, CreateCourseDTO, UpdateCourseDTO, DeleteCourseDTO } from '@/shared/redux/types'
 
 const getParams = (params?: string) => (params ? `?${params}` : '')
 
+export interface Course {
+  name: string
+  educationType: string
+  faculty: string
+  _id: string
+}
+
+export interface CreateCourseDTO {
+  name: string
+  facultyId: string
+}
+
+export interface UpdateCourseDTO {
+  id: string
+  name: string
+  facultyId: string
+}
+
+export interface DeleteCourseDTO {
+  id: string
+}
+
 export const coursesApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getCourses: builder.query<string[], string | void>({
+    getCourses: builder.query<Course[], string | void>({
       query: (searchParams) => `/course${getParams(searchParams ?? '')}`,
       providesTags: ['Courses'],
     }),
-    createCourse: builder.mutation<IGroup, CreateCourseDTO>({
+    createCourse: builder.mutation<{ message: string }, CreateCourseDTO>({
       query: (body) => ({
         url: `/course`,
         method: 'POST',
@@ -17,24 +38,20 @@ export const coursesApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Courses', 'Groups', 'Names'],
     }),
-    updateCourse: builder.mutation<{ message: string; modifiedCount: number }, UpdateCourseDTO>({
-      query: (body) => ({
-        url: `/course`,
+    updateCourse: builder.mutation<{ message: string }, UpdateCourseDTO>({
+      query: ({ id, name, facultyId }) => ({
+        url: `/course/${id}`,
         method: 'PUT',
-        body,
+        body: { name, facultyId },
       }),
       invalidatesTags: ['Courses', 'Groups', 'Names'],
     }),
-    deleteCourse: builder.mutation<{ message: string; deletedCount: number }, DeleteCourseDTO>({
-      query: ({ educationType, faculty, course }) => ({
-        url: `/course/${educationType}/${faculty}/${course}`,
+    deleteCourse: builder.mutation<{ message: string }, DeleteCourseDTO>({
+      query: ({ id }) => ({
+        url: `/course/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['Courses', 'Groups', 'Names'],
-    }),
-    getGroupsByCourse: builder.query<IGroup[], string>({
-      query: (course) => `/course/${course}/groups`,
-      providesTags: ['Groups'],
     }),
   }),
   overrideExisting: false,
@@ -45,5 +62,4 @@ export const {
   useCreateCourseMutation,
   useUpdateCourseMutation,
   useDeleteCourseMutation,
-  useGetGroupsByCourseQuery,
 } = coursesApi

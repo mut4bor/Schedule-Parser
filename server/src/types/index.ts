@@ -1,45 +1,48 @@
-import { ITeacher } from '@/database/models/teacher.model.js'
-import { Document, ObjectId } from 'mongoose'
+import { Types, Document } from 'mongoose'
 
-export type ILesson = {
-  time: string
-  classroom: string
-  teacher: ITeacher['_id']
-  subject: string
-  lessonType: string
-  _id?: ObjectId
-} | null
+export interface ITeacher extends Document {
+  firstName: string
+  middleName: string
+  lastName: string
+  title: string
+}
 
-export type IDay = ILesson[]
-export type IWeek = IDay[]
+export interface IEducationType extends Document {
+  name: string
+  createdAt: Date
+  updatedAt: Date
+}
 
-export type ISchedule = Map<string, IWeek>
+export interface ICourse {
+  courseNumber: number
+  name?: string
+}
+
+export interface IFaculty extends Document {
+  name: string
+  educationType: Types.ObjectId
+  courses: ICourse[]
+  createdAt: Date
+  updatedAt: Date
+}
 
 export interface IGroup extends Document {
-  educationType: string | null
-  faculty: string | null
-  course: string | null
-  groupName: string | null
-  dates: ISchedule
+  name: string
+  educationType: Types.ObjectId
+  faculty: Types.ObjectId
+  course: number
+  createdAt: Date
+  updatedAt: Date
 }
 
-export interface User {
-  id: string
-  email: string
-  password: string
-  role: 'admin' | 'user'
-}
-
-export interface JwtPayload {
-  userId: string
-  email: string
-  role: string
-}
-
-declare global {
-  namespace Express {
-    interface Request {
-      user?: JwtPayload
-    }
-  }
+export interface ISchedule extends Document {
+  group: Types.ObjectId
+  teacher: Types.ObjectId
+  date: Date
+  time: string
+  classroom: string
+  subject: string
+  lessonType: 'Лекция' | 'Практика' | 'Лабораторная' | 'Семинар'
+  createdAt: Date
+  updatedAt: Date
 }

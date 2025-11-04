@@ -50,8 +50,6 @@ export const LessonListItemAdmin = ({
     } catch (err) {
       console.error('Ошибка при создании урока:', err)
     }
-
-    setIsModalOpen(false)
   }
 
   const handleCancel = () => {
@@ -67,8 +65,8 @@ export const LessonListItemAdmin = ({
 
           {lesson.teacher.title && `, ${lesson.teacher.title}`}
           {` ${lesson.teacher.lastName}`}
-          {` ${lesson.teacher.firstName.charAt(0).toUpperCase()}.`}
-          {` ${lesson.teacher.middleName.charAt(0).toUpperCase()}.`}
+          {` ${lesson.teacher.firstName}`}
+          {` ${lesson.teacher.middleName}`}
 
           {lesson.classroom && `, ${lesson.classroom}`}
         </p>
@@ -95,35 +93,31 @@ export const LessonListItemAdmin = ({
 
       {isModalOpen && (
         <Modal onClose={handleCancel}>
-          <div className={style.modalContent}>
-            <h2 className={style.modalTitle}>Редактирование урока</h2>
-
-            <ModalForm onSubmit={handleSave} onCancel={handleCancel}>
-              <ModalInput label="Предмет:" name="subject" defaultValue={lesson.subject} />
-              <ModalInput label="Тип:" name="lessonType" defaultValue={lesson.lessonType} />
-              <ModalInput
-                label="Титул преподавателя:"
-                name="teacherTitle"
-                defaultValue={lesson.teacher.title ?? ''}
-              />
-              <ModalInput
-                label="Фамилия преподавателя:"
-                name="teacherLastName"
-                defaultValue={lesson.teacher.lastName}
-              />
-              <ModalInput
-                label="Имя преподавателя:"
-                name="teacherFirstName"
-                defaultValue={lesson.teacher.firstName}
-              />
-              <ModalInput
-                label="Отчество преподавателя:"
-                name="teacherMiddleName"
-                defaultValue={lesson.teacher.middleName}
-              />
-              <ModalInput label="Аудитория:" name="classroom" defaultValue={lesson.classroom} />
-            </ModalForm>
-          </div>
+          <ModalForm onSubmit={handleSave} onCancel={handleCancel}>
+            <ModalInput label="Предмет:" name="subject" defaultValue={lesson.subject} />
+            <ModalInput label="Тип:" name="lessonType" defaultValue={lesson.lessonType} />
+            <ModalInput
+              label="Титул преподавателя:"
+              name="teacherTitle"
+              defaultValue={lesson.teacher.title ?? ''}
+            />
+            <ModalInput
+              label="Фамилия преподавателя:"
+              name="teacherLastName"
+              defaultValue={lesson.teacher.lastName}
+            />
+            <ModalInput
+              label="Имя преподавателя:"
+              name="teacherFirstName"
+              defaultValue={lesson.teacher.firstName}
+            />
+            <ModalInput
+              label="Отчество преподавателя:"
+              name="teacherMiddleName"
+              defaultValue={lesson.teacher.middleName}
+            />
+            <ModalInput label="Аудитория:" name="classroom" defaultValue={lesson.classroom} />
+          </ModalForm>
         </Modal>
       )}
     </li>

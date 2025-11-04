@@ -61,6 +61,8 @@ export const LessonCell = ({
     setIsModalOpen(false)
   }
 
+  console.log('lesson', lesson)
+
   return (
     <div className={`${style.scheduleCell} ${style.lessonCell}`}>
       {!!lesson ? (

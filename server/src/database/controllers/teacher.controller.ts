@@ -14,7 +14,8 @@ const getAllTeachers = async (_req: Request, res: Response) => {
 
 const getTeacherById = async (req: Request, res: Response) => {
   try {
-    const teacher = await Teacher.findById(req.params.id)
+    const { id } = req.params
+    const teacher = await Teacher.findById(id)
     if (!teacher) {
       return res.status(404).json({ message: 'Преподаватель не найден' })
     }
@@ -47,10 +48,11 @@ const createTeacher = async (req: Request, res: Response) => {
 
 const updateTeacher = async (req: Request, res: Response) => {
   try {
+    const { id } = req.params
     const { firstName, middleName, lastName, title } = req.body
 
     const teacher = await Teacher.findByIdAndUpdate(
-      req.params.id,
+      id,
       { firstName, middleName, lastName, title },
       { new: true, runValidators: true },
     )
@@ -69,7 +71,8 @@ const updateTeacher = async (req: Request, res: Response) => {
 
 const deleteTeacher = async (req: Request, res: Response) => {
   try {
-    const teacher = await Teacher.findByIdAndDelete(req.params.id)
+    const { id } = req.params
+    const teacher = await Teacher.findByIdAndDelete(id)
 
     if (!teacher) {
       return res.status(404).json({ message: 'Преподаватель не найден' })

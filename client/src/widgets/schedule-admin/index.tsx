@@ -6,12 +6,10 @@ import {
   useDeleteLessonFromDayMutation,
   useGetGroupsSchedulesByIDQuery,
 } from '@/shared/redux/slices/api/groupsApi'
-import { CSSProperties, Fragment, useMemo } from 'react'
+import { CSSProperties, Fragment } from 'react'
 import { LessonCell } from './LessonCell'
 import { getWeekValue } from '../weeks-list/utils'
 import { Link } from 'react-router-dom'
-
-const dayNames = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота']
 
 interface Props {
   groupsIDs: string
@@ -24,23 +22,7 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
     skip: !groupsIdsArray.length,
   })
 
-  const uniqueGroups = useMemo(() => {
-    if (!scheduleData) return []
-
-    const groupsSet = new Map<string, string>()
-
-    scheduleData.forEach((week) => {
-      week.dates.forEach((day) => {
-        day.forEach((timeSlot) => {
-          timeSlot.lessons.forEach((lessonItem) => {
-            groupsSet.set(lessonItem.groupID, lessonItem.groupName)
-          })
-        })
-      })
-    })
-
-    return Array.from(groupsSet, ([id, name]) => ({ id, name }))
-  }, [scheduleData])
+  console.log('scheduleData', scheduleData)
 
   const [createLesson] = useCreateLessonInDayMutation()
   const [updateLesson] = useUpdateLessonInDayMutation()
@@ -70,17 +52,20 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
     }
   }
 
+  if (!scheduleData) return null
+
+  const { groups, weeks } = scheduleData
+
   return (
     <div className={style.scheduleTableWrapper}>
       <div
         className={style.scheduleTable}
-        style={{ '--groups-count': uniqueGroups.length } as CSSProperties}
+        style={{ '--groups-count': groups.length } as CSSProperties}
       >
-        {/* Заголовки */}
         <div className={`${style.scheduleCell} ${style.scheduleHeadCell}`}>Неделя</div>
         <div className={`${style.scheduleCell} ${style.scheduleHeadCell}`}>День недели</div>
         <div className={`${style.scheduleCell} ${style.scheduleHeadCell}`}>Время</div>
-        {uniqueGroups.map((group) => (
+        {groups.map((group) => (
           <Link
             key={group.id}
             to={`/groups/${group.id}`}
@@ -91,14 +76,11 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
           </Link>
         ))}
 
-        {/* Тело */}
-        {scheduleData?.map((week, weekIndex) => {
-          // Считаем общее количество строк = сумма всех time slots
-          const weekRowCount = week.dates.reduce((acc, day) => acc + day.length, 0)
+        {weeks.map((week) => {
+          const weekRowCount = week.days.reduce((acc, day) => acc + day.timeSlots.length, 0)
 
           return (
-            <Fragment key={weekIndex}>
-              {/* 🌿 Неделя */}
+            <Fragment key={week.weekName}>
               <div
                 className={`${style.scheduleCell} ${style.weekCell}`}
                 style={{ gridRow: `span ${weekRowCount}` }}
@@ -106,55 +88,45 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
                 {getWeekValue(week.weekName)}
               </div>
 
-              {week.dates.map((day, dayIndex) => {
-                // Количество строк = количество time slots в дне
-                const dayRowCount = day.length
+              {week.days.map((day) => (
+                <Fragment key={day.dayIndex}>
+                  <div
+                    className={`${style.scheduleCell} ${style.dayCell}`}
+                    style={{ gridRow: `span ${day.timeSlots.length}` }}
+                  >
+                    {day.dayName}
+                  </div>
 
-                return (
-                  <Fragment key={dayIndex}>
-                    {/* 📅 День недели */}
-                    <div
-                      className={`${style.scheduleCell} ${style.dayCell}`}
-                      style={{ gridRow: `span ${dayRowCount}` }}
-                    >
-                      {dayNames[dayIndex]}
-                    </div>
+                  {day.timeSlots.map((timeSlot, timeIndex) => (
+                    <Fragment key={timeIndex}>
+                      <div className={`${style.scheduleCell} ${style.timeCell}`}>
+                        {timeSlot.time}
+                      </div>
 
-                    {day.map((timeSlot, timeIndex) => (
-                      <Fragment key={timeIndex}>
-                        {/* ⏰ Время - одна строка */}
-                        <div className={`${style.scheduleCell} ${style.timeCell}`}>
-                          {timeSlot.time}
-                        </div>
+                      {timeSlot.lessons.map((lesson, groupIndex) => {
+                        const group = groups[groupIndex]
 
-                        {/* 👥 Ячейки для каждой группы */}
-                        {uniqueGroups.map((group) => {
-                          const groupLesson = timeSlot.lessons.find(
-                            (lesson) => lesson.groupID === group.id,
-                          )
+                        if (!lesson) {
+                          return <div className={style.scheduleCell} key={group.id}></div>
+                        }
 
-                          if (!groupLesson) {
-                            return <div className={style.scheduleCell} key={group.id}></div>
-                          }
-
-                          return (
-                            <LessonCell
-                              key={group.id}
-                              group={group}
-                              weekName={week.weekName}
-                              dayIndex={dayIndex}
-                              lesson={groupLesson.lesson}
-                              onAdd={handleCreateLesson}
-                              onUpdate={handleUpdateLesson}
-                              onDelete={handleDeleteLesson}
-                            />
-                          )
-                        })}
-                      </Fragment>
-                    ))}
-                  </Fragment>
-                )
-              })}
+                        return (
+                          <LessonCell
+                            key={group.id}
+                            group={group}
+                            weekName={week.weekName}
+                            dayIndex={day.dayIndex}
+                            lesson={lesson}
+                            onAdd={handleCreateLesson}
+                            onUpdate={handleUpdateLesson}
+                            onDelete={handleDeleteLesson}
+                          />
+                        )
+                      })}
+                    </Fragment>
+                  ))}
+                </Fragment>
+              ))}
             </Fragment>
           )
         })}

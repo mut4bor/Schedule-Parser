@@ -37,9 +37,6 @@ const getGroupNames = async (req: Request, res: Response) => {
   try {
     const names = await Group.find({ ...getFilterParams(req), groupName: { $exists: true, $ne: null } }, { dates: 0 })
 
-    console.log('Groups before sorting:', names)
-
-    // Sort group names before sending
     const sortedNames = [...names].sort(groupNameSorter)
 
     res.status(200).json(sortedNames)

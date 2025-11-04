@@ -1,23 +1,33 @@
 import { baseApi } from '../baseApi'
-import {
-  IGroup,
-  IFaculties,
-  CreateFacultyDTO,
-  UpdateFacultyDTO,
-  DeleteFacultyDTO,
-} from '@/shared/redux/types'
+import { EducationType } from './educationTypesApi'
+
+export interface Facultie {
+  _id: string
+  name: string
+  educationType: EducationType
+}
+
+export interface CreateFacultyDTO {
+  name: string
+  educationType: string
+}
+
+export interface UpdateFacultyDTO {
+  id: string
+  name: string
+}
+
+export interface DeleteFacultyDTO {
+  id: string
+}
 
 export const facultiesApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getFaculties: builder.query<IFaculties, void>({
-      query: () => `/faculty`,
+    getFaculties: builder.query<Facultie[], string | void>({
+      query: (educationType) => `/faculty${educationType ? `?educationType=${educationType}` : ''}`,
       providesTags: ['Faculties'],
     }),
-    getAllFaculties: builder.query<string[], void>({
-      query: () => `/faculty/all`,
-      providesTags: ['Faculties'],
-    }),
-    createFaculty: builder.mutation<IGroup, CreateFacultyDTO>({
+    createFaculty: builder.mutation<{ message: string }, CreateFacultyDTO>({
       query: (body) => ({
         url: `/faculty`,
         method: 'POST',
@@ -25,24 +35,20 @@ export const facultiesApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Faculties', 'Courses', 'Groups', 'Names'],
     }),
-    updateFaculty: builder.mutation<{ message: string; modifiedCount: number }, UpdateFacultyDTO>({
-      query: (body) => ({
-        url: `/faculty`,
+    updateFaculty: builder.mutation<{ message: string }, UpdateFacultyDTO>({
+      query: ({ id, name }) => ({
+        url: `/faculty/${id}`,
         method: 'PUT',
-        body,
+        body: { name },
       }),
       invalidatesTags: ['Faculties', 'Courses', 'Groups', 'Names'],
     }),
-    deleteFaculty: builder.mutation<{ message: string; deletedCount: number }, DeleteFacultyDTO>({
-      query: ({ educationType, faculty }) => ({
-        url: `/faculty/${educationType}/${faculty}`,
+    deleteFaculty: builder.mutation<{ message: string }, DeleteFacultyDTO>({
+      query: ({ id }) => ({
+        url: `/faculty/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['Faculties', 'Courses', 'Groups', 'Names'],
-    }),
-    getGroupsByFaculty: builder.query<IGroup[], string>({
-      query: (faculty) => `/faculty/${faculty}/groups`,
-      providesTags: ['Groups'],
     }),
   }),
   overrideExisting: false,
@@ -50,9 +56,7 @@ export const facultiesApi = baseApi.injectEndpoints({
 
 export const {
   useGetFacultiesQuery,
-  useGetAllFacultiesQuery,
   useCreateFacultyMutation,
   useUpdateFacultyMutation,
   useDeleteFacultyMutation,
-  useGetGroupsByFacultyQuery,
 } = facultiesApi

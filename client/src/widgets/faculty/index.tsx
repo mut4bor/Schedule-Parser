@@ -8,14 +8,20 @@ import { Modal } from '../modal'
 import { ModalForm } from '../modal-form'
 import { ModalInput } from '../modal-input'
 import {
+  useUpdateEducationTypeMutation,
+  useDeleteEducationTypeMutation,
+  EducationType,
+  UpdateEducationTypeDTO,
+  DeleteEducationTypeDTO,
+} from '@/shared/redux/slices/api/educationTypesApi'
+import {
   useCreateFacultyMutation,
   useUpdateFacultyMutation,
   useDeleteFacultyMutation,
+  useGetFacultiesQuery,
+  UpdateFacultyDTO,
+  DeleteFacultyDTO,
 } from '@/shared/redux/slices/api/facultiesApi'
-import {
-  useUpdateEducationTypeMutation,
-  useDeleteEducationTypeMutation,
-} from '@/shared/redux/slices/api/educationTypesApi'
 import { useAppSelector } from '@/shared/redux/hooks'
 
 const Pipe = () => {
@@ -23,17 +29,14 @@ const Pipe = () => {
 }
 
 interface Props {
-  data?: {
-    educationType: string
-    faculties: string[]
-  }
+  educationType?: EducationType
   columnsAmount?: number
 }
 
-export const Faculty = ({ data, columnsAmount }: Props) => {
-  const [isModalOpen, setIsModalOpen] = useState(false)
+export const Faculty = ({ educationType, columnsAmount }: Props) => {
+  const { data: facultiesData } = useGetFacultiesQuery(educationType?._id)
 
-  const { educationType, faculties } = data || {}
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const skeletonLength = columnsAmount ? (columnsAmount > 0 ? columnsAmount : 1) : 4
 
@@ -46,11 +49,11 @@ export const Faculty = ({ data, columnsAmount }: Props) => {
   const [updateFaculty] = useUpdateFacultyMutation()
   const [deleteFaculty] = useDeleteFacultyMutation()
 
-  const handleUpdateEducationType = async (oldType: string, newType: string) => {
+  const handleUpdateEducationType = async ({ id, name }: UpdateEducationTypeDTO) => {
     try {
       await updateEducationType({
-        oldEducationType: oldType,
-        newEducationType: newType,
+        id,
+        name,
       }).unwrap()
     } catch (err) {
       console.error('Ошибка при обновлении типа образования:', err)
@@ -58,9 +61,9 @@ export const Faculty = ({ data, columnsAmount }: Props) => {
     }
   }
 
-  const handleDeleteEducationType = async (educationType: string) => {
+  const handleDeleteEducationType = async ({ id }: DeleteEducationTypeDTO) => {
     try {
-      await deleteEducationType(educationType).unwrap()
+      await deleteEducationType({ id }).unwrap()
     } catch (err) {
       console.error('Ошибка при удалении типа образования:', err)
       throw err
@@ -73,10 +76,14 @@ export const Faculty = ({ data, columnsAmount }: Props) => {
     const formData = new FormData(e.target as HTMLFormElement)
     const faculty = formData.get('faculty') as string
 
+    if (!educationType) {
+      return
+    }
+
     try {
       await createFaculty({
-        educationType: educationType || '',
-        faculty,
+        educationType: educationType._id,
+        name: faculty,
       }).unwrap()
     } catch (err) {
       console.error('Ошибка при создании факультета:', err)
@@ -84,16 +91,11 @@ export const Faculty = ({ data, columnsAmount }: Props) => {
     }
   }
 
-  const handleUpdateFaculty = async (
-    educationType: string,
-    oldFaculty: string,
-    newFaculty: string,
-  ) => {
+  const handleUpdateFaculty = async ({ id, name }: UpdateFacultyDTO) => {
     try {
       await updateFaculty({
-        educationType,
-        oldFaculty,
-        newFaculty,
+        id,
+        name,
       }).unwrap()
     } catch (err) {
       console.error('Ошибка при обновлении факультета:', err)
@@ -101,9 +103,9 @@ export const Faculty = ({ data, columnsAmount }: Props) => {
     }
   }
 
-  const handleDeleteFaculty = async (educationType: string, faculty: string) => {
+  const handleDeleteFaculty = async ({ id }: DeleteFacultyDTO) => {
     try {
-      await deleteFaculty({ educationType, faculty }).unwrap()
+      await deleteFaculty({ id }).unwrap()
     } catch (err) {
       console.error('Ошибка при удалении факультета:', err)
       throw err
@@ -117,26 +119,27 @@ export const Faculty = ({ data, columnsAmount }: Props) => {
   return (
     <li className={style.container}>
       <div className={style.heading}>
-        {!educationType || !faculties ? (
+        {!educationType ? (
           <Skeleton />
         ) : (
           <div className={style.educationTypeHeader}>
             <EditableItem
-              value={educationType}
+              value={educationType.name}
               crudHandlers={{
-                onUpdate: (oldValue, newValue) => handleUpdateEducationType(oldValue, newValue),
-                onDelete: (value) => handleDeleteEducationType(value),
+                onUpdate: (_, newValue) =>
+                  handleUpdateEducationType({ id: educationType._id, name: newValue }),
+                onDelete: (_) => handleDeleteEducationType({ id: educationType._id }),
               }}
               className={style.educationType}
             >
-              <h2 className={style.educationType}>{educationType}</h2>
+              <h2 className={style.educationType}>{educationType.name}</h2>
             </EditableItem>
           </div>
         )}
       </div>
 
       <ul className={style.content}>
-        {!data || !educationType || !faculties ? (
+        {!educationType || !facultiesData ? (
           Array.from({ length: skeletonLength }).map((_, index, array) => (
             <Fragment key={`skeleton-${index}`}>
               <div className={style.skeletonContainer}>
@@ -153,21 +156,21 @@ export const Faculty = ({ data, columnsAmount }: Props) => {
           ))
         ) : (
           <>
-            {faculties.map((faculty, index, array) => (
+            {facultiesData.map((faculty, index, array) => (
               <Fragment key={`faculty-${index}`}>
                 <li className={style.facultyItem}>
                   <EditableItem
-                    value={faculty}
+                    value={faculty.name}
                     crudHandlers={{
-                      onUpdate: (oldValue, newValue) =>
-                        handleUpdateFaculty(educationType, oldValue, newValue),
-                      onDelete: (value) => handleDeleteFaculty(educationType, value),
+                      onUpdate: (_, newValue) =>
+                        handleUpdateFaculty({ id: faculty._id, name: newValue }),
+                      onDelete: (_) => handleDeleteFaculty({ id: faculty._id }),
                     }}
                     className={style.facultyWithActions}
                   >
                     <FacultyLink
-                      faculty={faculty}
-                      href={`/educationTypes/${educationType}/faculties/${faculty}/courses`}
+                      faculty={faculty.name}
+                      href={`/educationTypes/${educationType.name}/faculties/${faculty.name}/courses`}
                     />
                   </EditableItem>
                 </li>
@@ -177,7 +180,7 @@ export const Faculty = ({ data, columnsAmount }: Props) => {
 
             {accessToken && (
               <Fragment>
-                {faculties.length > 0 && <Pipe />}
+                {facultiesData.length > 0 && <Pipe />}
                 <div>
                   <AddItem
                     addButtonLabel="Добавить факультет"

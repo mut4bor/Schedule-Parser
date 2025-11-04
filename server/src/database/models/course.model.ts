@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose'
 
-const groupSchema = new Schema(
+const courseSchema = new Schema(
   {
     name: {
       type: String,
@@ -17,15 +17,10 @@ const groupSchema = new Schema(
       ref: 'Faculty',
       required: true,
     },
-    course: {
-      type: Schema.Types.ObjectId,
-      ref: 'Course',
-      required: true,
-    },
   },
   { timestamps: true },
 )
 
-groupSchema.index({ name: 1, faculty: 1, course: 1 }, { unique: true })
+courseSchema.index({ name: 1, educationType: 1 }, { unique: true })
 
-export const Group = mongoose.model('Group', groupSchema)
+export const Course = mongoose.model('Course', courseSchema)
