@@ -31,17 +31,8 @@ export const Courses = () => {
   }).toString()
 
   const { data: coursesData } = useGetCoursesQuery(searchParams, {
-    selectFromResult: ({ data }) => ({
-      data: data?.filter((course) => course !== null && course !== undefined),
-    }),
     skip: !educationType || !faculty,
   })
-
-  useEffect(() => {
-    if (!educationType || educationType === 'undefined' || !faculty || faculty === 'undefined') {
-      navigate(routes.BASE_URL)
-    }
-  }, [coursesData, educationType, faculty, navigate])
 
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -93,17 +84,22 @@ export const Courses = () => {
     setIsModalOpen(false)
   }
 
-  // useEffect(() => {
-  //   if (!coursesData?.length) return
+  useEffect(() => {
+    if (!educationType || educationType === 'undefined' || !faculty || faculty === 'undefined') {
+      navigate(routes.BASE_URL)
+    }
 
-  //   if (course && coursesData.includes(course)) return
+    if (!coursesData?.length) return
 
-  //   navigate(`/educationTypes/${educationType}/faculties/${faculty}/courses/${coursesData[0]}`, {
-  //     replace: true,
-  //   })
-  // }, [course, coursesData, educationType, faculty, navigate])
+    if (course && coursesData.find((courseItem) => courseItem.name === course)) return
 
-  console.log('coursesData', coursesData)
+    navigate(
+      `/educationTypes/${educationType}/faculties/${faculty}/courses/${coursesData[0]._id}`,
+      {
+        replace: true,
+      },
+    )
+  }, [course, coursesData, educationType, faculty, navigate])
 
   return (
     <ul className={style.list}>
@@ -130,7 +126,7 @@ export const Courses = () => {
                   onDelete: () => handleDeleteCourse({ id: course._id }),
                 }}
               >
-                <CourseButton course={course.name} />
+                <CourseButton course={course} />
               </EditableItem>
             </li>
           ))}

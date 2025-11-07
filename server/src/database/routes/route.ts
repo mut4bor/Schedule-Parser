@@ -5,26 +5,23 @@ import {
   createGroup,
   updateGroupById,
   deleteGroupById,
-  addWeekNameToGroup,
-  updateWeekNameInGroup,
-  deleteWeekNameFromGroup,
-  getWeeksByID,
-  getWeekScheduleByID,
-  deleteLessonFromDay,
-  updateLessonInDay,
-  createLessonInDay,
-  getGroupsSchedulesByID,
 } from '@/database/controllers/group.controller.js'
-
+import {
+  getWeeksByGroupId,
+  getWeekScheduleByGroupId,
+  getGroupsSchedules,
+  checkWeekAvailability,
+  updateWeekSchedule,
+  deleteWeekSchedule,
+} from '@/database/controllers/week.controller.js'
+import { createLesson, updateLesson, deleteLesson } from '@/database/controllers/schedule.controller.js'
 import { getCourses, createCourse, updateCourse, deleteCourse } from '@/database/controllers/courses.controller.js'
-
 import {
   getFaculties,
   createFaculty,
   updateFaculty,
   deleteFaculty,
 } from '@/database/controllers/faculties.controller.js'
-
 import {
   getEducationTypes,
   createEducationType,
@@ -32,15 +29,15 @@ import {
   deleteEducationType,
 } from '@/database/controllers/educationTypes.controller.js'
 import { getGroupNames, getGroupNamesThatMatchWithReqParams } from '@/database/controllers/name.controller.js'
-import { authMiddleware } from '@/middleware/authMiddleware.js'
-import { login, refresh, logout } from '../controllers/auth.controller.js'
+import { login, refresh, logout } from '@/database/controllers/auth.controller.js'
 import {
   getAllTeachers,
   createTeacher,
   updateTeacher,
   deleteTeacher,
   getTeacherById,
-} from '../controllers/teacher.controller.js'
+} from '@/database/controllers/teacher.controller.js'
+import { authMiddleware } from '@/middleware/authMiddleware.js'
 
 // --- Router ---
 const router = Router()
@@ -80,21 +77,24 @@ router.delete(`${coursePath}/:id`, deleteCourse)
 // --- Группы ---
 router.get(groupsPath, getAllGroups)
 router.get(`${groupsPath}/:id`, getGroupById)
-router.get(`${groupsPath}/:id/weeks`, getWeeksByID)
-router.get(`${groupsPath}/:id/weeks/:week`, getWeekScheduleByID)
-router.get(`${groupsPath}/:ids/schedule`, getGroupsSchedulesByID)
 router.post(groupsPath, createGroup)
 router.put(`${groupsPath}/:id`, updateGroupById)
 router.delete(`${groupsPath}/:id`, deleteGroupById)
 
-// --- Управление расписанием для групп ---
-router.post(`${groupsPath}/:id/weeks`, addWeekNameToGroup)
-router.put(`${groupsPath}/:id/weeks`, updateWeekNameInGroup)
-router.delete(`${groupsPath}/:id/weeks/:weekName`, deleteWeekNameFromGroup)
+// --- Расписание групп ---
+router.get(`${groupsPath}/:id/weeks`, getWeeksByGroupId)
+router.get(`${groupsPath}/:id/weeks/:week`, getWeekScheduleByGroupId)
+router.get(`${groupsPath}/:ids/schedule`, getGroupsSchedules)
 
-router.post(`${groupsPath}/:id/weeks/:weekName/days/:dayIndex/lessons`, createLessonInDay)
-router.put(`${groupsPath}/:id/weeks/:weekName/days/:dayIndex/lessons/:lessonId`, updateLessonInDay)
-router.delete(`${groupsPath}/:id/weeks/:weekName/days/:dayIndex/lessons/:lessonId`, deleteLessonFromDay)
+// --- Управление неделями ---
+router.post(`${groupsPath}/:id/weeks`, checkWeekAvailability)
+router.put(`${groupsPath}/:id/weeks`, updateWeekSchedule)
+router.delete(`${groupsPath}/:id/weeks/:weekName`, deleteWeekSchedule)
+
+// --- Управление уроками ---
+router.post(`${groupsPath}/:id/weeks/:weekName/days/:dayIndex/lessons`, createLesson)
+router.put(`${groupsPath}/lessons/:lessonId`, updateLesson)
+router.delete(`${groupsPath}/lessons/:lessonId`, deleteLesson)
 
 // --- Названия групп ---
 router.get(namesPath, getGroupNames)

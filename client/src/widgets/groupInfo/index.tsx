@@ -1,16 +1,17 @@
 import * as style from './style.module.scss'
 import { Schedule } from '@/widgets/schedule'
 import {
+  UpdateGroupDTO,
   useGetGroupByIDQuery,
   useUpdateGroupByIDMutation,
 } from '@/shared/redux/slices/api/groupsApi'
 import { useState } from 'react'
 import { useSwipeable } from 'react-swipeable'
-import { RefreshDate } from '@/widgets/refresh-date'
 import { GroupHeading } from '@/entities/group'
 import { ErrorComponent } from '@/widgets/error'
 import { Options } from '@/widgets/options'
 import { EditableItem } from '@/widgets/editable-item'
+import { Skeleton } from '@/shared/ui'
 
 const CreateTapStopPropagationHandler = () =>
   useSwipeable({
@@ -36,7 +37,28 @@ export const GroupInfo = ({ groupID, pickedWeek, pickedDayIndex }: Props) => {
     skip: !groupID,
   })
 
-  const [updateGroup] = useUpdateGroupByIDMutation()
+  const [updateGroupByID] = useUpdateGroupByIDMutation()
+
+  const handleUpdateGroup = async ({
+    id,
+    educationType,
+    faculty,
+    course,
+    name,
+  }: UpdateGroupDTO) => {
+    if (!educationType || !faculty || !course) return
+    try {
+      await updateGroupByID({
+        id,
+        educationType,
+        faculty,
+        course,
+        name,
+      }).unwrap()
+    } catch (err) {
+      console.error('Ошибка при обновлении группы:', err)
+    }
+  }
 
   if (!groupID) {
     return (
@@ -53,20 +75,18 @@ export const GroupInfo = ({ groupID, pickedWeek, pickedDayIndex }: Props) => {
     <div className={style.schedule}>
       <div className={style.headingContainer}>
         <div>
-          <EditableItem
-            value={groupData?.groupName ?? ''}
-            crudHandlers={{
-              onUpdate: async (_, newValue) => {
-                if (!groupID) return
-                await updateGroup({
-                  id: groupID,
-                  data: { groupName: newValue },
-                }).unwrap()
-              },
-            }}
-          >
-            <GroupHeading>{groupData?.groupName}</GroupHeading>
-          </EditableItem>
+          {!groupData ? (
+            <Skeleton className={style.skeleton} />
+          ) : (
+            <EditableItem
+              value={groupData.name}
+              crudHandlers={{
+                onUpdate: async (name) => handleUpdateGroup({ id: groupData._id, name }),
+              }}
+            >
+              <GroupHeading>{groupData.name}</GroupHeading>
+            </EditableItem>
+          )}
         </div>
 
         <Options
@@ -78,8 +98,6 @@ export const GroupInfo = ({ groupID, pickedWeek, pickedDayIndex }: Props) => {
       </div>
 
       <Schedule groupID={groupID} pickedDayIndex={pickedDayIndex} pickedWeek={pickedWeek} />
-
-      <RefreshDate date={groupData?.updatedAt} />
     </div>
   )
 }

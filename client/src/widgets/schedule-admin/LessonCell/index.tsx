@@ -1,11 +1,16 @@
 import * as style from './style.module.scss'
-import { CreateLessonDTO, DeleteLessonDTO, ILesson, UpdateLessonDTO } from '@/shared/redux/types'
+import { ILesson } from '@/shared/redux/types'
 import { LessonListItemAdmin } from './LessonListItem'
 import { AddItem } from '@/widgets/add-item'
 import { ModalInput } from '@/widgets/modal-input'
 import { ModalForm } from '@/widgets/modal-form'
 import { useState } from 'react'
 import { Modal } from '@/widgets/modal'
+import {
+  CreateLessonDTO,
+  DeleteLessonDTO,
+  UpdateLessonDTO,
+} from '@/shared/redux/slices/api/scheduleApi'
 
 interface Props {
   group: {
@@ -61,16 +66,12 @@ export const LessonCell = ({
     setIsModalOpen(false)
   }
 
-  console.log('lesson', lesson)
-
   return (
     <div className={`${style.scheduleCell} ${style.lessonCell}`}>
       {!!lesson ? (
         <LessonListItemAdmin
           key={lesson._id}
           group={group}
-          weekName={weekName}
-          dayIndex={dayIndex}
           lesson={lesson}
           onUpdate={(args) => onUpdate({ ...args, ...group })}
           onDelete={

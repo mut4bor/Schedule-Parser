@@ -2,6 +2,11 @@ import mongoose, { Schema } from 'mongoose'
 
 const scheduleSchema = new Schema(
   {
+    week: {
+      type: Schema.Types.ObjectId,
+      ref: 'Week',
+      required: true,
+    },
     group: {
       type: Schema.Types.ObjectId,
       ref: 'Group',
@@ -12,9 +17,11 @@ const scheduleSchema = new Schema(
       ref: 'Teacher',
       required: true,
     },
-    date: {
-      type: Date,
+    dayOfWeek: {
+      type: Number,
       required: true,
+      min: 0,
+      max: 6,
     },
     time: {
       type: String,
@@ -39,7 +46,7 @@ const scheduleSchema = new Schema(
   { timestamps: true },
 )
 
-scheduleSchema.index({ group: 1, date: 1 })
-scheduleSchema.index({ teacher: 1, date: 1 })
+scheduleSchema.index({ week: 1, group: 1 })
+scheduleSchema.index({ week: 1, teacher: 1 })
 
 export const Schedule = mongoose.model('Schedule', scheduleSchema)

@@ -5,15 +5,18 @@ import {
   useCreateGroupMutation,
   useUpdateGroupByIDMutation,
   useDeleteGroupByIDMutation,
+  CreateGroupDTO,
+  UpdateGroupDTO,
+  DeleteGroupDTO,
 } from '@/shared/redux/slices/api/groupsApi'
 import { useGetGroupNamesQuery } from '@/shared/redux/slices/api/namesApi'
 import { useAppSelector } from '@/shared/redux/hooks'
 import { AddItem } from '@/widgets/add-item'
-import { EditableItem } from '../editable-item'
-import { Modal } from '../modal'
-import { ModalInput } from '../modal-input'
-import { ModalForm } from '../modal-form'
-import { useState } from 'react'
+import { EditableItem } from '@/widgets/editable-item'
+import { Modal } from '@/widgets/modal'
+import { ModalInput } from '@/widgets/modal-input'
+import { ModalForm } from '@/widgets/modal-form'
+import { useMemo, useState } from 'react'
 
 export const GroupsList = () => {
   const accessToken = useAppSelector((store) => store.auth.accessToken)
@@ -21,14 +24,17 @@ export const GroupsList = () => {
   const { educationType, faculty, course } = useParams()
   const favoriteGroup = localStorage.getItem('favorite-group')
 
-  const namesSearchParams = new URLSearchParams({
-    educationType: educationType ?? '',
-    faculty: faculty ?? '',
-    course: course ?? '',
-  }).toString()
+  const namesSearchParams = useMemo(() => {
+    const params = new URLSearchParams()
+
+    if (educationType) params.append('educationType', educationType)
+    if (faculty) params.append('faculty', faculty)
+    if (course) params.append('course', course)
+
+    return params.toString()
+  }, [educationType, faculty, course])
 
   const { data: namesData } = useGetGroupNamesQuery(namesSearchParams)
-
   const [createGroup] = useCreateGroupMutation()
   const [updateGroupByID] = useUpdateGroupByIDMutation()
   const [deleteGroupByID] = useDeleteGroupByIDMutation()
@@ -38,40 +44,48 @@ export const GroupsList = () => {
   const handleCreateGroup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    const formData = new FormData(e.target as HTMLFormElement)
-    const newGroup = formData.get('groupName') as string
+    const formData = new FormData(e.currentTarget)
 
-    if (!newGroup || !educationType || !faculty || !course) return
+    if (!educationType || !faculty || !course) return
+
+    const typedForm: CreateGroupDTO = {
+      name: String(formData.get('groupName')),
+      educationType,
+      faculty,
+      course,
+    }
 
     try {
-      await createGroup({
-        educationType,
-        faculty,
-        course,
-        groupName: newGroup,
-      }).unwrap()
+      await createGroup(typedForm)
     } catch (err) {
-      console.error('Ошибка при создании группы:', err)
+      console.error('Ошибка при создании урока:', err)
     }
   }
 
-  const handleUpdateGroup = async (id: string, newGroup: string) => {
+  const handleUpdateGroup = async ({
+    id,
+    educationType,
+    faculty,
+    course,
+    name,
+  }: UpdateGroupDTO) => {
     if (!educationType || !faculty || !course) return
     try {
       await updateGroupByID({
         id,
-        data: {
-          groupName: newGroup,
-        },
+        educationType,
+        faculty,
+        course,
+        name,
       }).unwrap()
     } catch (err) {
       console.error('Ошибка при обновлении группы:', err)
     }
   }
 
-  const handleDeleteGroup = async (id: string) => {
+  const handleDeleteGroup = async ({ id }: DeleteGroupDTO) => {
     try {
-      await deleteGroupByID(id).unwrap()
+      await deleteGroupByID({ id }).unwrap()
     } catch (err) {
       console.error('Ошибка при удалении группы:', err)
     }
@@ -80,8 +94,6 @@ export const GroupsList = () => {
   const handleCancel = () => {
     setIsModalOpen(false)
   }
-
-  console.log('namesData', namesData)
 
   return (
     <div className={style.container}>
@@ -93,24 +105,24 @@ export const GroupsList = () => {
           : namesData.map((item) => (
               <li key={item._id}>
                 <EditableItem
-                  value={item.groupName}
+                  value={item.name}
                   crudHandlers={{
-                    onUpdate: async (_, newValue) => handleUpdateGroup(item._id, newValue),
-                    onDelete: async () => handleDeleteGroup(item._id),
+                    onUpdate: async (name) => handleUpdateGroup({ id: item._id, name }),
+                    onDelete: async () => handleDeleteGroup({ id: item._id }),
                   }}
                 >
                   <Link
                     to={`groups/${item._id}`}
                     className={`${style.link} ${favoriteGroup === item._id ? style.active : ''}`}
                   >
-                    {item.groupName}
+                    {item.name}
                   </Link>
                 </EditableItem>
               </li>
             ))}
       </ul>
 
-      {accessToken && (
+      {accessToken && course && (
         <AddItem
           addButtonLabel="Добавить группу"
           isAdding={isModalOpen}

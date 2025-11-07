@@ -170,7 +170,7 @@ export const Faculty = ({ educationType, columnsAmount }: Props) => {
                   >
                     <FacultyLink
                       faculty={faculty.name}
-                      href={`/educationTypes/${educationType.name}/faculties/${faculty.name}/courses`}
+                      href={`/educationTypes/${educationType._id}/faculties/${faculty._id}/courses`}
                     />
                   </EditableItem>
                 </li>

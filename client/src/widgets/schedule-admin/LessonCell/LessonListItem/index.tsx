@@ -1,32 +1,24 @@
 import * as style from './style.module.scss'
-import { DeleteLessonDTO, ILesson, UpdateLessonDTO } from '@/shared/redux/types'
+import { ILesson } from '@/shared/redux/types'
 import { useState } from 'react'
 import { useAppSelector } from '@/shared/redux/hooks'
 import { EditDeleteActions } from '@/entities/admin'
 import { Modal } from '@/widgets/modal'
 import { ModalInput } from '@/widgets/modal-input'
 import { ModalForm } from '@/widgets/modal-form'
+import { UpdateLessonDTO, DeleteLessonDTO } from '@/shared/redux/slices/api/scheduleApi'
 
 interface Props {
   group: {
     id: string
     name: string
   }
-  weekName: string
-  dayIndex: number
   lesson: ILesson
   onUpdate: (args: UpdateLessonDTO) => Promise<void>
   onDelete?: (args: DeleteLessonDTO) => Promise<void>
 }
 
-export const LessonListItemAdmin = ({
-  group,
-  weekName,
-  dayIndex,
-  lesson,
-  onUpdate,
-  onDelete,
-}: Props) => {
+export const LessonListItemAdmin = ({ group, lesson, onUpdate, onDelete }: Props) => {
   const accessToken = useAppSelector((store) => store.auth.accessToken)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -36,16 +28,18 @@ export const LessonListItemAdmin = ({
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
 
+    const typedForm: Omit<UpdateLessonDTO, 'lessonId'> = {
+      time: String(formData.get('time') || undefined),
+      classroom: String(formData.get('classroom') || undefined),
+      teacherID: String(formData.get('teacherID') || undefined),
+      subject: String(formData.get('subject') || undefined),
+      lessonType: String(formData.get('lessonType') || undefined),
+    }
+
     try {
       await onUpdate({
-        id: group.id,
-        weekName,
-        dayIndex,
-        lessonId: lesson._id,
-        subject: formData.get('subject') as string,
-        lessonType: formData.get('lessonType') as string,
-        classroom: formData.get('classroom') as string,
-        teacherID: formData.get('teacherID') as string,
+        lessonId: group.id,
+        ...typedForm,
       })
     } catch (err) {
       console.error('Ошибка при создании урока:', err)
@@ -79,9 +73,6 @@ export const LessonListItemAdmin = ({
                 !!onDelete
                   ? () =>
                       onDelete({
-                        id: group.id,
-                        weekName,
-                        dayIndex,
                         lessonId: lesson._id,
                       })
                   : null

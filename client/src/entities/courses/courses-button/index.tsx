@@ -1,8 +1,9 @@
 import * as style from './style.module.scss'
 import { Link, useParams } from 'react-router-dom'
+import { Course } from '@/shared/redux/slices/api/coursesApi'
 
 interface Props {
-  course: string
+  course: Course
 }
 
 export const CourseButton = ({ course }: Props) => {
@@ -11,9 +12,9 @@ export const CourseButton = ({ course }: Props) => {
   return (
     <Link
       to={`/educationTypes/${educationType}/faculties/${faculty}/courses/${course}`}
-      className={`${style.link} ${pickedCourse === course ? style.active : ''}`}
+      className={`${style.link} ${pickedCourse === course._id ? style.active : ''}`}
     >
-      {course} курс
+      {course.name} курс
     </Link>
   )
 }

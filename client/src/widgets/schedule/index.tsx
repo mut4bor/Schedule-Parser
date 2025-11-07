@@ -1,12 +1,13 @@
 import * as style from './style.module.scss'
 import { Skeleton } from '@/shared/ui'
-import { UpdateLessonDTO } from '@/shared/redux/types'
 import {
-  useUpdateLessonInDayMutation,
-  useDeleteLessonFromDayMutation,
-  useCreateLessonInDayMutation,
-  useGetWeekScheduleByIDQuery,
-} from '@/shared/redux/slices/api/groupsApi'
+  UpdateLessonDTO,
+  useUpdateLessonMutation,
+  useDeleteLessonMutation,
+  useCreateLessonMutation,
+  LessonType,
+} from '@/shared/redux/slices/api/scheduleApi'
+import { useGetWeekScheduleByGroupIdQuery } from '@/shared/redux/slices/api/weekApi'
 import { useGetAllTeachersQuery } from '@/shared/redux/slices/api/teachersApi'
 import { useAppSelector } from '@/shared/redux/hooks'
 import { AddItem } from '@/widgets/add-item'
@@ -16,6 +17,7 @@ import { ModalForm } from '../modal-form'
 import { ModalInput } from '../modal-input'
 import { useState } from 'react'
 import { ModalSelect } from '../modal-select'
+import { RefreshDate } from '../refresh-date'
 
 interface Props {
   groupID: string
@@ -23,10 +25,14 @@ interface Props {
   pickedWeek: string | null
 }
 
+const isLessonType = (value: string): value is LessonType => {
+  return ['Лекция', 'Практика', 'Лабораторная', 'Семинар'].includes(value)
+}
+
 export const Schedule = ({ groupID, pickedDayIndex, pickedWeek }: Props) => {
   const accessToken = useAppSelector((store) => store.auth.accessToken)
 
-  const { data: scheduleData } = useGetWeekScheduleByIDQuery(
+  const { data: scheduleData } = useGetWeekScheduleByGroupIdQuery(
     {
       groupID: groupID,
       week: pickedWeek ?? '',
@@ -38,9 +44,9 @@ export const Schedule = ({ groupID, pickedDayIndex, pickedWeek }: Props) => {
 
   const { data: teachers } = useGetAllTeachersQuery()
 
-  const [createLesson] = useCreateLessonInDayMutation()
-  const [updateLesson] = useUpdateLessonInDayMutation()
-  const [deleteLesson] = useDeleteLessonFromDayMutation()
+  const [createLesson] = useCreateLessonMutation()
+  const [updateLesson] = useUpdateLessonMutation()
+  const [deleteLesson] = useDeleteLessonMutation()
 
   const isScheduleData = !!scheduleData && pickedDayIndex !== -1 && !!scheduleData[pickedDayIndex]
 
@@ -51,10 +57,16 @@ export const Schedule = ({ groupID, pickedDayIndex, pickedWeek }: Props) => {
     const time = formData.get('time') as string
     const classroom = formData.get('classroom') as string
     const teacherID = formData.get('teacherID') as string
-    const lessonType = formData.get('lessonType') as string
+    const lessonTypeRaw = formData.get('lessonType') as string
     const subject = formData.get('subject') as string
 
     if (!groupID || !pickedWeek || pickedDayIndex === -1) return
+
+    // Проверяем, что lessonType соответствует типу LessonType
+    if (!isLessonType(lessonTypeRaw)) {
+      console.error('Недопустимый тип занятия:', lessonTypeRaw)
+      return
+    }
 
     try {
       await createLesson({
@@ -65,30 +77,29 @@ export const Schedule = ({ groupID, pickedDayIndex, pickedWeek }: Props) => {
         classroom,
         teacherID,
         subject,
-        lessonType,
+        lessonType: lessonTypeRaw, // теперь lessonTypeRaw – это точно LessonType
       }).unwrap()
     } catch (err) {
       console.error('Ошибка при создании урока:', err)
     }
   }
 
-  const handleUpdateLesson = async (
-    lessonId: string,
-    newLesson: Omit<UpdateLessonDTO, 'id' | 'weekName' | 'dayIndex' | 'lessonId'>,
-  ) => {
-    if (!scheduleData || !pickedWeek || pickedDayIndex === -1) return
+  const handleUpdateLesson = async ({
+    lessonId,
+    time,
+    classroom,
+    teacherID,
+    subject,
+    lessonType,
+  }: UpdateLessonDTO) => {
     try {
-      const oldLesson = scheduleData[pickedDayIndex].find((lesson) => lesson._id === lessonId)
-
-      if (!oldLesson) return
-
       await updateLesson({
-        id: groupID,
-        weekName: pickedWeek,
-        dayIndex: pickedDayIndex,
         lessonId,
-        ...oldLesson,
-        ...newLesson,
+        time,
+        classroom,
+        teacherID,
+        subject,
+        lessonType,
       }).unwrap()
     } catch (err) {
       console.error('Ошибка при обновлении урока:', err)
@@ -96,12 +107,8 @@ export const Schedule = ({ groupID, pickedDayIndex, pickedWeek }: Props) => {
   }
 
   const handleDeleteLesson = async (lessonId: string) => {
-    if (!groupID || !pickedWeek || pickedDayIndex === -1) return
     try {
       await deleteLesson({
-        id: groupID,
-        weekName: pickedWeek,
-        dayIndex: pickedDayIndex,
         lessonId,
       }).unwrap()
     } catch (err) {
@@ -116,49 +123,57 @@ export const Schedule = ({ groupID, pickedDayIndex, pickedWeek }: Props) => {
   }
 
   return (
-    <ul className={style.lessonList}>
-      {!isScheduleData || !pickedWeek
-        ? Array.from({ length: 5 }).map((_, index) => (
-            <li key={index}>
-              <Skeleton className={style.skeleton} />
-            </li>
-          ))
-        : [...scheduleData[pickedDayIndex]]
-            .sort((lessonA, lessonB) => {
-              const [hA, mA] = lessonA.time.split(':').map(Number)
-              const [hB, mB] = lessonB.time.split(':').map(Number)
-              return hA - hB || mA - mB
-            })
-            .map((lesson, index) => (
-              <LessonListItem
-                lesson={lesson}
-                onUpdate={handleUpdateLesson}
-                onDelete={handleDeleteLesson}
-                key={index}
-              />
-            ))}
+    <>
+      <ul className={style.lessonList}>
+        {!isScheduleData || !pickedWeek
+          ? Array.from({ length: 5 }).map((_, index) => (
+              <li key={index}>
+                <Skeleton className={style.skeleton} />
+              </li>
+            ))
+          : [...scheduleData[pickedDayIndex]]
+              .sort((lessonA, lessonB) => {
+                const [hA, mA] = lessonA.time.split(':').map(Number)
+                const [hB, mB] = lessonB.time.split(':').map(Number)
+                return hA - hB || mA - mB
+              })
+              .map((lesson, index) => (
+                <LessonListItem
+                  lesson={lesson}
+                  onUpdate={handleUpdateLesson}
+                  onDelete={handleDeleteLesson}
+                  key={index}
+                />
+              ))}
 
-      {accessToken && isScheduleData && teachers && pickedWeek && (
-        <AddItem addButtonLabel="Добавить пару" isAdding={isModalOpen} setIsAdding={setIsModalOpen}>
-          <Modal onClose={handleCancel}>
-            <ModalForm onSubmit={handleCreateLesson} onCancel={handleCancel}>
-              <ModalInput label="Время:" name="time" defaultValue="" type="time" />
-              <ModalInput label="Аудитория:" name="classroom" defaultValue="" />
-              <ModalSelect
-                label="Преподаватель:"
-                name="teacherID"
-                defaultValue=""
-                options={teachers.map((teacher) => ({
-                  value: teacher._id,
-                  label: `${teacher.firstName} ${teacher.middleName} ${teacher.lastName}`,
-                }))}
-              />
-              <ModalInput label="Тип предмета:" name="lessonType" defaultValue="" />
-              <ModalInput label="Название предмета:" name="subject" defaultValue="" />
-            </ModalForm>
-          </Modal>
-        </AddItem>
-      )}
-    </ul>
+        {accessToken && isScheduleData && teachers && pickedWeek && (
+          <AddItem
+            addButtonLabel="Добавить пару"
+            isAdding={isModalOpen}
+            setIsAdding={setIsModalOpen}
+          >
+            <Modal onClose={handleCancel}>
+              <ModalForm onSubmit={handleCreateLesson} onCancel={handleCancel}>
+                <ModalInput label="Время:" name="time" defaultValue="" type="time" />
+                <ModalInput label="Аудитория:" name="classroom" defaultValue="" />
+                <ModalSelect
+                  label="Преподаватель:"
+                  name="teacherID"
+                  defaultValue=""
+                  options={teachers.map((teacher) => ({
+                    value: teacher._id,
+                    label: `${teacher.firstName} ${teacher.middleName} ${teacher.lastName}`,
+                  }))}
+                />
+                <ModalInput label="Тип предмета:" name="lessonType" defaultValue="" />
+                <ModalInput label="Название предмета:" name="subject" defaultValue="" />
+              </ModalForm>
+            </Modal>
+          </AddItem>
+        )}
+      </ul>
+
+      <RefreshDate date={scheduleData?.updatedAt} />
+    </>
   )
 }

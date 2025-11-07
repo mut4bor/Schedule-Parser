@@ -54,7 +54,8 @@ const createCourse = async (req: Request, res: Response) => {
 
     const newCourse = new Course({
       name: name.trim(),
-      faculty: facultyId,
+      educationType: faculty.educationType,
+      faculty: faculty._id,
     })
 
     await newCourse.save()

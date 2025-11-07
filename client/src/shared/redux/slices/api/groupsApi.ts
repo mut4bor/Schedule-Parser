@@ -1,19 +1,36 @@
 import { baseApi } from '../baseApi'
-import {
-  IGroup,
-  IWeek,
-  IGroupsSchedule,
-  CreateGroupDTO,
-  UpdateGroupDTO,
-  CreateWeekDTO,
-  UpdateWeekDTO,
-  DeleteWeekDTO,
-  CreateLessonDTO,
-  UpdateLessonDTO,
-  DeleteLessonDTO,
-} from '@/shared/redux/types'
+import { EducationType } from '@/shared/redux/slices/api/educationTypesApi'
+import { Facultie } from '@/shared/redux/slices/api/facultiesApi'
+import { Course } from '@/shared/redux/slices/api/coursesApi'
 
 const getParams = (params?: string) => (params ? `?${params}` : '')
+
+export interface IGroup {
+  educationType: Pick<EducationType, '_id' | 'name'>
+  faculty: Pick<Facultie, '_id' | 'name'>
+  course: Pick<Course, '_id' | 'name'>
+  name: string
+  _id: string
+}
+
+export interface CreateGroupDTO {
+  educationType: string
+  faculty: string
+  course: string
+  name: string
+}
+
+export interface UpdateGroupDTO {
+  id: string
+  educationType?: string
+  faculty?: string
+  course?: string
+  name?: string
+}
+
+export interface DeleteGroupDTO {
+  id: string
+}
 
 export const groupsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -33,83 +50,25 @@ export const groupsApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ['Groups', 'Names'],
     }),
-    updateGroupByID: builder.mutation<IGroup, { id: string; data: UpdateGroupDTO }>({
-      query: ({ id, data }) => ({
+    updateGroupByID: builder.mutation<IGroup, UpdateGroupDTO>({
+      query: ({ id, educationType, faculty, course, name }) => ({
         url: `/groups/${id}`,
         method: 'PUT',
-        body: data,
+        body: {
+          educationType,
+          faculty,
+          course,
+          name,
+        },
       }),
       invalidatesTags: ['Groups', 'Names'],
     }),
-    deleteGroupByID: builder.mutation<{ message: string }, string>({
+    deleteGroupByID: builder.mutation<{ message: string }, DeleteGroupDTO>({
       query: (id) => ({
         url: `/groups/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Groups', 'Names'],
-    }),
-
-    // Weeks
-    getWeeksByID: builder.query<string[], string>({
-      query: (groupID) => `/groups/${groupID}/weeks`,
-      providesTags: ['Weeks'],
-    }),
-    getWeekScheduleByID: builder.query<IWeek, { groupID: string; week: string }>({
-      query: ({ groupID, week }) => `/groups/${groupID}/weeks/${week}`,
-      providesTags: ['Schedule'],
-    }),
-    getGroupsSchedulesByID: builder.query<IGroupsSchedule, string[]>({
-      query: (groupIDs) => `/groups/${groupIDs.join(',')}/schedule`,
-      providesTags: ['GroupsSchedule'],
-    }),
-
-    createWeekInGroup: builder.mutation<{ message: string }, CreateWeekDTO>({
-      query: ({ id, weekName }) => ({
-        url: `/groups/${id}/weeks`,
-        method: 'POST',
-        body: { weekName },
-      }),
-      invalidatesTags: ['Weeks', 'GroupsSchedule'],
-    }),
-    updateWeekInGroup: builder.mutation<{ message: string }, UpdateWeekDTO>({
-      query: ({ id, oldWeekName, newWeekName }) => ({
-        url: `/groups/${id}/weeks`,
-        method: 'PUT',
-        body: { oldWeekName, newWeekName },
-      }),
-      invalidatesTags: ['Weeks', 'GroupsSchedule'],
-    }),
-    deleteWeekFromGroup: builder.mutation<{ message: string }, DeleteWeekDTO>({
-      query: ({ id, weekName }) => ({
-        url: `/groups/${id}/weeks/${weekName}`,
-        method: 'DELETE',
-      }),
-      invalidatesTags: ['Weeks', 'GroupsSchedule'],
-    }),
-
-    // Lessons
-    createLessonInDay: builder.mutation<{ message: string }, CreateLessonDTO>({
-      query: ({ id, weekName, dayIndex, ...body }) => ({
-        url: `/groups/${id}/weeks/${weekName}/days/${dayIndex}/lessons`,
-        method: 'POST',
-        body,
-      }),
-      invalidatesTags: ['Schedule', 'GroupsSchedule'],
-    }),
-    updateLessonInDay: builder.mutation<{ message: string }, UpdateLessonDTO>({
-      query: ({ id, weekName, dayIndex, lessonId, ...body }) => ({
-        url: `/groups/${id}/weeks/${weekName}/days/${dayIndex}/lessons/${lessonId}`,
-        method: 'PUT',
-        body,
-      }),
-      invalidatesTags: ['Schedule', 'GroupsSchedule'],
-    }),
-    deleteLessonFromDay: builder.mutation<{ message: string }, DeleteLessonDTO>({
-      query: ({ id, weekName, dayIndex, lessonId }) => ({
-        url: `/groups/${id}/weeks/${weekName}/days/${dayIndex}/lessons/${lessonId}`,
-        method: 'DELETE',
-      }),
-      invalidatesTags: ['Schedule', 'GroupsSchedule'],
+      invalidatesTags: ['Groups', 'Names', 'Weeks', 'Schedule'],
     }),
   }),
   overrideExisting: false,
@@ -121,13 +80,4 @@ export const {
   useCreateGroupMutation,
   useUpdateGroupByIDMutation,
   useDeleteGroupByIDMutation,
-  useGetWeeksByIDQuery,
-  useGetWeekScheduleByIDQuery,
-  useGetGroupsSchedulesByIDQuery,
-  useCreateWeekInGroupMutation,
-  useUpdateWeekInGroupMutation,
-  useDeleteWeekFromGroupMutation,
-  useCreateLessonInDayMutation,
-  useUpdateLessonInDayMutation,
-  useDeleteLessonFromDayMutation,
 } = groupsApi

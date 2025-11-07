@@ -1,11 +1,15 @@
 import * as style from './style.module.scss'
-import { CreateLessonDTO, DeleteLessonDTO, UpdateLessonDTO } from '@/shared/redux/types'
 import {
-  useUpdateLessonInDayMutation,
-  useCreateLessonInDayMutation,
-  useDeleteLessonFromDayMutation,
-  useGetGroupsSchedulesByIDQuery,
-} from '@/shared/redux/slices/api/groupsApi'
+  CreateLessonDTO,
+  DeleteLessonDTO,
+  UpdateLessonDTO,
+} from '@/shared/redux/slices/api/scheduleApi'
+import {
+  useUpdateLessonMutation,
+  useCreateLessonMutation,
+  useDeleteLessonMutation,
+  useGetGroupsSchedulesQuery,
+} from '@/shared/redux/slices/api/scheduleApi'
 import { CSSProperties, Fragment } from 'react'
 import { LessonCell } from './LessonCell'
 import { getWeekValue } from '../weeks-list/utils'
@@ -18,15 +22,13 @@ interface Props {
 export const ScheduleAdmin = ({ groupsIDs }: Props) => {
   const groupsIdsArray = groupsIDs.split(',')
 
-  const { data: scheduleData } = useGetGroupsSchedulesByIDQuery(groupsIdsArray, {
+  const { data: scheduleData } = useGetGroupsSchedulesQuery(groupsIdsArray, {
     skip: !groupsIdsArray.length,
   })
 
-  console.log('scheduleData', scheduleData)
-
-  const [createLesson] = useCreateLessonInDayMutation()
-  const [updateLesson] = useUpdateLessonInDayMutation()
-  const [deleteLesson] = useDeleteLessonFromDayMutation()
+  const [createLesson] = useCreateLessonMutation()
+  const [updateLesson] = useUpdateLessonMutation()
+  const [deleteLesson] = useDeleteLessonMutation()
 
   const handleCreateLesson = async (args: CreateLessonDTO) => {
     try {

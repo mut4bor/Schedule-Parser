@@ -3,11 +3,12 @@ import { getWeekNumber, getWeekValue } from './utils'
 import { useEffect, useState } from 'react'
 import { WeeksButton } from '@/entities/weeks'
 import {
-  useGetWeeksByIDQuery,
-  useCreateWeekInGroupMutation,
-  useUpdateWeekInGroupMutation,
-  useDeleteWeekFromGroupMutation,
-} from '@/shared/redux/slices/api/groupsApi'
+  useGetWeeksByGroupIdQuery,
+  useCheckWeekAvailabilityMutation,
+  useUpdateWeekScheduleMutation,
+  useDeleteWeekScheduleMutation,
+  CreateWeekDTO,
+} from '@/shared/redux/slices/api/scheduleApi'
 import { useAppSelector } from '@/shared/redux/hooks'
 import { Skeleton } from '@/shared/ui'
 import { useParams } from 'react-router-dom'
@@ -30,27 +31,32 @@ export const WeeksList = ({ pickedWeek, setPickedWeek }: Props) => {
 
   const { groupID } = useParams()
 
-  const { data: weeksData } = useGetWeeksByIDQuery(groupID ?? '', {
+  const { data: weeksData } = useGetWeeksByGroupIdQuery(groupID ?? '', {
     skip: !groupID,
   })
 
-  const [createWeek] = useCreateWeekInGroupMutation()
-  const [updateWeek] = useUpdateWeekInGroupMutation()
-  const [deleteWeek] = useDeleteWeekFromGroupMutation()
+  const [createWeek] = useCheckWeekAvailabilityMutation()
+  const [updateWeek] = useUpdateWeekScheduleMutation()
+  const [deleteWeek] = useDeleteWeekScheduleMutation()
 
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const handleCreateWeek = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    const formData = new FormData(e.target as HTMLFormElement)
-    const newWeek = formData.get('week') as string
+    const formData = new FormData(e.currentTarget)
 
-    if (!newWeek || !groupID) return
+    if (!groupID) return
+
+    const typedForm: CreateWeekDTO = {
+      id: groupID,
+      weekName: String(formData.get('weekName') || undefined),
+    }
+
     try {
-      await createWeek({ id: groupID, weekName: newWeek }).unwrap()
+      await createWeek(typedForm)
     } catch (err) {
-      console.error('Ошибка при создании недели:', err)
+      console.error('Ошибка при создании урока:', err)
     }
   }
 
@@ -127,7 +133,7 @@ export const WeeksList = ({ pickedWeek, setPickedWeek }: Props) => {
           >
             <Modal onClose={handleCancel}>
               <ModalForm onSubmit={handleCreateWeek} onCancel={handleCancel}>
-                <ModalInput label="Добавить неделю:" name="week" defaultValue="" type="week" />
+                <ModalInput label="Добавить неделю:" name="weekName" defaultValue="" type="week" />
               </ModalForm>
             </Modal>
           </AddItem>

@@ -3,11 +3,19 @@ import { EditableItem } from '@/widgets/editable-item'
 import * as style from './style.module.scss'
 import { ILesson } from '@/shared/redux/types'
 import { useAppSelector } from '@/shared/redux/hooks'
+import { UpdateLessonDTO } from '@/shared/redux/slices/api/scheduleApi'
 
 interface Props {
   lesson: ILesson
   onDelete: (id: string) => Promise<void>
-  onUpdate: (id: string, newLesson: Partial<ILesson>) => Promise<void>
+  onUpdate: ({
+    lessonId,
+    time,
+    classroom,
+    teacherID,
+    subject,
+    lessonType,
+  }: UpdateLessonDTO) => Promise<void>
 }
 
 export const LessonListItem = ({ lesson, onDelete, onUpdate }: Props) => {
@@ -48,83 +56,42 @@ export const LessonListItem = ({ lesson, onDelete, onUpdate }: Props) => {
               label: 'Время',
               value: lesson.time,
               type: 'time',
-              update: (newValue: string) => onUpdate(lesson._id, { time: newValue }),
-              delete: () => onUpdate(lesson._id, { time: '' }),
+              update: (newValue: string) => onUpdate({ lessonId: lesson._id, time: newValue }),
+              delete: () => onUpdate({ lessonId: lesson._id, time: '' }),
             },
             {
               label: 'Предмет',
               value: lesson.subject,
-              update: (newValue: string) => onUpdate(lesson._id, { subject: newValue }),
-              delete: () => onUpdate(lesson._id, { subject: '' }),
+              update: (newValue: string) => onUpdate({ lessonId: lesson._id, subject: newValue }),
+              delete: () => onUpdate({ lessonId: lesson._id, subject: '' }),
             },
             {
               label: 'Тип',
               value: lesson.lessonType,
               update: (newValue: string) =>
-                onUpdate(lesson._id, {
-                  lessonType: newValue,
-                }),
-              delete: () => onUpdate(lesson._id, { lessonType: '' }),
+                onUpdate({ lessonId: lesson._id, lessonType: newValue }),
+              delete: () => onUpdate({ lessonId: lesson._id, lessonType: '' }),
             },
             {
-              label: 'Титул преподавателя',
+              label: 'Преподаватель',
               value: lesson.teacher.title ?? '',
               update: (newValue: string) =>
-                onUpdate(lesson._id, {
-                  teacher: { ...lesson.teacher, title: newValue },
+                onUpdate({
+                  lessonId: lesson._id,
+                  teacherID: newValue,
                 }),
               delete: () =>
-                onUpdate(lesson._id, {
-                  teacher: { ...lesson.teacher, title: '' },
+                onUpdate({
+                  lessonId: lesson._id,
+                  teacherID: '',
                 }),
             },
-            {
-              label: 'Фамилия преподавателя',
-              value: lesson.teacher.lastName,
-              update: (newValue: string) =>
-                onUpdate(lesson._id, {
-                  teacher: { ...lesson.teacher, lastName: newValue },
-                }),
-              delete: () =>
-                onUpdate(lesson._id, {
-                  teacher: { ...lesson.teacher, lastName: '' },
-                }),
-            },
-            {
-              label: 'Имя преподавателя',
-              value: lesson.teacher.firstName,
-              update: (newValue: string) =>
-                onUpdate(lesson._id, {
-                  teacher: { ...lesson.teacher, firstName: newValue },
-                }),
-              delete: () =>
-                onUpdate(lesson._id, {
-                  teacher: { ...lesson.teacher, firstName: '' },
-                }),
-            },
-            {
-              label: 'Отчество преподавателя',
-              value: lesson.teacher.middleName,
-              update: (newValue: string) =>
-                onUpdate(lesson._id, {
-                  teacher: {
-                    ...lesson.teacher,
-                    middleName: newValue,
-                  },
-                }),
-              delete: () =>
-                onUpdate(lesson._id, {
-                  teacher: { ...lesson.teacher, middleName: '' },
-                }),
-            },
+
             {
               label: 'Аудитория',
               value: lesson.classroom,
-              update: (newValue: string) =>
-                onUpdate(lesson._id, {
-                  classroom: newValue,
-                }),
-              delete: () => onUpdate(lesson._id, { classroom: '' }),
+              update: (newValue: string) => onUpdate({ lessonId: lesson._id, classroom: newValue }),
+              delete: () => onUpdate({ lessonId: lesson._id, classroom: '' }),
             },
           ].map((field, index) => (
             <li className={style.editListItem} key={index}>
