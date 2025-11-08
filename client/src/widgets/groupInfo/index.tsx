@@ -12,6 +12,7 @@ import { ErrorComponent } from '@/widgets/error'
 import { Options } from '@/widgets/options'
 import { EditableItem } from '@/widgets/editable-item'
 import { Skeleton } from '@/shared/ui'
+import { PickedWeekType } from '@/pages/groupID'
 
 const CreateTapStopPropagationHandler = () =>
   useSwipeable({
@@ -22,7 +23,7 @@ const CreateTapStopPropagationHandler = () =>
 
 interface Props {
   groupID: string
-  pickedWeek: string
+  pickedWeek: PickedWeekType | null
   pickedDayIndex: number
 }
 

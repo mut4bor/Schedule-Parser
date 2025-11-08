@@ -1,27 +1,37 @@
 import { ITeacher } from '@/shared/redux/slices/api/teachersApi'
+import { LessonType } from './slices/api/scheduleApi'
 
-export interface IWeek {
-  _id: string
-  weekNumber: number
-  startDate: string
-  endDate: string
-  isActive: boolean
-  createdAt: string
-  updatedAt: string
+export enum DayOfWeek {
+  None = -1,
+  Monday = 0,
+  Tuesday = 1,
+  Wednesday = 2,
+  Thursday = 3,
+  Friday = 4,
+  Saturday = 5,
 }
 
 export interface ILesson {
-  _id: string
-  week: string | IWeek
-  group: string
-  teacher: ITeacher
-  dayOfWeek: number
   time: string
   classroom: string
   subject: string
-  lessonType: 'Лекция' | 'Практика' | 'Лабораторная' | 'Семинар'
-  createdAt: string
-  updatedAt: string
+  teacher: ITeacher
+  lessonType: LessonType
+}
+
+export interface IDay {
+  dayOfWeek: DayOfWeek
+  lessons: ILesson[]
+}
+
+export interface ISchedule {
+  _id: string
+  weekName: string
+  isActive: boolean
+  group: string
+  days: IDay[]
+  createdAt?: string
+  updatedAt?: string
 }
 
 export interface IGroupsSchedule {

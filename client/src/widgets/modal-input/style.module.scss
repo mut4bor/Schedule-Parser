@@ -1,7 +1,7 @@
 @use '@/shared/vars/vars' as *;
 
 @media (min-width: $pageWidth320) {
-  .editLabel {
+  .label {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -11,7 +11,7 @@
     font-size: 1.4rem;
   }
 
-  .editInput {
+  .input {
     transition: 0.2s ease-in-out;
     border: 2px solid transparent;
     border-radius: 0.5rem;
@@ -29,11 +29,11 @@
 }
 
 @media (min-width: $pageWidth425) {
-  .editLabel {
+  .label {
     font-size: 1.6rem;
   }
 
-  .editInput {
+  .input {
     font-size: 1.6rem;
   }
 }

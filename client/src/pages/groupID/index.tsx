@@ -11,17 +11,7 @@ import { Skeleton } from '@/shared/ui'
 import { DaysButton } from '@/entities/days'
 import { GroupInfo } from '@/widgets/groupInfo'
 import { getTodayIndex } from '@/widgets/groupInfo/utils'
-
-enum DayIndex {
-  None = -1,
-  Monday = 0,
-  Tuesday = 1,
-  Wednesday = 2,
-  Thursday = 3,
-  Friday = 4,
-  Saturday = 5,
-  Sunday = 6,
-}
+import { DayOfWeek } from '@/shared/redux/types'
 
 const { dayWeekIndex } = getTodayIndex()
 
@@ -32,6 +22,11 @@ const CreateTapStopPropagationHandler = () =>
     },
   })
 
+export interface PickedWeekType {
+  id: string
+  name: string
+}
+
 export const GroupIDPage = () => {
   const location = useLocation()
 
@@ -39,12 +34,12 @@ export const GroupIDPage = () => {
 
   const navigate = useNavigate()
 
-  const [pickedWeek, setPickedWeek] = useState<string>('')
-  const [pickedDayIndex, setPickedDayIndex] = useState<DayIndex>(DayIndex.None)
+  const [pickedWeek, setPickedWeek] = useState<PickedWeekType | null>(null)
+  const [pickedDayIndex, setPickedDayIndex] = useState<DayOfWeek>(DayOfWeek.None)
 
   const [isSidebarVisible, setIsSidebarVisible] = useState(false)
 
-  const week = getWeekDates(pickedWeek)
+  const week = getWeekDates(pickedWeek?.name)
 
   const hideGroupDays = () => setIsSidebarVisible(false)
   const showGroupDays = () => setIsSidebarVisible(true)
@@ -80,8 +75,8 @@ export const GroupIDPage = () => {
     setPickedDayIndex(dayWeekIndex)
 
     return () => {
-      setPickedDayIndex(DayIndex.None)
-      setPickedWeek('')
+      setPickedDayIndex(DayOfWeek.None)
+      setPickedWeek(null)
     }
   }, [groupID])
 

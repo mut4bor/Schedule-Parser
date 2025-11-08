@@ -14,11 +14,11 @@ interface Props {
 
 export const ModalSelect = ({ label, name, defaultValue, options }: Props) => {
   return (
-    <label className={style.editLabel}>
+    <label className={style.label}>
       {label}
-      <select name={name} className={style.editInput} defaultValue={defaultValue}>
+      <select name={name} className={style.select} defaultValue={defaultValue}>
         {options.map((option) => (
-          <option key={option.value} value={option.value}>
+          <option className={style.option} key={option.value} value={option.value}>
             {option.label}
           </option>
         ))}

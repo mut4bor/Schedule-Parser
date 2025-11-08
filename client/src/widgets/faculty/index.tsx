@@ -126,7 +126,7 @@ export const Faculty = ({ educationType, columnsAmount }: Props) => {
             <EditableItem
               value={educationType.name}
               crudHandlers={{
-                onUpdate: (_, newValue) =>
+                onUpdate: (newValue) =>
                   handleUpdateEducationType({ id: educationType._id, name: newValue }),
                 onDelete: (_) => handleDeleteEducationType({ id: educationType._id }),
               }}
@@ -162,7 +162,7 @@ export const Faculty = ({ educationType, columnsAmount }: Props) => {
                   <EditableItem
                     value={faculty.name}
                     crudHandlers={{
-                      onUpdate: (_, newValue) =>
+                      onUpdate: (newValue) =>
                         handleUpdateFaculty({ id: faculty._id, name: newValue }),
                       onDelete: (_) => handleDeleteFaculty({ id: faculty._id }),
                     }}

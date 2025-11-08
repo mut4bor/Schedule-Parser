@@ -9,9 +9,9 @@ interface Props {
 
 export const ModalInput = ({ label, name, defaultValue, type = 'text' }: Props) => {
   return (
-    <label className={style.editLabel}>
+    <label className={style.label}>
       {label}
-      <input name={name} className={style.editInput} defaultValue={defaultValue} type={type} />
+      <input name={name} className={style.input} defaultValue={defaultValue} type={type} />
     </label>
   )
 }

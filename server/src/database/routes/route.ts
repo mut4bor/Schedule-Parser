@@ -7,14 +7,16 @@ import {
   deleteGroupById,
 } from '@/database/controllers/group.controller.js'
 import {
+  getScheduleById,
+  createLesson,
+  updateLesson,
+  deleteLesson,
   getWeeksByGroupId,
-  getWeekScheduleByGroupId,
   getGroupsSchedules,
-  checkWeekAvailability,
+  createWeekSchedule,
   updateWeekSchedule,
   deleteWeekSchedule,
-} from '@/database/controllers/week.controller.js'
-import { createLesson, updateLesson, deleteLesson } from '@/database/controllers/schedule.controller.js'
+} from '@/database/controllers/schedule.controller.js'
 import { getCourses, createCourse, updateCourse, deleteCourse } from '@/database/controllers/courses.controller.js'
 import {
   getFaculties,
@@ -48,6 +50,7 @@ const coursePath = `/course`
 const groupsPath = `/groups`
 const namesPath = `/names`
 const teachersPath = `/teachers`
+const schedulesPath = `/schedules`
 
 // --- Авторизация ---
 router.post('/login', login)
@@ -83,18 +86,16 @@ router.delete(`${groupsPath}/:id`, deleteGroupById)
 
 // --- Расписание групп ---
 router.get(`${groupsPath}/:id/weeks`, getWeeksByGroupId)
-router.get(`${groupsPath}/:id/weeks/:week`, getWeekScheduleByGroupId)
 router.get(`${groupsPath}/:ids/schedule`, getGroupsSchedules)
 
-// --- Управление неделями ---
-router.post(`${groupsPath}/:id/weeks`, checkWeekAvailability)
-router.put(`${groupsPath}/:id/weeks`, updateWeekSchedule)
-router.delete(`${groupsPath}/:id/weeks/:weekName`, deleteWeekSchedule)
-
-// --- Управление уроками ---
-router.post(`${groupsPath}/:id/weeks/:weekName/days/:dayIndex/lessons`, createLesson)
-router.put(`${groupsPath}/lessons/:lessonId`, updateLesson)
-router.delete(`${groupsPath}/lessons/:lessonId`, deleteLesson)
+// --- Управление расписанием ---
+router.post(`${schedulesPath}/weeks`, createWeekSchedule)
+router.put(`${schedulesPath}/weeks/:id`, updateWeekSchedule)
+router.delete(`${schedulesPath}/weeks/:id`, deleteWeekSchedule)
+router.get(`${schedulesPath}/:scheduleID`, getScheduleById)
+router.post(schedulesPath, createLesson)
+router.put(`${schedulesPath}/:scheduleID/days/:dayIndex/lessons/:lessonIndex`, updateLesson)
+router.delete(`${schedulesPath}/:scheduleID/days/:dayIndex/lessons/:lessonIndex`, deleteLesson)
 
 // --- Названия групп ---
 router.get(namesPath, getGroupNames)

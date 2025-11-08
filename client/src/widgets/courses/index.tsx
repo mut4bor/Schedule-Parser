@@ -117,7 +117,7 @@ export const Courses = () => {
                 min={1}
                 max={6}
                 crudHandlers={{
-                  onUpdate: (_, newValue) =>
+                  onUpdate: (newValue) =>
                     handleUpdateCourse({
                       id: course._id,
                       name: newValue,

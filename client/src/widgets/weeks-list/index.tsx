@@ -4,10 +4,12 @@ import { useEffect, useState } from 'react'
 import { WeeksButton } from '@/entities/weeks'
 import {
   useGetWeeksByGroupIdQuery,
-  useCheckWeekAvailabilityMutation,
+  useCreateWeekScheduleMutation,
   useUpdateWeekScheduleMutation,
   useDeleteWeekScheduleMutation,
   CreateWeekDTO,
+  UpdateWeekDTO,
+  DeleteWeekDTO,
 } from '@/shared/redux/slices/api/scheduleApi'
 import { useAppSelector } from '@/shared/redux/hooks'
 import { Skeleton } from '@/shared/ui'
@@ -17,13 +19,14 @@ import { AddItem } from '../add-item'
 import { ModalForm } from '../modal-form'
 import { ModalInput } from '../modal-input'
 import { Modal } from '../modal'
+import { PickedWeekType } from '@/pages/groupID'
 
 const currentWeek = getWeekNumber(new Date())
 const formattedCurrentWeek = `${currentWeek.year}-W${currentWeek.week}`
 
 interface Props {
-  pickedWeek: string
-  setPickedWeek: (week: string) => void
+  pickedWeek: PickedWeekType | null
+  setPickedWeek: (week: PickedWeekType) => void
 }
 
 export const WeeksList = ({ pickedWeek, setPickedWeek }: Props) => {
@@ -35,7 +38,7 @@ export const WeeksList = ({ pickedWeek, setPickedWeek }: Props) => {
     skip: !groupID,
   })
 
-  const [createWeek] = useCheckWeekAvailabilityMutation()
+  const [createWeek] = useCreateWeekScheduleMutation()
   const [updateWeek] = useUpdateWeekScheduleMutation()
   const [deleteWeek] = useDeleteWeekScheduleMutation()
 
@@ -49,8 +52,10 @@ export const WeeksList = ({ pickedWeek, setPickedWeek }: Props) => {
     if (!groupID) return
 
     const typedForm: CreateWeekDTO = {
-      id: groupID,
       weekName: String(formData.get('weekName') || undefined),
+      groupID,
+      days: [],
+      isActive: false,
     }
 
     try {
@@ -60,24 +65,17 @@ export const WeeksList = ({ pickedWeek, setPickedWeek }: Props) => {
     }
   }
 
-  const handleUpdateWeek = async (oldWeek: string, newWeek: string) => {
-    if (!groupID) return
+  const handleUpdateWeek = async (args: UpdateWeekDTO) => {
     try {
-      await updateWeek({
-        id: groupID,
-        oldWeekName: oldWeek,
-        newWeekName: newWeek,
-      }).unwrap()
-      setPickedWeek(newWeek)
+      await updateWeek(args).unwrap()
     } catch (err) {
       console.error('Ошибка при обновлении недели:', err)
     }
   }
 
-  const handleDeleteWeek = async (week: string) => {
-    if (!groupID) return
+  const handleDeleteWeek = async (args: DeleteWeekDTO) => {
     try {
-      await deleteWeek({ id: groupID, weekName: week }).unwrap()
+      await deleteWeek(args).unwrap()
     } catch (err) {
       console.error('Ошибка при удалении недели:', err)
     }
@@ -89,9 +87,19 @@ export const WeeksList = ({ pickedWeek, setPickedWeek }: Props) => {
 
   useEffect(() => {
     if (!weeksData?.length) return
-    if (pickedWeek && weeksData.includes(pickedWeek)) return
 
-    setPickedWeek(weeksData.includes(formattedCurrentWeek) ? formattedCurrentWeek : weeksData[0])
+    const pickedWeekInWeekData = weeksData.find((week) => week._id === pickedWeek?.id)
+
+    if (pickedWeek && !!pickedWeekInWeekData) return
+
+    const weekToPick = weeksData.find((week) => week.weekName === formattedCurrentWeek)
+
+    const pickedWeekObject = {
+      id: weekToPick?._id ?? weeksData[0]._id,
+      name: weekToPick?.weekName ?? weeksData[0].weekName,
+    }
+
+    setPickedWeek(pickedWeekObject)
   }, [weeksData, pickedWeek, setPickedWeek])
 
   return (
@@ -105,20 +113,35 @@ export const WeeksList = ({ pickedWeek, setPickedWeek }: Props) => {
         : weeksData.map((week, index) => (
             <li className={style.listItem} key={index}>
               <EditableItem
-                value={week}
+                value={week.weekName}
                 crudHandlers={
-                  week === 'odd' || week === 'even'
+                  week.weekName === 'odd' || week.weekName === 'even'
                     ? null
                     : {
-                        onUpdate: handleUpdateWeek,
-                        onDelete: handleDeleteWeek,
+                        onUpdate: (newValue) => {
+                          setPickedWeek({
+                            id: week._id,
+                            name: newValue,
+                          })
+                          return handleUpdateWeek({
+                            id: week._id,
+                            weekName: newValue,
+                          })
+                        },
+                        onDelete: () =>
+                          handleDeleteWeek({
+                            id: week._id,
+                          }),
                       }
                 }
                 type="week"
                 min={formattedCurrentWeek}
               >
-                <WeeksButton onClick={() => setPickedWeek(week)} isActive={pickedWeek === week}>
-                  {getWeekValue(week)}
+                <WeeksButton
+                  onClick={() => setPickedWeek({ id: week._id, name: week.weekName })}
+                  isActive={pickedWeek?.name === week.weekName}
+                >
+                  {getWeekValue(week.weekName)}
                 </WeeksButton>
               </EditableItem>
             </li>

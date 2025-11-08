@@ -1,117 +1,129 @@
-import { useState } from 'react'
-import { EditableItem } from '@/widgets/editable-item'
 import * as style from './style.module.scss'
-import { ILesson } from '@/shared/redux/types'
+import { useState } from 'react'
+import { DayOfWeek, ILesson } from '@/shared/redux/types'
 import { useAppSelector } from '@/shared/redux/hooks'
-import { UpdateLessonDTO } from '@/shared/redux/slices/api/scheduleApi'
+import {
+  UpdateLessonDTO,
+  DeleteLessonDTO,
+  LessonType,
+  isValidLessonType,
+} from '@/shared/redux/slices/api/scheduleApi'
+import { Modal } from '@/widgets/modal'
+import { ModalForm } from '@/widgets/modal-form'
+import { ModalInput } from '@/widgets/modal-input'
+import { ModalSelect } from '@/widgets/modal-select'
+import { EditDeleteActions } from '@/entities/admin'
+import { useGetAllTeachersQuery } from '@/shared/redux/slices/api/teachersApi'
 
 interface Props {
   lesson: ILesson
-  onDelete: (id: string) => Promise<void>
-  onUpdate: ({
-    lessonId,
-    time,
-    classroom,
-    teacherID,
-    subject,
-    lessonType,
-  }: UpdateLessonDTO) => Promise<void>
+  scheduleID: string
+  dayIndex: DayOfWeek
+  lessonIndex: number
+  onUpdate: (args: UpdateLessonDTO) => Promise<void>
+  onDelete: (args: DeleteLessonDTO) => Promise<void>
 }
 
-export const LessonListItem = ({ lesson, onDelete, onUpdate }: Props) => {
+export const LessonListItem = ({
+  lesson,
+  scheduleID,
+  dayIndex,
+  lessonIndex,
+  onUpdate,
+  onDelete,
+}: Props) => {
   const accessToken = useAppSelector((store) => store.auth.accessToken)
-  const [isCollapsed, setIsCollapsed] = useState(true)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const { data: teachersData } = useGetAllTeachersQuery()
+
+  const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const formData = new FormData(e.currentTarget)
+
+    const lessonType = String(formData.get('lessonType'))
+
+    const typedForm: Omit<UpdateLessonDTO, 'scheduleID' | 'dayIndex' | 'lessonIndex'> = {
+      time: String(formData.get('time') || undefined),
+      classroom: String(formData.get('classroom') || undefined),
+      teacherID: String(formData.get('teacherID') || undefined),
+      subject: String(formData.get('subject') || undefined),
+      lessonType: isValidLessonType(lessonType) ? lessonType : undefined,
+    }
+
+    try {
+      await onUpdate({
+        scheduleID,
+        dayIndex,
+        lessonIndex,
+        ...typedForm,
+      })
+    } catch (err) {
+      console.error('Ошибка при создании урока:', err)
+    }
+  }
+
+  const handleCancel = () => {
+    setIsModalOpen(false)
+  }
 
   return (
     <li className={style.lessonListItem}>
       <div className={style.lessonHeader}>
-        <EditableItem
-          value={lesson.time}
-          crudHandlers={{
-            onDelete: async () => onDelete(lesson._id),
-          }}
-        >
-          <p className={style.text}>
-            {lesson.time} - {lesson.subject}
-            {lesson.lessonType && ` (${lesson.lessonType})`}
-            {lesson.teacher.title && `, ${lesson.teacher.title}`}
-            {` ${lesson.teacher.lastName}`}
-            {` ${lesson.teacher.firstName.charAt(0).toUpperCase()}.`}
-            {` ${lesson.teacher.middleName.charAt(0).toUpperCase()}.`}
-            {`, ${lesson.classroom}`}
-          </p>
-        </EditableItem>
+        <p className={style.text}>
+          {lesson.time} - {lesson.subject}
+          {` (${lesson.lessonType})`}
+          {`, ${lesson.teacher.title}`}
+          {` ${lesson.teacher.lastName}`}
+          {` ${lesson.teacher.firstName.charAt(0).toUpperCase()}.`}
+          {` ${lesson.teacher.middleName.charAt(0).toUpperCase()}.`}
+          {`, ${lesson.classroom}`}
+        </p>
 
         {accessToken && (
-          <button className={style.toggleBtn} onClick={() => setIsCollapsed((prev) => !prev)}>
-            {isCollapsed ? '▼' : '▲'}
-          </button>
+          <div>
+            <EditDeleteActions
+              onEdit={() => setIsModalOpen(true)}
+              onDelete={
+                !!onDelete
+                  ? () =>
+                      onDelete({
+                        scheduleID,
+                        dayIndex,
+                        lessonIndex,
+                      })
+                  : null
+              }
+            />
+          </div>
         )}
       </div>
 
-      {!isCollapsed && accessToken && (
-        <ul className={style.editList}>
-          {[
-            {
-              label: 'Время',
-              value: lesson.time,
-              type: 'time',
-              update: (newValue: string) => onUpdate({ lessonId: lesson._id, time: newValue }),
-              delete: () => onUpdate({ lessonId: lesson._id, time: '' }),
-            },
-            {
-              label: 'Предмет',
-              value: lesson.subject,
-              update: (newValue: string) => onUpdate({ lessonId: lesson._id, subject: newValue }),
-              delete: () => onUpdate({ lessonId: lesson._id, subject: '' }),
-            },
-            {
-              label: 'Тип',
-              value: lesson.lessonType,
-              update: (newValue: string) =>
-                onUpdate({ lessonId: lesson._id, lessonType: newValue }),
-              delete: () => onUpdate({ lessonId: lesson._id, lessonType: '' }),
-            },
-            {
-              label: 'Преподаватель',
-              value: lesson.teacher.title ?? '',
-              update: (newValue: string) =>
-                onUpdate({
-                  lessonId: lesson._id,
-                  teacherID: newValue,
-                }),
-              delete: () =>
-                onUpdate({
-                  lessonId: lesson._id,
-                  teacherID: '',
-                }),
-            },
-
-            {
-              label: 'Аудитория',
-              value: lesson.classroom,
-              update: (newValue: string) => onUpdate({ lessonId: lesson._id, classroom: newValue }),
-              delete: () => onUpdate({ lessonId: lesson._id, classroom: '' }),
-            },
-          ].map((field, index) => (
-            <li className={style.editListItem} key={index}>
-              <p className={style.editLabel}>{field.label}:</p>
-              <div className={style.editContainer}>
-                <EditableItem
-                  value={field.value}
-                  type={(field?.type as 'text' | 'date' | 'week' | 'time') ?? 'text'}
-                  crudHandlers={{
-                    onUpdate: async (_, newValue) => field.update(newValue),
-                  }}
-                >
-                  <p className={`${style.editValue} ${!field.value ? style.empty : ''}`}>
-                    {field.value}
-                  </p>
-                </EditableItem>
-              </div>
-            </li>
-          ))}
-        </ul>
+      {isModalOpen && accessToken && teachersData && (
+        <Modal onClose={handleCancel}>
+          <ModalForm onSubmit={handleSave} onCancel={handleCancel}>
+            <ModalInput label="Время:" name="time" defaultValue={lesson.time} type="time" />
+            <ModalInput label="Название предмета:" name="subject" defaultValue={lesson.subject} />
+            <ModalSelect
+              label="Преподаватель:"
+              name="teacherID"
+              defaultValue={lesson.teacher._id}
+              options={teachersData.map((teacher) => ({
+                value: teacher._id,
+                label: `${teacher.firstName} ${teacher.middleName} ${teacher.lastName}`,
+              }))}
+            />
+            <ModalSelect
+              label="Тип занятия:"
+              name="lessonType"
+              defaultValue={lesson.lessonType}
+              options={Object.values(LessonType).map((value) => ({
+                value: value,
+                label: value,
+              }))}
+            />
+            <ModalInput label="Аудитория:" name="classroom" defaultValue={lesson.classroom} />
+          </ModalForm>
+        </Modal>
       )}
     </li>
   )

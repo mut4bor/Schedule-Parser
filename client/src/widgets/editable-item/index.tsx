@@ -4,7 +4,7 @@ import { InlineEdit, EditDeleteActions } from '@/entities/admin'
 import { useAppSelector } from '@/shared/redux/hooks'
 
 export type CrudHandlers = {
-  onUpdate?: ((oldValue: string, newValue: string) => Promise<void>) | null
+  onUpdate?: ((newValue: string) => Promise<void>) | null
   onDelete?: ((value: string) => Promise<void>) | null
 }
 
@@ -42,7 +42,7 @@ export const EditableItem = ({
         setIsEditing(false)
         return
       }
-      await crudHandlers.onUpdate(value, newValue)
+      await crudHandlers.onUpdate(newValue)
       setIsEditing(false)
     } catch (err) {
       console.error('Ошибка при обновлении:', err)

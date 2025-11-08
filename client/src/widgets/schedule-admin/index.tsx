@@ -32,7 +32,7 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
 
   const handleCreateLesson = async (args: CreateLessonDTO) => {
     try {
-      await createLesson({ ...args }).unwrap()
+      await createLesson(args).unwrap()
     } catch (err) {
       console.error('Ошибка при создании урока:', err)
     }
@@ -40,7 +40,7 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
 
   const handleUpdateLesson = async (args: UpdateLessonDTO) => {
     try {
-      await updateLesson({ ...args }).unwrap()
+      await updateLesson(args).unwrap()
     } catch (err) {
       console.error('Ошибка при обновлении урока:', err)
     }
@@ -48,7 +48,7 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
 
   const handleDeleteLesson = async (args: DeleteLessonDTO) => {
     try {
-      await deleteLesson({ ...args }).unwrap()
+      await deleteLesson(args).unwrap()
     } catch (err) {
       console.error('Ошибка при удалении урока:', err)
     }
@@ -105,8 +105,8 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
                         {timeSlot.time}
                       </div>
 
-                      {timeSlot.lessons.map((lesson, groupIndex) => {
-                        const group = groups[groupIndex]
+                      {timeSlot.lessons.map((lesson, lessonIndex) => {
+                        const group = groups[lessonIndex]
 
                         if (!lesson) {
                           return <div className={style.scheduleCell} key={group.id}></div>
@@ -114,14 +114,16 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
 
                         return (
                           <LessonCell
-                            key={group.id}
                             group={group}
                             weekName={week.weekName}
                             dayIndex={day.dayIndex}
                             lesson={lesson}
+                            scheduleID=""
+                            lessonIndex={lessonIndex}
                             onAdd={handleCreateLesson}
                             onUpdate={handleUpdateLesson}
                             onDelete={handleDeleteLesson}
+                            key={group.id}
                           />
                         )
                       })}

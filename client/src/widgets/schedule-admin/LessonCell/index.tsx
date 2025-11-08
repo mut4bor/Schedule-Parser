@@ -9,6 +9,7 @@ import { Modal } from '@/widgets/modal'
 import {
   CreateLessonDTO,
   DeleteLessonDTO,
+  isValidLessonType,
   UpdateLessonDTO,
 } from '@/shared/redux/slices/api/scheduleApi'
 
@@ -17,22 +18,23 @@ interface Props {
     id: string
     name: string
   }
+  lesson: ILesson
+  scheduleID: string
   weekName: string
   dayIndex: number
-  lesson: ILesson
-
+  lessonIndex: number
   onAdd: (args: CreateLessonDTO) => Promise<void>
-
   onUpdate: (args: UpdateLessonDTO) => Promise<void>
-
   onDelete: (args: DeleteLessonDTO) => Promise<void>
 }
 
 export const LessonCell = ({
   group,
+  lesson,
+  scheduleID,
   weekName,
   dayIndex,
-  lesson,
+  lessonIndex,
   onAdd,
   onUpdate,
   onDelete,
@@ -48,6 +50,10 @@ export const LessonCell = ({
     const teacherID = formData.get('teacherID') as string
     const subject = formData.get('subject') as string
     const lessonType = formData.get('lessonType') as string
+
+    if (!isValidLessonType(lessonType)) {
+      return
+    }
 
     await onAdd({
       id: group.id,
@@ -70,12 +76,13 @@ export const LessonCell = ({
     <div className={`${style.scheduleCell} ${style.lessonCell}`}>
       {!!lesson ? (
         <LessonListItemAdmin
-          key={lesson._id}
-          group={group}
           lesson={lesson}
-          onUpdate={(args) => onUpdate({ ...args, ...group })}
+          scheduleID={scheduleID}
+          dayIndex={dayIndex}
+          lessonIndex={lessonIndex}
+          onUpdate={onUpdate}
           onDelete={
-            weekName !== 'even' && weekName !== 'odd' ? (args) => onDelete({ ...args }) : undefined
+            weekName !== 'even' && weekName !== 'odd' ? (args) => onDelete(args) : undefined
           }
         />
       ) : (

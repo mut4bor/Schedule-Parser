@@ -1,7 +1,7 @@
 @use '@/shared/vars/vars' as *;
 
 @media (min-width: $pageWidth320) {
-  .editLabel {
+  .label {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -11,8 +11,10 @@
     font-size: 1.4rem;
   }
 
-  .editInput {
+  .select {
+    appearance: none;
     transition: 0.2s ease-in-out;
+    cursor: pointer;
     border: 2px solid transparent;
     border-radius: 0.5rem;
     background: rgba($white, 0.1);
@@ -22,18 +24,42 @@
     font-size: 1.4rem;
 
     &:focus {
+      outline: none;
       border: 2px solid $accentColor;
       background: rgba($white, 0.15);
+    }
+
+    &:hover {
+      background: rgba($white, 0.15);
+    }
+  }
+
+  .option {
+    cursor: pointer;
+    background: rgba($darkGray, 0.9);
+    padding: 0.6rem 1rem;
+    color: $white;
+    font-size: 1.4rem;
+
+    &:hover,
+    &:focus,
+    &:checked {
+      background: rgba($accentColor, 1);
+      color: $white;
     }
   }
 }
 
 @media (min-width: $pageWidth425) {
-  .editLabel {
+  .label {
     font-size: 1.6rem;
   }
 
-  .editInput {
+  .select {
+    font-size: 1.6rem;
+  }
+
+  .option {
     font-size: 1.6rem;
   }
 }
