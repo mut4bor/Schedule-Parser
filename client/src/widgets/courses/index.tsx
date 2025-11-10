@@ -58,23 +58,17 @@ export const Courses = () => {
     }
   }
 
-  const handleUpdateCourse = async ({ id, name, facultyId }: UpdateCourseDTO) => {
+  const handleUpdateCourse = async (args: UpdateCourseDTO) => {
     try {
-      await updateCourse({
-        id,
-        name,
-        facultyId,
-      }).unwrap()
+      await updateCourse(args).unwrap()
     } catch (err) {
       console.error('Ошибка при обновлении курса:', err)
     }
   }
 
-  const handleDeleteCourse = async ({ id }: DeleteCourseDTO) => {
+  const handleDeleteCourse = async (args: DeleteCourseDTO) => {
     try {
-      await deleteCourse({
-        id,
-      }).unwrap()
+      await deleteCourse(args).unwrap()
     } catch (err) {
       console.error('Ошибка при удалении курса:', err)
     }

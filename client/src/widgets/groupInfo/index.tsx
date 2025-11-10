@@ -40,22 +40,9 @@ export const GroupInfo = ({ groupID, pickedWeek, pickedDayIndex }: Props) => {
 
   const [updateGroupByID] = useUpdateGroupByIDMutation()
 
-  const handleUpdateGroup = async ({
-    id,
-    educationType,
-    faculty,
-    course,
-    name,
-  }: UpdateGroupDTO) => {
-    if (!educationType || !faculty || !course) return
+  const handleUpdateGroup = async (args: UpdateGroupDTO) => {
     try {
-      await updateGroupByID({
-        id,
-        educationType,
-        faculty,
-        course,
-        name,
-      }).unwrap()
+      await updateGroupByID(args).unwrap()
     } catch (err) {
       console.error('Ошибка при обновлении группы:', err)
     }

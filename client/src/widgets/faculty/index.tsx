@@ -49,21 +49,18 @@ export const Faculty = ({ educationType, columnsAmount }: Props) => {
   const [updateFaculty] = useUpdateFacultyMutation()
   const [deleteFaculty] = useDeleteFacultyMutation()
 
-  const handleUpdateEducationType = async ({ id, name }: UpdateEducationTypeDTO) => {
+  const handleUpdateEducationType = async (args: UpdateEducationTypeDTO) => {
     try {
-      await updateEducationType({
-        id,
-        name,
-      }).unwrap()
+      await updateEducationType(args).unwrap()
     } catch (err) {
       console.error('Ошибка при обновлении типа образования:', err)
       throw err
     }
   }
 
-  const handleDeleteEducationType = async ({ id }: DeleteEducationTypeDTO) => {
+  const handleDeleteEducationType = async (args: DeleteEducationTypeDTO) => {
     try {
-      await deleteEducationType({ id }).unwrap()
+      await deleteEducationType(args).unwrap()
     } catch (err) {
       console.error('Ошибка при удалении типа образования:', err)
       throw err
@@ -91,21 +88,18 @@ export const Faculty = ({ educationType, columnsAmount }: Props) => {
     }
   }
 
-  const handleUpdateFaculty = async ({ id, name }: UpdateFacultyDTO) => {
+  const handleUpdateFaculty = async (args: UpdateFacultyDTO) => {
     try {
-      await updateFaculty({
-        id,
-        name,
-      }).unwrap()
+      await updateFaculty(args).unwrap()
     } catch (err) {
       console.error('Ошибка при обновлении факультета:', err)
       throw err
     }
   }
 
-  const handleDeleteFaculty = async ({ id }: DeleteFacultyDTO) => {
+  const handleDeleteFaculty = async (args: DeleteFacultyDTO) => {
     try {
-      await deleteFaculty({ id }).unwrap()
+      await deleteFaculty(args).unwrap()
     } catch (err) {
       console.error('Ошибка при удалении факультета:', err)
       throw err
@@ -128,7 +122,7 @@ export const Faculty = ({ educationType, columnsAmount }: Props) => {
               crudHandlers={{
                 onUpdate: (newValue) =>
                   handleUpdateEducationType({ id: educationType._id, name: newValue }),
-                onDelete: (_) => handleDeleteEducationType({ id: educationType._id }),
+                onDelete: () => handleDeleteEducationType({ id: educationType._id }),
               }}
               className={style.educationType}
             >
@@ -164,7 +158,7 @@ export const Faculty = ({ educationType, columnsAmount }: Props) => {
                     crudHandlers={{
                       onUpdate: (newValue) =>
                         handleUpdateFaculty({ id: faculty._id, name: newValue }),
-                      onDelete: (_) => handleDeleteFaculty({ id: faculty._id }),
+                      onDelete: () => handleDeleteFaculty({ id: faculty._id }),
                     }}
                     className={style.facultyWithActions}
                   >

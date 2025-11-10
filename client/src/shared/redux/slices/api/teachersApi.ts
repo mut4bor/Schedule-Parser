@@ -1,18 +1,30 @@
 import { baseApi } from '../baseApi'
 
+export enum TeacherTitle {
+  None = 'Без степени',
+  CandidateOfSciences = 'Кандидат наук',
+  DoctorOfSciences = 'Доктор наук',
+  Assistant = 'Ассистент',
+  Lecturer = 'Преподаватель',
+  SeniorLecturer = 'Старший преподаватель',
+  Docent = 'Доцент',
+  Professor = 'Профессор',
+  HeadOfDepartment = 'Заведующий кафедрой',
+}
+
 export interface ITeacher {
-  firstName: string
-  middleName: string
-  lastName: string
-  title?: string
   _id: string
+  firstName?: string
+  middleName?: string
+  lastName?: string
+  title?: string
 }
 
 export interface CreateTeacherDTO {
   firstName: string
   middleName: string
   lastName: string
-  title?: string
+  title: string
 }
 
 export interface UpdateTeacherDTO {
@@ -46,16 +58,16 @@ export const teachersApi = baseApi.injectEndpoints({
       invalidatesTags: ['Teachers'],
     }),
     updateTeacher: builder.mutation<{ message: string }, UpdateTeacherDTO>({
-      query: (body) => ({
-        url: `/teachers`,
+      query: ({ id, ...body }) => ({
+        url: `/teachers/${id}`,
         method: 'PUT',
         body,
       }),
       invalidatesTags: ['Teachers'],
     }),
     deleteTeacher: builder.mutation<{ message: string }, DeleteTeacherDTO>({
-      query: (body) => ({
-        url: `/teachers/${body.id}`,
+      query: ({ id }) => ({
+        url: `/teachers/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['Teachers'],

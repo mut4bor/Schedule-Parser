@@ -1,5 +1,5 @@
 import * as style from './style.module.scss'
-import { DayOfWeek, ILesson } from '@/shared/redux/types'
+import { DayOfWeek, ILesson, TimeSlots } from '@/shared/redux/types'
 import { useState } from 'react'
 import { useAppSelector } from '@/shared/redux/hooks'
 import { EditDeleteActions } from '@/entities/admin'
@@ -76,10 +76,10 @@ export const LessonListItemAdmin = ({
           {lesson.subject}
           {lesson.lessonType && ` (${lesson.lessonType})`}
 
-          {lesson.teacher.title && `, ${lesson.teacher.title}`}
-          {` ${lesson.teacher.lastName}`}
-          {` ${lesson.teacher.firstName}`}
-          {` ${lesson.teacher.middleName}`}
+          {lesson.teacher?.title && `, ${lesson.teacher.title}`}
+          {` ${lesson.teacher?.lastName ? lesson.teacher.lastName : ''}`}
+          {` ${lesson.teacher?.firstName ? lesson.teacher.firstName : ''}`}
+          {` ${lesson.teacher?.middleName ? lesson.teacher.middleName : ''}`}
 
           {lesson.classroom && `, ${lesson.classroom}`}
         </p>
@@ -106,7 +106,15 @@ export const LessonListItemAdmin = ({
       {isModalOpen && accessToken && teachersData && (
         <Modal onClose={handleCancel}>
           <ModalForm onSubmit={handleSave} onCancel={handleCancel}>
-            <ModalInput label="Время:" name="time" defaultValue={lesson.time} type="time" />
+            <ModalSelect
+              label="Время:"
+              name="time"
+              defaultValue={lesson.time}
+              options={TimeSlots.map((time) => ({
+                value: time,
+                label: time,
+              }))}
+            />
             <ModalInput label="Название предмета:" name="subject" defaultValue={lesson.subject} />
             <ModalSelect
               label="Преподаватель:"

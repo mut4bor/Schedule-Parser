@@ -20,40 +20,30 @@
     display: flex;
     position: relative;
     flex-direction: column;
-    align-items: center;
-    gap: $containerPaddingX;
+    gap: 10px;
     border-radius: 0.5rem;
     background: $darkGray;
-    padding: $containerPaddingX;
+    padding: 20px;
     width: 100%;
   }
 
-  .selectContainer {
+  .teacherContainer {
     display: flex;
     flex-direction: row;
+    justify-content: space-between;
     align-items: center;
-    gap: 1rem;
-    width: 100%;
-
-    &.column {
-      flex-direction: column;
-      width: fit-content;
-      min-width: 20rem;
-    }
+    gap: 10px;
   }
 
-  .doneButton {
+  .text {
     display: flex;
-    transition: 0.2s ease-in-out;
-    cursor: pointer;
+    align-items: center;
     border-radius: 0.5rem;
-    background: $accentColor;
-    padding: 0.5rem 1rem;
+    background: rgba($white, 0.1);
+    padding: 0.8rem 1.5rem;
+    width: 100%;
     color: $white;
-
-    &:hover {
-      background: color.scale($accentColor, $lightness: 10%);
-    }
+    font-size: 2rem;
   }
 }
 

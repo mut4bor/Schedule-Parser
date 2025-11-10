@@ -1,6 +1,6 @@
 import * as style from './style.module.scss'
 import { useState } from 'react'
-import { DayOfWeek, ILesson } from '@/shared/redux/types'
+import { DayOfWeek, ILesson, TimeSlots } from '@/shared/redux/types'
 import { useAppSelector } from '@/shared/redux/hooks'
 import {
   UpdateLessonDTO,
@@ -66,16 +66,20 @@ export const LessonListItem = ({
     setIsModalOpen(false)
   }
 
+  console.log('lesson', lesson)
+
   return (
     <li className={style.lessonListItem}>
       <div className={style.lessonHeader}>
         <p className={style.text}>
           {lesson.time} - {lesson.subject}
           {` (${lesson.lessonType})`}
-          {`, ${lesson.teacher.title}`}
-          {` ${lesson.teacher.lastName}`}
-          {` ${lesson.teacher.firstName.charAt(0).toUpperCase()}.`}
-          {` ${lesson.teacher.middleName.charAt(0).toUpperCase()}.`}
+          {lesson.teacher?.title ? `, ${lesson.teacher.title}` : ''}
+          {lesson.teacher?.lastName ? ` ${lesson.teacher.lastName}` : ''}
+          {lesson.teacher?.firstName ? ` ${lesson.teacher.firstName.charAt(0).toUpperCase()}.` : ''}
+          {lesson.teacher?.middleName
+            ? ` ${lesson.teacher.middleName.charAt(0).toUpperCase()}.`
+            : ''}
           {`, ${lesson.classroom}`}
         </p>
 
@@ -101,7 +105,15 @@ export const LessonListItem = ({
       {isModalOpen && accessToken && teachersData && (
         <Modal onClose={handleCancel}>
           <ModalForm onSubmit={handleSave} onCancel={handleCancel}>
-            <ModalInput label="Время:" name="time" defaultValue={lesson.time} type="time" />
+            <ModalSelect
+              label="Время:"
+              name="time"
+              defaultValue={lesson.time}
+              options={TimeSlots.map((time) => ({
+                value: time,
+                label: time,
+              }))}
+            />
             <ModalInput label="Название предмета:" name="subject" defaultValue={lesson.subject} />
             <ModalSelect
               label="Преподаватель:"

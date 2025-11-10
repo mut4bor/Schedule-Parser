@@ -1,4 +1,5 @@
 import mongoose, { Schema } from 'mongoose'
+import { LessonType, TimeSlots } from '@/types/index.js'
 
 const scheduleSchema = new Schema(
   {
@@ -28,6 +29,7 @@ const scheduleSchema = new Schema(
             time: {
               type: String,
               required: true,
+              enum: TimeSlots,
             },
             classroom: {
               type: String,
@@ -47,7 +49,7 @@ const scheduleSchema = new Schema(
             lessonType: {
               type: String,
               required: true,
-              enum: ['Лекция', 'Практика', 'Лабораторная', 'Семинар'],
+              enum: Object.values(LessonType),
             },
           },
         ],

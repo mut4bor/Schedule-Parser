@@ -5,7 +5,7 @@ import { useAppSelector } from '@/shared/redux/hooks'
 
 export type CrudHandlers = {
   onUpdate?: ((newValue: string) => Promise<void>) | null
-  onDelete?: ((value: string) => Promise<void>) | null
+  onDelete?: (() => Promise<void>) | null
 }
 
 interface Props {
@@ -53,7 +53,7 @@ export const EditableItem = ({
     if (!crudHandlers?.onDelete || !window.confirm(`Вы уверены, что хотите удалить ${value}?`))
       return
     try {
-      await crudHandlers.onDelete(value)
+      await crudHandlers.onDelete()
     } catch (err) {
       console.error('Ошибка при удалении:', err)
     }

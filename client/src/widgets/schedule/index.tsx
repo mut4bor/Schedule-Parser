@@ -20,7 +20,7 @@ import { ModalInput } from '../modal-input'
 import { useState } from 'react'
 import { ModalSelect } from '../modal-select'
 import { RefreshDate } from '../refresh-date'
-import { DayOfWeek } from '@/shared/redux/types'
+import { DayOfWeek, TimeSlots } from '@/shared/redux/types'
 import { PickedWeekType } from '@/pages/groupID'
 
 interface Props {
@@ -104,8 +104,6 @@ export const Schedule = ({ groupID, pickedDayIndex, pickedWeek }: Props) => {
     setIsModalOpen(false)
   }
 
-  console.log('scheduleData', scheduleData)
-
   return (
     <>
       <ul className={style.lessonList}>
@@ -137,7 +135,15 @@ export const Schedule = ({ groupID, pickedDayIndex, pickedWeek }: Props) => {
           >
             <Modal onClose={handleCancel}>
               <ModalForm onSubmit={handleCreateLesson} onCancel={handleCancel}>
-                <ModalInput label="Время:" name="time" defaultValue="" type="time" />
+                <ModalSelect
+                  label="Время:"
+                  name="time"
+                  defaultValue=""
+                  options={TimeSlots.map((time) => ({
+                    value: time,
+                    label: time,
+                  }))}
+                />
                 <ModalInput label="Название предмета:" name="subject" defaultValue="" />
                 <ModalSelect
                   label="Преподаватель:"

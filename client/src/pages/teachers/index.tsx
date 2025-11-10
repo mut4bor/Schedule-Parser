@@ -4,102 +4,101 @@ import {
   useCreateTeacherMutation,
   useUpdateTeacherMutation,
   useDeleteTeacherMutation,
-  ITeacher,
+  UpdateTeacherDTO,
+  DeleteTeacherDTO,
 } from '@/shared/redux/slices/api/teachersApi'
 import * as style from './style.module.scss'
+import { useAppSelector } from '@/shared/redux/hooks'
+import { AddItem } from '@/widgets/add-item'
+import { Modal } from '@/widgets/modal'
+import { ModalForm } from '@/widgets/modal-form'
+import { ModalInput } from '@/widgets/modal-input'
+import { TeacherCell } from '@/widgets/teacher-cell'
 
 export const TeachersPage = () => {
-  const { data: teachers, isLoading } = useGetAllTeachersQuery()
-  const [addTeacher] = useCreateTeacherMutation()
+  const { data: teachersData } = useGetAllTeachersQuery()
+  const accessToken = useAppSelector((store) => store.auth.accessToken)
+
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const handleCancel = () => {
+    setIsModalOpen(false)
+  }
+
+  const [createTeacher] = useCreateTeacherMutation()
   const [updateTeacher] = useUpdateTeacherMutation()
   const [deleteTeacher] = useDeleteTeacherMutation()
 
-  const [formData, setFormData] = useState<Partial<ITeacher>>({})
-  const [editingId, setEditingId] = useState<string | null>(null)
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!formData.firstName || !formData.lastName || !formData.middleName) return
 
-    if (editingId) {
-      await updateTeacher({ ...formData, id: editingId })
-    } else {
-      await addTeacher({
-        firstName: formData.firstName,
-        middleName: formData.middleName,
-        lastName: formData.lastName,
-        title: formData.title,
-      })
-    }
+    const formData = new FormData(e.target as HTMLFormElement)
+    const firstName = formData.get('firstName') as string
+    const lastName = formData.get('lastName') as string
+    const middleName = formData.get('middleName') as string
+    const title = formData.get('title') as string
 
-    setFormData({})
-    setEditingId(null)
-  }
+    if (!firstName || !lastName || !middleName || !title) return
 
-  const handleEdit = (teacher: ITeacher) => {
-    setFormData(teacher)
-    setEditingId(teacher._id)
-  }
-
-  const handleDelete = async (id: string) => {
-    if (confirm('Удалить преподавателя?')) {
-      await deleteTeacher({ id })
+    try {
+      await createTeacher({
+        firstName,
+        middleName,
+        lastName,
+        title,
+      }).unwrap()
+    } catch (err) {
+      console.error('Ошибка при создании учителя:', err)
     }
   }
 
-  if (isLoading) return <div>Загрузка...</div>
+  const handleUpdateTeacher = async (args: UpdateTeacherDTO) => {
+    try {
+      await updateTeacher(args).unwrap()
+    } catch (err) {
+      console.error('Ошибка при обновлении урока:', err)
+    }
+  }
+
+  const handleDelete = async (args: DeleteTeacherDTO) => {
+    if (!window.confirm(`Вы уверены, что хотите удалить этого преподавателя?`)) return
+
+    try {
+      await deleteTeacher(args).unwrap()
+    } catch (err) {
+      console.error('Ошибка при удалении урока:', err)
+    }
+  }
 
   return (
     <div className={style.container}>
-      <h1>Преподаватели</h1>
-
-      <form onSubmit={handleSubmit} className={style.form}>
-        <input
-          type="text"
-          placeholder="Имя"
-          value={formData.firstName || ''}
-          onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-        />
-        <input
-          type="text"
-          placeholder="Фамилия"
-          value={formData.lastName || ''}
-          onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-        />
-        <input
-          type="text"
-          placeholder="Отчество"
-          value={formData.middleName || ''}
-          onChange={(e) => setFormData({ ...formData, middleName: e.target.value })}
-        />
-        <input
-          type="text"
-          placeholder="Титул"
-          value={formData.title || ''}
-          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-        />
-        <button type="submit">{editingId ? 'Сохранить' : 'Добавить'}</button>
-        {editingId && (
-          <button type="button" onClick={() => setEditingId(null)}>
-            Отмена
-          </button>
-        )}
-      </form>
-
-      <ul className={style.list}>
-        {teachers?.map((teacher) => (
-          <li key={teacher._id} className={style.item}>
-            <span>
-              {teacher.lastName} {teacher.firstName} {teacher.middleName} —{' '}
-              {teacher.title || 'Без должности'}
-            </span>
-            <div className={style.actions}>
-              <button onClick={() => handleEdit(teacher)}>✏️ Редактировать</button>
-              <button onClick={() => handleDelete(teacher._id)}>🗑️ Удалить</button>
-            </div>
-          </li>
+      <div className={style.wrapper}>
+        {teachersData?.map((teacher) => (
+          <TeacherCell
+            teacher={teacher}
+            onUpdate={handleUpdateTeacher}
+            onDelete={handleDelete}
+            key={teacher._id}
+          />
         ))}
-      </ul>
+
+        {accessToken && (
+          <AddItem
+            addButtonLabel="Добавить преподавателя"
+            isAdding={isModalOpen}
+            setIsAdding={setIsModalOpen}
+          >
+            <Modal onClose={handleCancel}>
+              <ModalForm onSubmit={handleSubmit} onCancel={handleCancel}>
+                <ModalInput label="Фамилия:" name="lastName" defaultValue="" />
+                <ModalInput label="Имя:" name="firstName" defaultValue="" />
+                <ModalInput label="Отчество:" name="middleName" defaultValue="" />
+                <ModalInput label="Титул:" name="title" defaultValue="" />
+              </ModalForm>
+            </Modal>
+          </AddItem>
+        )}
+      </div>
     </div>
   )
 }

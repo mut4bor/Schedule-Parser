@@ -1,6 +1,7 @@
 import { Group } from '@/database/models/group.model.js'
 import { Schedule } from '@/database/models/schedule.model.js'
 import { Teacher } from '@/database/models/teacher.model.js'
+import { ISchedule, LessonType, TimeSlots } from '@/types/index.js'
 import { Request, Response } from 'express'
 
 const getScheduleById = async (req: Request, res: Response) => {
@@ -88,21 +89,52 @@ const getGroupsSchedules = async (req: Request, res: Response) => {
 
     const dayNames = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота']
 
-    const weeks = schedules.map((schedule) => {
-      const days = schedule.days.map((day) => {
+    // Группируем расписания по неделям
+    const weekMap = new Map()
+
+    schedules.forEach((schedule) => {
+      const weekKey = schedule.weekName
+      if (!weekMap.has(weekKey)) {
+        weekMap.set(weekKey, {
+          weekName: schedule.weekName,
+          isActive: schedule.isActive,
+          schedulesByGroup: new Map(),
+        })
+      }
+      weekMap.get(weekKey).schedulesByGroup.set(String(schedule.group), schedule)
+    })
+
+    // Формируем унифицированную структуру
+    const weeks = Array.from(weekMap.values()).map((week) => {
+      const days = dayNames.map((dayName, dayIndex) => {
+        const timeSlots = TimeSlots.map((time) => {
+          const lessons = groupsList.map((group) => {
+            const schedule: ISchedule = week.schedulesByGroup.get(group.id)
+            if (!schedule) return null
+
+            const day = schedule.days.find((d) => d.dayOfWeek === dayIndex)
+            if (!day) return null
+
+            const lesson = day.lessons.find((l) => l.time === time)
+            return lesson || null
+          })
+
+          return {
+            time,
+            lessons,
+          }
+        })
+
         return {
-          dayName: dayNames[day.dayOfWeek] || `День ${day.dayOfWeek}`,
-          dayIndex: day.dayOfWeek,
-          timeSlots: day.lessons.map((lesson) => ({
-            time: lesson.time,
-            lessons: [lesson],
-          })),
+          dayName,
+          dayIndex,
+          timeSlots,
         }
       })
 
       return {
-        weekName: schedule.weekName,
-        isActive: schedule.isActive,
+        weekName: week.weekName,
+        isActive: week.isActive,
         days,
       }
     })
@@ -229,10 +261,9 @@ const createLesson = async (req: Request, res: Response) => {
       })
     }
 
-    const validLessonTypes = ['Лекция', 'Практика', 'Лабораторная', 'Семинар']
-    if (!validLessonTypes.includes(lessonType)) {
+    if (!Object.values(LessonType).includes(lessonType)) {
       return res.status(400).json({
-        message: 'Invalid lesson type. Must be one of: ' + validLessonTypes.join(', '),
+        message: 'Invalid lesson type. Must be one of: ' + Object.values(LessonType).join(', '),
       })
     }
 
@@ -330,10 +361,9 @@ const updateLesson = async (req: Request, res: Response) => {
     if (subject) lesson.subject = subject
     if (teacherID) lesson.teacher = teacherID
     if (lessonType) {
-      const validLessonTypes = ['Лекция', 'Практика', 'Лабораторная', 'Семинар']
-      if (!validLessonTypes.includes(lessonType)) {
+      if (!Object.values(LessonType).includes(lessonType)) {
         return res.status(400).json({
-          message: 'Invalid lesson type. Must be one of: ' + validLessonTypes.join(', '),
+          message: 'Invalid lesson type. Must be one of: ' + Object.values(LessonType).join(', '),
         })
       }
       lesson.lessonType = lessonType

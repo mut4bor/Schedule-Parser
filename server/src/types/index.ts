@@ -1,48 +1,49 @@
-import { Types, Document } from 'mongoose'
-
-export interface ITeacher extends Document {
+export interface ITeacher {
   firstName: string
   middleName: string
   lastName: string
-  title: string
+  title?: string
+  _id: string
 }
 
-export interface IEducationType extends Document {
-  name: string
-  createdAt: Date
-  updatedAt: Date
+export enum LessonType {
+  Lecture = 'Лекция',
+  Practice = 'Практика',
+  Laboratory = 'Лабораторная',
+  Seminar = 'Семинар',
 }
 
-export interface ICourse {
-  courseNumber: number
-  name?: string
+export enum DayOfWeek {
+  None = -1,
+  Monday = 0,
+  Tuesday = 1,
+  Wednesday = 2,
+  Thursday = 3,
+  Friday = 4,
+  Saturday = 5,
 }
 
-export interface IFaculty extends Document {
-  name: string
-  educationType: Types.ObjectId
-  courses: ICourse[]
-  createdAt: Date
-  updatedAt: Date
-}
+export const TimeSlots = ['09:45', '11:30', '13:30', '15:15', '17:00']
 
-export interface IGroup extends Document {
-  name: string
-  educationType: Types.ObjectId
-  faculty: Types.ObjectId
-  course: number
-  createdAt: Date
-  updatedAt: Date
-}
-
-export interface ISchedule extends Document {
-  group: Types.ObjectId
-  teacher: Types.ObjectId
-  date: Date
+export interface ILesson {
   time: string
   classroom: string
   subject: string
-  lessonType: 'Лекция' | 'Практика' | 'Лабораторная' | 'Семинар'
-  createdAt: Date
-  updatedAt: Date
+  teacher: ITeacher
+  lessonType: LessonType
+}
+
+export interface IDay {
+  dayOfWeek: DayOfWeek
+  lessons: ILesson[]
+}
+
+export interface ISchedule {
+  _id: string
+  weekName: string
+  isActive: boolean
+  group: string
+  days: IDay[]
+  createdAt?: string
+  updatedAt?: string
 }
