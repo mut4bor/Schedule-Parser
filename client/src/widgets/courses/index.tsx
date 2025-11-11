@@ -13,7 +13,7 @@ import {
 } from '@/shared/redux/slices/api/coursesApi'
 import { useAppSelector } from '@/shared/redux/hooks'
 import routes from '@/shared/routes'
-import { AddItem } from '@/widgets/add-item'
+import { AdminAddButton } from '@/entities/admin'
 import { EditableItem } from '../editable-item'
 import { ModalForm } from '../modal-form'
 import { Modal } from '../modal'
@@ -40,17 +40,16 @@ export const Courses = () => {
   const [updateCourse] = useUpdateCourseMutation()
   const [deleteCourse] = useDeleteCourseMutation()
 
+  const [formState, setFormState] = useState('')
+
   const handleCreateCourse = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    const formData = new FormData(e.target as HTMLFormElement)
-    const course = formData.get('course') as string
-
-    if (!course || !faculty) return
+    if (!faculty) return
 
     try {
       await createCourse({
-        name: course,
+        name: formState,
         facultyId: faculty,
       }).unwrap()
     } catch (err) {
@@ -126,13 +125,21 @@ export const Courses = () => {
           ))}
 
       {accessToken && (
-        <AddItem addButtonLabel="Добавить курс" isAdding={isModalOpen} setIsAdding={setIsModalOpen}>
-          <Modal onClose={handleCancel}>
-            <ModalForm onSubmit={handleCreateCourse} onCancel={handleCancel}>
-              <ModalInput label="Добавить курс:" name="course" defaultValue="" type="number" />
-            </ModalForm>
-          </Modal>
-        </AddItem>
+        <AdminAddButton onClick={() => setIsModalOpen(true)}>Добавить курс</AdminAddButton>
+      )}
+
+      {isModalOpen && (
+        <Modal onClose={handleCancel}>
+          <ModalForm onSubmit={handleCreateCourse} onCancel={handleCancel}>
+            <ModalInput
+              label="Добавить курс:"
+              name="course"
+              value={formState}
+              onChange={(e) => setFormState(e.target.value)}
+              type="number"
+            />
+          </ModalForm>
+        </Modal>
       )}
     </ul>
   )

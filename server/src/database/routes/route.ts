@@ -38,6 +38,7 @@ import {
   updateTeacher,
   deleteTeacher,
   getTeacherById,
+  getTeachersSchedules,
 } from '@/database/controllers/teacher.controller.js'
 import { authMiddleware } from '@/middleware/authMiddleware.js'
 
@@ -107,5 +108,6 @@ router.get(`${teachersPath}/:id`, getTeacherById)
 router.post(teachersPath, createTeacher)
 router.put(`${teachersPath}/:id`, updateTeacher)
 router.delete(`${teachersPath}/:id`, deleteTeacher)
+router.get(`${teachersPath}/:ids/schedules`, getTeachersSchedules)
 
 export { router }

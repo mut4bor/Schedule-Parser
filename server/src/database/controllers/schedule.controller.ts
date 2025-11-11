@@ -1,7 +1,7 @@
 import { Group } from '@/database/models/group.model.js'
 import { Schedule } from '@/database/models/schedule.model.js'
 import { Teacher } from '@/database/models/teacher.model.js'
-import { ISchedule, LessonType, TimeSlots } from '@/types/index.js'
+import { dayNames, ISchedule, LessonType, TimeSlots } from '@/types/index.js'
 import { Request, Response } from 'express'
 
 const getScheduleById = async (req: Request, res: Response) => {
@@ -86,8 +86,6 @@ const getGroupsSchedules = async (req: Request, res: Response) => {
     })
       .populate('days.lessons.teacher')
       .lean()
-
-    const dayNames = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота']
 
     // Группируем расписания по неделям
     const weekMap = new Map()

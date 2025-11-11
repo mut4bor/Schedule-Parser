@@ -39,6 +39,44 @@ export interface DeleteTeacherDTO {
   id: string
 }
 
+interface TeachersSchedule {
+  teachers: {
+    id: string
+    firstName: string
+    middleName: string
+    lastName: string
+    title: string
+  }[]
+
+  weeks: {
+    weekName: string
+    isActive: boolean
+    days: {
+      dayName: string
+      dayIndex: number
+      timeSlots: {
+        time: string
+        lessons: (
+          | {
+              subject: string
+              classroom: string
+              lessonType: string
+              group: {
+                _id: string
+                name: string
+                educationType: string
+                faculty: string
+                course: string
+                __v: number
+              }
+            }[]
+          | null
+        )[]
+      }[]
+    }[]
+  }[]
+}
+
 export const teachersApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAllTeachers: builder.query<ITeacher[], string | void>({
@@ -48,6 +86,10 @@ export const teachersApi = baseApi.injectEndpoints({
     getTeacherById: builder.query<ITeacher, string>({
       query: (id) => `/teachers/${id}`,
       providesTags: ['Teachers'],
+    }),
+    getTeachersSchedules: builder.query<TeachersSchedule, string[]>({
+      query: (ids) => `/teachers/${ids.join(',')}/schedules`,
+      providesTags: ['GroupsSchedule'],
     }),
     createTeacher: builder.mutation<{ message: string }, CreateTeacherDTO>({
       query: (body) => ({
@@ -79,6 +121,7 @@ export const teachersApi = baseApi.injectEndpoints({
 export const {
   useGetAllTeachersQuery,
   useGetTeacherByIdQuery,
+  useGetTeachersSchedulesQuery,
   useCreateTeacherMutation,
   useUpdateTeacherMutation,
   useDeleteTeacherMutation,

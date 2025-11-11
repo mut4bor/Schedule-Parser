@@ -11,7 +11,7 @@ import {
 } from '@/shared/redux/slices/api/groupsApi'
 import { useGetGroupNamesQuery } from '@/shared/redux/slices/api/namesApi'
 import { useAppSelector } from '@/shared/redux/hooks'
-import { AddItem } from '@/widgets/add-item'
+import { AdminAddButton } from '@/entities/admin'
 import { EditableItem } from '@/widgets/editable-item'
 import { Modal } from '@/widgets/modal'
 import { ModalInput } from '@/widgets/modal-input'
@@ -41,15 +41,15 @@ export const GroupsList = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false)
 
+  const [formState, setFormState] = useState('')
+
   const handleCreateGroup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-
-    const formData = new FormData(e.currentTarget)
 
     if (!educationType || !faculty || !course) return
 
     const typedForm: CreateGroupDTO = {
-      name: String(formData.get('groupName')),
+      name: formState,
       educationType,
       faculty,
       course,
@@ -110,17 +110,20 @@ export const GroupsList = () => {
       </ul>
 
       {accessToken && course && (
-        <AddItem
-          addButtonLabel="Добавить группу"
-          isAdding={isModalOpen}
-          setIsAdding={setIsModalOpen}
-        >
-          <Modal onClose={handleCancel}>
-            <ModalForm onSubmit={handleCreateGroup} onCancel={handleCancel}>
-              <ModalInput label="Добавить группу:" name="groupName" defaultValue="" />
-            </ModalForm>
-          </Modal>
-        </AddItem>
+        <AdminAddButton onClick={() => setIsModalOpen(true)}>Добавить группу</AdminAddButton>
+      )}
+
+      {isModalOpen && (
+        <Modal onClose={handleCancel}>
+          <ModalForm onSubmit={handleCreateGroup} onCancel={handleCancel}>
+            <ModalInput
+              label="Добавить группу:"
+              name="groupName"
+              value={formState}
+              onChange={(e) => setFormState(e.target.value)}
+            />
+          </ModalForm>
+        </Modal>
       )}
     </div>
   )

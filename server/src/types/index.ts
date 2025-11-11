@@ -23,6 +23,8 @@ export enum DayOfWeek {
   Saturday = 5,
 }
 
+export const dayNames = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота']
+
 export const TimeSlots = ['09:45', '11:30', '13:30', '15:15', '17:00']
 
 export interface ILesson {

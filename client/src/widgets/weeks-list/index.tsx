@@ -15,11 +15,12 @@ import { useAppSelector } from '@/shared/redux/hooks'
 import { Skeleton } from '@/shared/ui'
 import { useParams } from 'react-router-dom'
 import { EditableItem } from '../editable-item'
-import { AddItem } from '../add-item'
+import { AdminAddButton } from '@/entities/admin'
 import { ModalForm } from '../modal-form'
 import { ModalInput } from '../modal-input'
 import { Modal } from '../modal'
 import { PickedWeekType } from '@/pages/groupID'
+import { ModalSelect } from '../modal-select'
 
 const currentWeek = getWeekNumber(new Date())
 const formattedCurrentWeek = `${currentWeek.year}-W${currentWeek.week}`
@@ -31,7 +32,6 @@ interface Props {
 
 export const WeeksList = ({ pickedWeek, setPickedWeek }: Props) => {
   const accessToken = useAppSelector((store) => store.auth.accessToken)
-
   const { groupID } = useParams()
 
   const { data: weeksData } = useGetWeeksByGroupIdQuery(groupID ?? '', {
@@ -44,15 +44,29 @@ export const WeeksList = ({ pickedWeek, setPickedWeek }: Props) => {
 
   const [isModalOpen, setIsModalOpen] = useState(false)
 
+  const [formState, setFormState] = useState({
+    weekType: 'odd',
+    weekValue: '',
+  })
+
+  const handleChange = (field: keyof typeof formState, value: string) => {
+    setFormState((prev) => ({ ...prev, [field]: value }))
+  }
+
   const handleCreateWeek = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-
     const formData = new FormData(e.currentTarget)
 
     if (!groupID) return
 
+    const selectedType = formData.get('weekType') as string
+    const weekName =
+      selectedType === 'specific' ? String(formData.get('weekName') || '') : selectedType
+
+    if (!weekName) return
+
     const typedForm: CreateWeekDTO = {
-      weekName: String(formData.get('weekName') || undefined),
+      weekName,
       groupID,
       days: [],
       isActive: false,
@@ -60,8 +74,9 @@ export const WeeksList = ({ pickedWeek, setPickedWeek }: Props) => {
 
     try {
       await createWeek(typedForm)
+      setIsModalOpen(false)
     } catch (err) {
-      console.error('Ошибка при создании урока:', err)
+      console.error('Ошибка при создании недели:', err)
     }
   }
 
@@ -81,9 +96,7 @@ export const WeeksList = ({ pickedWeek, setPickedWeek }: Props) => {
     }
   }
 
-  const handleCancel = () => {
-    setIsModalOpen(false)
-  }
+  const handleCancel = () => setIsModalOpen(false)
 
   useEffect(() => {
     if (!weeksData?.length) return
@@ -114,26 +127,22 @@ export const WeeksList = ({ pickedWeek, setPickedWeek }: Props) => {
             <li className={style.listItem} key={index}>
               <EditableItem
                 value={week.weekName}
-                crudHandlers={
-                  week.weekName === 'odd' || week.weekName === 'even'
-                    ? null
-                    : {
-                        onUpdate: (newValue) => {
-                          setPickedWeek({
-                            id: week._id,
-                            name: newValue,
-                          })
-                          return handleUpdateWeek({
-                            id: week._id,
-                            weekName: newValue,
-                          })
-                        },
-                        onDelete: () =>
-                          handleDeleteWeek({
-                            id: week._id,
-                          }),
-                      }
-                }
+                crudHandlers={{
+                  onUpdate: (newValue) => {
+                    setPickedWeek({
+                      id: week._id,
+                      name: newValue,
+                    })
+                    return handleUpdateWeek({
+                      id: week._id,
+                      weekName: newValue,
+                    })
+                  },
+                  onDelete: () =>
+                    handleDeleteWeek({
+                      id: week._id,
+                    }),
+                }}
                 type="week"
                 min={formattedCurrentWeek}
               >
@@ -148,19 +157,35 @@ export const WeeksList = ({ pickedWeek, setPickedWeek }: Props) => {
           ))}
 
       {accessToken && (
-        <li>
-          <AddItem
-            addButtonLabel="Добавить неделю"
-            isAdding={isModalOpen}
-            setIsAdding={setIsModalOpen}
-          >
-            <Modal onClose={handleCancel}>
-              <ModalForm onSubmit={handleCreateWeek} onCancel={handleCancel}>
-                <ModalInput label="Добавить неделю:" name="weekName" defaultValue="" type="week" />
-              </ModalForm>
-            </Modal>
-          </AddItem>
-        </li>
+        <AdminAddButton onClick={() => setIsModalOpen(true)}>Добавить неделю</AdminAddButton>
+      )}
+
+      {isModalOpen && (
+        <Modal onClose={handleCancel}>
+          <ModalForm onSubmit={handleCreateWeek} onCancel={handleCancel}>
+            <ModalSelect
+              label="Выберите тип недели"
+              name="weekType"
+              value={formState.weekType}
+              onChange={(e) => handleChange('weekType', e.target.value)}
+              options={[
+                { value: 'odd', label: 'Нечетная' },
+                { value: 'even', label: 'Четная' },
+                { value: 'specific', label: 'Конкретная неделя' },
+              ]}
+            />
+
+            {formState.weekType === 'specific' && (
+              <ModalInput
+                label="Добавить неделю:"
+                name="weekName"
+                type="week"
+                value={formState.weekValue}
+                onChange={(e) => handleChange('weekValue', e.target.value)}
+              />
+            )}
+          </ModalForm>
+        </Modal>
       )}
     </ul>
   )

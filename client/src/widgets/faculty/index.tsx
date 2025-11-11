@@ -3,7 +3,7 @@ import { Skeleton } from '@/shared/ui'
 import { FacultyLink } from '@/entities/faculty'
 import { Fragment, useState } from 'react'
 import { EditableItem } from '@/widgets/editable-item'
-import { AddItem } from '../add-item'
+import { AdminAddButton } from '@/entities/admin'
 import { Modal } from '../modal'
 import { ModalForm } from '../modal-form'
 import { ModalInput } from '../modal-input'
@@ -49,6 +49,8 @@ export const Faculty = ({ educationType, columnsAmount }: Props) => {
   const [updateFaculty] = useUpdateFacultyMutation()
   const [deleteFaculty] = useDeleteFacultyMutation()
 
+  const [formState, setFormState] = useState('')
+
   const handleUpdateEducationType = async (args: UpdateEducationTypeDTO) => {
     try {
       await updateEducationType(args).unwrap()
@@ -70,9 +72,6 @@ export const Faculty = ({ educationType, columnsAmount }: Props) => {
   const handleCreateFaculty = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    const formData = new FormData(e.target as HTMLFormElement)
-    const faculty = formData.get('faculty') as string
-
     if (!educationType) {
       return
     }
@@ -80,7 +79,7 @@ export const Faculty = ({ educationType, columnsAmount }: Props) => {
     try {
       await createFaculty({
         educationType: educationType._id,
-        name: faculty,
+        name: formState,
       }).unwrap()
     } catch (err) {
       console.error('Ошибка при создании факультета:', err)
@@ -176,28 +175,29 @@ export const Faculty = ({ educationType, columnsAmount }: Props) => {
               <Fragment>
                 {facultiesData.length > 0 && <Pipe />}
                 <div>
-                  <AddItem
-                    addButtonLabel="Добавить факультет"
-                    isAdding={isModalOpen}
-                    setIsAdding={setIsModalOpen}
-                  >
-                    <Modal onClose={handleCancel}>
-                      <ModalForm onSubmit={handleCreateFaculty} onCancel={handleCancel}>
-                        <ModalInput
-                          label="Добавить факультет:"
-                          name="faculty"
-                          defaultValue=""
-                          type="text"
-                        />
-                      </ModalForm>
-                    </Modal>
-                  </AddItem>
+                  <AdminAddButton onClick={() => setIsModalOpen(true)}>
+                    Добавить факультет
+                  </AdminAddButton>
                 </div>
               </Fragment>
             )}
           </>
         )}
       </ul>
+
+      {isModalOpen && (
+        <Modal onClose={handleCancel}>
+          <ModalForm onSubmit={handleCreateFaculty} onCancel={handleCancel}>
+            <ModalInput
+              label="Добавить факультет:"
+              name="faculty"
+              value={formState}
+              onChange={(e) => setFormState(e.target.value)}
+              type="text"
+            />
+          </ModalForm>
+        </Modal>
+      )}
     </li>
   )
 }

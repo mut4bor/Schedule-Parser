@@ -4,14 +4,15 @@ interface Props {
   label: string
   type?: 'text' | 'number' | 'date' | 'week' | 'time'
   name: string
-  defaultValue: string
+  value: string
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-export const ModalInput = ({ label, name, defaultValue, type = 'text' }: Props) => {
+export const ModalInput = ({ label, name, value, onChange, type = 'text' }: Props) => {
   return (
     <label className={style.label}>
       {label}
-      <input name={name} className={style.input} defaultValue={defaultValue} type={type} />
+      <input name={name} className={style.input} type={type} value={value} onChange={onChange} />
     </label>
   )
 }

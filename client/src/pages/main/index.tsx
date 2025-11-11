@@ -5,7 +5,7 @@ import {
   useGetEducationTypesQuery,
 } from '@/shared/redux/slices/api/educationTypesApi'
 import { useAppSelector } from '@/shared/redux/hooks'
-import { AddItem } from '@/widgets/add-item'
+import { AdminAddButton } from '@/entities/admin'
 import { Modal } from '@/widgets/modal'
 import { ModalInput } from '@/widgets/modal-input'
 import { ModalForm } from '@/widgets/modal-form'
@@ -20,14 +20,14 @@ export const MainPage = () => {
 
   const [createEducationType] = useCreateEducationTypeMutation()
 
+  const [formState, setFormState] = useState('')
+
   const handleCreateEducationType = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     try {
-      const formData = new FormData(e.target as HTMLFormElement)
-      const educationType = formData.get('educationType') as string
       await createEducationType({
-        name: educationType,
+        name: formState,
       })
     } catch (err) {
       console.error('Ошибка при создании типа образования:', err)
@@ -52,17 +52,20 @@ export const MainPage = () => {
       </ul>
 
       {accessToken && (
-        <AddItem
-          addButtonLabel="Добавить тип обучения"
-          isAdding={isModalOpen}
-          setIsAdding={setIsModalOpen}
-        >
-          <Modal onClose={handleCancel}>
-            <ModalForm onSubmit={handleCreateEducationType} onCancel={handleCancel}>
-              <ModalInput label="Добавить тип обучения:" name="educationType" defaultValue="" />
-            </ModalForm>
-          </Modal>
-        </AddItem>
+        <AdminAddButton onClick={() => setIsModalOpen(true)}>Добавить тип обучения</AdminAddButton>
+      )}
+
+      {isModalOpen && (
+        <Modal onClose={handleCancel}>
+          <ModalForm onSubmit={handleCreateEducationType} onCancel={handleCancel}>
+            <ModalInput
+              label="Добавить тип обучения:"
+              name="educationType"
+              value={formState}
+              onChange={(e) => setFormState(e.target.value)}
+            />
+          </ModalForm>
+        </Modal>
       )}
     </div>
   )

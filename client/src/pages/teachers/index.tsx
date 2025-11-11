@@ -9,7 +9,7 @@ import {
 } from '@/shared/redux/slices/api/teachersApi'
 import * as style from './style.module.scss'
 import { useAppSelector } from '@/shared/redux/hooks'
-import { AddItem } from '@/widgets/add-item'
+import { AdminAddButton } from '@/entities/admin'
 import { Modal } from '@/widgets/modal'
 import { ModalForm } from '@/widgets/modal-form'
 import { ModalInput } from '@/widgets/modal-input'
@@ -17,11 +17,18 @@ import { TeacherCell } from '@/widgets/teacher-cell'
 
 export const TeachersPage = () => {
   const { data: teachersData } = useGetAllTeachersQuery()
+
   const accessToken = useAppSelector((store) => store.auth.accessToken)
 
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const handleCancel = () => {
+    setFormState({
+      lastName: '',
+      firstName: '',
+      middleName: '',
+      title: '',
+    })
     setIsModalOpen(false)
   }
 
@@ -29,16 +36,25 @@ export const TeachersPage = () => {
   const [updateTeacher] = useUpdateTeacherMutation()
   const [deleteTeacher] = useDeleteTeacherMutation()
 
+  const [formState, setFormState] = useState({
+    lastName: '',
+    firstName: '',
+    middleName: '',
+    title: '',
+  })
+
+  const handleChange = (field: keyof typeof formState, value: string) => {
+    setFormState((prev) => ({ ...prev, [field]: value }))
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    const { firstName, lastName, middleName, title } = formState
 
-    const formData = new FormData(e.target as HTMLFormElement)
-    const firstName = formData.get('firstName') as string
-    const lastName = formData.get('lastName') as string
-    const middleName = formData.get('middleName') as string
-    const title = formData.get('title') as string
-
-    if (!firstName || !lastName || !middleName || !title) return
+    if (!firstName || !lastName || !middleName || !title) {
+      console.warn('Все поля обязательны для заполнения.')
+      return
+    }
 
     try {
       await createTeacher({
@@ -47,6 +63,14 @@ export const TeachersPage = () => {
         lastName,
         title,
       }).unwrap()
+
+      setFormState({
+        lastName: '',
+        firstName: '',
+        middleName: '',
+        title: '',
+      })
+      setIsModalOpen(false)
     } catch (err) {
       console.error('Ошибка при создании учителя:', err)
     }
@@ -56,7 +80,7 @@ export const TeachersPage = () => {
     try {
       await updateTeacher(args).unwrap()
     } catch (err) {
-      console.error('Ошибка при обновлении урока:', err)
+      console.error('Ошибка при обновлении преподавателя:', err)
     }
   }
 
@@ -66,7 +90,7 @@ export const TeachersPage = () => {
     try {
       await deleteTeacher(args).unwrap()
     } catch (err) {
-      console.error('Ошибка при удалении урока:', err)
+      console.error('Ошибка при удалении преподавателя:', err)
     }
   }
 
@@ -83,22 +107,42 @@ export const TeachersPage = () => {
         ))}
 
         {accessToken && (
-          <AddItem
-            addButtonLabel="Добавить преподавателя"
-            isAdding={isModalOpen}
-            setIsAdding={setIsModalOpen}
-          >
-            <Modal onClose={handleCancel}>
-              <ModalForm onSubmit={handleSubmit} onCancel={handleCancel}>
-                <ModalInput label="Фамилия:" name="lastName" defaultValue="" />
-                <ModalInput label="Имя:" name="firstName" defaultValue="" />
-                <ModalInput label="Отчество:" name="middleName" defaultValue="" />
-                <ModalInput label="Титул:" name="title" defaultValue="" />
-              </ModalForm>
-            </Modal>
-          </AddItem>
+          <AdminAddButton onClick={() => setIsModalOpen(true)}>
+            Добавить преподавателя
+          </AdminAddButton>
         )}
       </div>
+
+      {isModalOpen && (
+        <Modal onClose={handleCancel}>
+          <ModalForm onSubmit={handleSubmit} onCancel={handleCancel}>
+            <ModalInput
+              label="Фамилия:"
+              name="lastName"
+              value={formState.lastName}
+              onChange={(e) => handleChange('lastName', e.target.value)}
+            />
+            <ModalInput
+              label="Имя:"
+              name="firstName"
+              value={formState.firstName}
+              onChange={(e) => handleChange('firstName', e.target.value)}
+            />
+            <ModalInput
+              label="Отчество:"
+              name="middleName"
+              value={formState.middleName}
+              onChange={(e) => handleChange('middleName', e.target.value)}
+            />
+            <ModalInput
+              label="Титул:"
+              name="title"
+              value={formState.title}
+              onChange={(e) => handleChange('title', e.target.value)}
+            />
+          </ModalForm>
+        </Modal>
+      )}
     </div>
   )
 }

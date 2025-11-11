@@ -8,15 +8,19 @@ interface Option {
 interface Props {
   label: string
   name: string
-  defaultValue?: string
+  value: string
+  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
   options: Option[]
 }
 
-export const ModalSelect = ({ label, name, defaultValue, options }: Props) => {
+export const ModalSelect = ({ label, name, value, onChange, options }: Props) => {
   return (
     <label className={style.label}>
       {label}
-      <select name={name} className={style.select} defaultValue={defaultValue}>
+      <select name={name} className={style.select} value={value} onChange={onChange}>
+        <option value="" disabled>
+          Выберите значение
+        </option>
         {options.map((option) => (
           <option className={style.option} key={option.value} value={option.value}>
             {option.label}

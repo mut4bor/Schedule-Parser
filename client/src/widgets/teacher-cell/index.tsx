@@ -15,34 +15,51 @@ interface Props {
 
 export const TeacherCell = ({ teacher, onUpdate, onDelete }: Props) => {
   const accessToken = useAppSelector((store) => store.auth.accessToken)
-
   const [isModalOpen, setIsModalOpen] = useState(false)
 
+  // Локальное состояние контролируемой формы
+  const [formState, setFormState] = useState({
+    lastName: teacher.lastName || '',
+    firstName: teacher.firstName || '',
+    middleName: teacher.middleName || '',
+    title: teacher.title || '',
+  })
+
+  const handleChange = (field: keyof typeof formState, value: string) => {
+    setFormState((prev) => ({ ...prev, [field]: value }))
+  }
+
   const handleCancel = () => {
+    // восстанавливаем исходное состояние при отмене
+    setFormState({
+      lastName: teacher.lastName || '',
+      firstName: teacher.firstName || '',
+      middleName: teacher.middleName || '',
+      title: teacher.title || '',
+    })
     setIsModalOpen(false)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    const { firstName, lastName, middleName, title } = formState
 
-    const formData = new FormData(e.target as HTMLFormElement)
-    const firstName = formData.get('firstName') as string
-    const lastName = formData.get('lastName') as string
-    const middleName = formData.get('middleName') as string
-    const title = formData.get('title') as string
-
-    if (!firstName || !lastName || !middleName || !title) return
+    if (!firstName || !lastName || !middleName || !title) {
+      console.warn('Все поля обязательны для заполнения.')
+      return
+    }
 
     try {
       await onUpdate({
         id: teacher._id,
         firstName,
-        middleName,
         lastName,
+        middleName,
         title,
       })
+      setIsModalOpen(false)
     } catch (err) {
-      console.error('Ошибка при создании учителя:', err)
+      console.error('Ошибка при обновлении учителя:', err)
     }
   }
 
@@ -65,22 +82,26 @@ export const TeacherCell = ({ teacher, onUpdate, onDelete }: Props) => {
             <ModalInput
               label="Фамилия:"
               name="lastName"
-              defaultValue={teacher?.lastName ? teacher.lastName : ''}
+              value={formState.lastName}
+              onChange={(e) => handleChange('lastName', e.target.value)}
             />
             <ModalInput
               label="Имя:"
               name="firstName"
-              defaultValue={teacher?.firstName ? teacher.firstName : ''}
+              value={formState.firstName}
+              onChange={(e) => handleChange('firstName', e.target.value)}
             />
             <ModalInput
               label="Отчество:"
               name="middleName"
-              defaultValue={teacher?.middleName ? teacher.middleName : ''}
+              value={formState.middleName}
+              onChange={(e) => handleChange('middleName', e.target.value)}
             />
             <ModalInput
               label="Титул:"
               name="title"
-              defaultValue={teacher?.title ? teacher.title : ''}
+              value={formState.title}
+              onChange={(e) => handleChange('title', e.target.value)}
             />
           </ModalForm>
         </Modal>

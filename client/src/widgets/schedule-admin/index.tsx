@@ -4,8 +4,6 @@ import {
   isValidLessonType,
   LessonType,
   UpdateLessonDTO,
-} from '@/shared/redux/slices/api/scheduleApi'
-import {
   useUpdateLessonMutation,
   useCreateLessonMutation,
   useDeleteLessonMutation,
@@ -14,8 +12,8 @@ import {
 import { CSSProperties, Fragment, useState } from 'react'
 import { getWeekValue } from '../weeks-list/utils'
 import { Link } from 'react-router-dom'
-import { LessonListItemAdmin } from './LessonCell/LessonListItem'
-import { AddItem } from '../add-item'
+import { LessonListItemAdmin } from './LessonListItem'
+import { AdminAddButton } from '@/entities/admin'
 import { Modal } from '../modal'
 import { ModalForm } from '../modal-form'
 import { ModalInput } from '../modal-input'
@@ -37,23 +35,46 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
   const [createLesson] = useCreateLessonMutation()
   const [updateLesson] = useUpdateLessonMutation()
   const [deleteLesson] = useDeleteLessonMutation()
+  const { data: teachersData } = useGetAllTeachersQuery()
 
-  const handleCreateLessonSubmit = async (
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const handleCancel = () => {
+    setIsModalOpen(false)
+    setSelectedContext(null)
+  }
+
+  const [selectedContext, setSelectedContext] = useState<{
+    groupId: string
+    weekName: string
+    dayIndex: number
+    time: string
+  } | null>(null)
+
+  const [formState, setFormState] = useState({
+    time: '',
+    subject: '',
+    teacherID: '',
+    lessonType: '',
+    classroom: '',
+  })
+
+  const handleChange = (field: keyof typeof formState, value: string) => {
+    setFormState((prev) => ({ ...prev, [field]: value }))
+  }
+
+  const handleCreateLesson = async (
     e: React.FormEvent<HTMLFormElement>,
     groupId: string,
     weekName: string,
     dayIndex: number,
   ) => {
     e.preventDefault()
-    const formData = new FormData(e.target as HTMLFormElement)
-    const time = formData.get('time') as string
-    const classroom = formData.get('classroom') as string
-    const teacherID = formData.get('teacherID') as string
-    const lessonTypeRaw = formData.get('lessonType') as string
-    const subject = formData.get('subject') as string
 
-    if (!isValidLessonType(lessonTypeRaw)) {
-      console.error('Недопустимый тип занятия:', lessonTypeRaw)
+    const { time, classroom, teacherID, lessonType, subject } = formState
+
+    if (!isValidLessonType(lessonType)) {
+      console.error('Недопустимый тип занятия:', lessonType)
       return
     }
 
@@ -66,9 +87,17 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
         classroom,
         teacherID,
         subject,
-        lessonType: lessonTypeRaw,
+        lessonType,
       }).unwrap()
-      setOpenModalId(null)
+
+      // Сброс формы
+      setFormState({
+        time: '',
+        subject: '',
+        teacherID: '',
+        lessonType: '',
+        classroom: '',
+      })
     } catch (err) {
       console.error('Ошибка при создании урока:', err)
     }
@@ -90,14 +119,7 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
     }
   }
 
-  const [openModalId, setOpenModalId] = useState<string | null>(null)
-  const { data: teachersData } = useGetAllTeachersQuery()
-
-  const handleCancel = () => {
-    setOpenModalId(null)
-  }
-
-  if (!scheduleData) return null
+  if (!scheduleData || !teachersData) return null
 
   return (
     <div className={style.scheduleTableWrapper}>
@@ -147,61 +169,23 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
                       const group = scheduleData.groups[lessonIndex]
                       const cellId = `${week.weekName}-${weekIndex}-${dayIndex}-${timeIndex}-${lessonIndex}`
 
-                      if (!teachersData) {
-                        return null
-                      }
-
                       if (!lesson) {
                         return (
-                          <AddItem
-                            addButtonLabel="Добавить пару"
-                            isAdding={openModalId === cellId}
-                            setIsAdding={(isAdding) => setOpenModalId(isAdding ? cellId : null)}
+                          <AdminAddButton
+                            onClick={() => {
+                              setSelectedContext({
+                                groupId: group.id,
+                                weekName: week.weekName,
+                                dayIndex: day.dayIndex,
+                                time: timeSlot.time,
+                              })
+                              handleChange('time', timeSlot.time)
+                              setIsModalOpen(true)
+                            }}
                             key={cellId}
                           >
-                            <Modal onClose={handleCancel}>
-                              <ModalForm
-                                onSubmit={(e) =>
-                                  handleCreateLessonSubmit(e, group.id, week.weekName, day.dayIndex)
-                                }
-                                onCancel={handleCancel}
-                              >
-                                <ModalSelect
-                                  label="Время:"
-                                  name="time"
-                                  defaultValue={timeSlot.time}
-                                  options={TimeSlots.map((time) => ({
-                                    value: time,
-                                    label: time,
-                                  }))}
-                                />
-                                <ModalInput
-                                  label="Название предмета:"
-                                  name="subject"
-                                  defaultValue=""
-                                />
-                                <ModalSelect
-                                  label="Преподаватель:"
-                                  name="teacherID"
-                                  defaultValue=""
-                                  options={teachersData.map((teacher) => ({
-                                    value: teacher._id,
-                                    label: `${teacher.firstName} ${teacher.middleName} ${teacher.lastName}`,
-                                  }))}
-                                />
-                                <ModalSelect
-                                  label="Тип занятия:"
-                                  name="lessonType"
-                                  defaultValue=""
-                                  options={Object.values(LessonType).map((value) => ({
-                                    value: value,
-                                    label: value,
-                                  }))}
-                                />
-                                <ModalInput label="Аудитория:" name="classroom" defaultValue="" />
-                              </ModalForm>
-                            </Modal>
-                          </AddItem>
+                            Добавить пару
+                          </AdminAddButton>
                         )
                       }
 
@@ -213,11 +197,7 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
                             dayIndex={day.dayIndex}
                             lessonIndex={lessonIndex}
                             onUpdate={handleUpdateLesson}
-                            onDelete={
-                              week.weekName !== 'even' && week.weekName !== 'odd'
-                                ? (args) => handleDeleteLesson(args)
-                                : undefined
-                            }
+                            onDelete={(args) => handleDeleteLesson(args)}
                           />
                         </div>
                       )
@@ -229,6 +209,69 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
           </Fragment>
         ))}
       </div>
+
+      {isModalOpen && selectedContext && (
+        <Modal onClose={handleCancel}>
+          <ModalForm
+            onSubmit={(e) =>
+              handleCreateLesson(
+                e,
+                selectedContext.groupId,
+                selectedContext.weekName,
+                selectedContext.dayIndex,
+              )
+            }
+            onCancel={handleCancel}
+          >
+            <ModalSelect
+              label="Время:"
+              name="time"
+              value={formState.time || selectedContext.time}
+              onChange={(e) => handleChange('time', e.target.value)}
+              options={TimeSlots.map((time) => ({
+                value: time,
+                label: time,
+              }))}
+            />
+
+            <ModalInput
+              label="Название предмета:"
+              name="subject"
+              value={formState.subject}
+              onChange={(e) => handleChange('subject', e.target.value)}
+            />
+
+            <ModalSelect
+              label="Преподаватель:"
+              name="teacherID"
+              value={formState.teacherID}
+              onChange={(e) => handleChange('teacherID', e.target.value)}
+              options={teachersData.map((teacher) => ({
+                value: teacher._id,
+                label: `${teacher.firstName} ${teacher.middleName} ${teacher.lastName}`,
+              }))}
+            />
+
+            <ModalSelect
+              label="Тип занятия:"
+              name="lessonType"
+              value={formState.lessonType}
+              onChange={(e) => handleChange('lessonType', e.target.value)}
+              options={Object.values(LessonType).map((value) => ({
+                value,
+                label: value,
+              }))}
+            />
+
+            <ModalInput
+              label="Аудитория:"
+              name="classroom"
+              value={formState.classroom}
+              onChange={(e) => handleChange('classroom', e.target.value)}
+            />
+          </ModalForm>
+        </Modal>
+      )}
     </div>
   )
 }
