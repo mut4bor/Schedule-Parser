@@ -57,6 +57,7 @@ const getTeachersSchedules = async (req: Request, res: Response) => {
     })
       .populate('group')
       .populate('days.lessons.teacher')
+      .populate('days.lessons.classroom')
       .lean()
 
     const weekMap = new Map()

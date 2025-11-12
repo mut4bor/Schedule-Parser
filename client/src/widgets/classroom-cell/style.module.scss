@@ -1,0 +1,19 @@
+@use '@/shared/vars/vars' as *;
+@use 'sass:color';
+
+.container {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+}
+
+.text {
+  display: flex;
+  align-items: center;
+  border-radius: 0.5rem;
+  background: rgba($white, 0.1);
+  padding: 0.8rem 1.5rem;
+  width: 100%;
+  color: $white;
+  font-size: 2rem;
+}

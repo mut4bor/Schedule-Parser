@@ -32,9 +32,9 @@ const scheduleSchema = new Schema(
               enum: TimeSlots,
             },
             classroom: {
-              type: String,
+              type: Schema.Types.ObjectId,
+              ref: 'Classroom',
               required: true,
-              trim: true,
             },
             subject: {
               type: String,

@@ -1,6 +1,7 @@
 import { Group } from '@/database/models/group.model.js'
 import { Schedule } from '@/database/models/schedule.model.js'
 import { Teacher } from '@/database/models/teacher.model.js'
+import '../models/classroom.model.js'
 import { dayNames, ISchedule, LessonType, TimeSlots } from '@/types/index.js'
 import { Request, Response } from 'express'
 
@@ -14,7 +15,9 @@ const getScheduleById = async (req: Request, res: Response) => {
       })
     }
 
-    const schedule = await Schedule.findById(scheduleID).populate('days.lessons.teacher')
+    const schedule = await Schedule.findById(scheduleID)
+      .populate('days.lessons.teacher')
+      .populate('days.lessons.classroom')
 
     if (!schedule) {
       return res.status(404).json({ message: 'Расписание не найдено' })
@@ -85,6 +88,7 @@ const getGroupsSchedules = async (req: Request, res: Response) => {
       group: { $in: idArray },
     })
       .populate('days.lessons.teacher')
+      .populate('days.lessons.classroom')
       .lean()
 
     // Группируем расписания по неделям
@@ -203,7 +207,6 @@ const updateWeekSchedule = async (req: Request, res: Response) => {
 
     res.json({
       message: 'Расписание успешно обновлено',
-      data: schedule,
     })
   } catch (error) {
     res.status(500).json({
@@ -316,9 +319,6 @@ const createLesson = async (req: Request, res: Response) => {
 
     await schedule.save()
 
-    await schedule.populate('group')
-    await schedule.populate('days.lessons.teacher')
-
     res.status(201).json({
       message: 'Lesson added successfully',
     })
@@ -368,9 +368,6 @@ const updateLesson = async (req: Request, res: Response) => {
     }
 
     await schedule.save()
-
-    await schedule.populate('group')
-    await schedule.populate('days.lessons.teacher')
 
     res.status(200).json({
       message: 'Lesson updated successfully',

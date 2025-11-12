@@ -1,4 +1,6 @@
 import { Router } from 'express'
+import { authMiddleware } from '@/middleware/authMiddleware.js'
+import { login, refresh, logout } from '@/database/controllers/auth.controller.js'
 import {
   getAllGroups,
   getGroupById,
@@ -31,7 +33,6 @@ import {
   deleteEducationType,
 } from '@/database/controllers/educationTypes.controller.js'
 import { getGroupNames, getGroupNamesThatMatchWithReqParams } from '@/database/controllers/name.controller.js'
-import { login, refresh, logout } from '@/database/controllers/auth.controller.js'
 import {
   getAllTeachers,
   createTeacher,
@@ -40,7 +41,13 @@ import {
   getTeacherById,
   getTeachersSchedules,
 } from '@/database/controllers/teacher.controller.js'
-import { authMiddleware } from '@/middleware/authMiddleware.js'
+import {
+  getAllClassrooms,
+  getClassroomById,
+  createClassroom,
+  deleteClassroom,
+  updateClassroom,
+} from '@/database/controllers/classroom.controller.js'
 
 // --- Router ---
 const router = Router()
@@ -52,6 +59,7 @@ const groupsPath = `/groups`
 const namesPath = `/names`
 const teachersPath = `/teachers`
 const schedulesPath = `/schedules`
+const classroomsPath = `/classrooms`
 
 // --- Авторизация ---
 router.post('/login', login)
@@ -109,5 +117,12 @@ router.post(teachersPath, createTeacher)
 router.put(`${teachersPath}/:id`, updateTeacher)
 router.delete(`${teachersPath}/:id`, deleteTeacher)
 router.get(`${teachersPath}/:ids/schedules`, getTeachersSchedules)
+
+// --- Аудитории ---
+router.get(classroomsPath, getAllClassrooms)
+router.get(`${classroomsPath}/:id`, getClassroomById)
+router.post(classroomsPath, createClassroom)
+router.put(`${classroomsPath}/:id`, updateClassroom)
+router.delete(`${classroomsPath}/:id`, deleteClassroom)
 
 export { router }

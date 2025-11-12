@@ -11,6 +11,7 @@ import { GroupsEditPage } from './groupsEdit'
 import { TeachersPage } from './teachers'
 import { TeachersSchedulePage } from './teachersSchedule'
 import { LoginPage } from './login'
+import { ClassroomsPage } from './classrooms'
 
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Provider } from 'react-redux'
@@ -34,6 +35,7 @@ const routesArray = [
   { path: routes.TEACHERS_PATH, Component: TeachersPage },
   { path: routes.TEACHERS_SCHEDULE_PATH, Component: TeachersSchedulePage },
   { path: `${routes.TEACHERS_SCHEDULE_PATH}/:teachersIDs`, Component: TeachersSchedulePage },
+  { path: routes.CLASSROOMS_PATH, Component: ClassroomsPage },
   { path: routes.LOGIN_PATH, Component: LoginPage },
 ]
 

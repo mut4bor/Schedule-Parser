@@ -54,6 +54,7 @@ export const baseApi = createApi({
     'Schedule',
     'GroupsSchedule',
     'Teachers',
+    'Classrooms',
   ],
   endpoints: () => ({}),
 })
