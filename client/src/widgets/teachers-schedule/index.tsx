@@ -84,12 +84,12 @@ export const TeachersSchedule = ({ teachersIDs }: Props) => {
                       return (
                         <div className={`${style.scheduleCell} ${style.lessonCell}`} key={cellId}>
                           {teacherLessons.map((lesson, idx) => (
-                            <div key={`${cellId}-lesson-${idx}`}>
+                            <p key={`${cellId}-lesson-${idx}`}>
                               {lesson.group.name}
                               {`, ${lesson.subject}`}
                               {lesson.lessonType && ` (${lesson.lessonType})`}
                               {`, ${lesson.classroom}`}
-                            </div>
+                            </p>
                           ))}
                         </div>
                       )
