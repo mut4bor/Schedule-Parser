@@ -9,6 +9,7 @@ import { FavoritePage } from './favorite'
 import { GroupRedirectPage } from './groupRedirect'
 import { GroupsEditPage } from './groupsEdit'
 import { TeachersPage } from './teachers'
+import { TeachersSchedulePage } from './teachersSchedule'
 import { LoginPage } from './login'
 
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
@@ -31,6 +32,8 @@ const routesArray = [
   { path: `${routes.GROUPS_EDIT_PATH}`, Component: GroupsEditPage },
   { path: `/${routes.GROUPS_EDIT_PATH}/:groupsIDs`, Component: GroupsEditPage },
   { path: routes.TEACHERS_PATH, Component: TeachersPage },
+  { path: routes.TEACHERS_SCHEDULE_PATH, Component: TeachersSchedulePage },
+  { path: `${routes.TEACHERS_SCHEDULE_PATH}/:teachersIDs`, Component: TeachersSchedulePage },
   { path: routes.LOGIN_PATH, Component: LoginPage },
 ]
 

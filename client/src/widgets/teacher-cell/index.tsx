@@ -17,7 +17,6 @@ export const TeacherCell = ({ teacher, onUpdate, onDelete }: Props) => {
   const accessToken = useAppSelector((store) => store.auth.accessToken)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  // Локальное состояние контролируемой формы
   const [formState, setFormState] = useState({
     lastName: teacher.lastName || '',
     firstName: teacher.firstName || '',
@@ -30,7 +29,6 @@ export const TeacherCell = ({ teacher, onUpdate, onDelete }: Props) => {
   }
 
   const handleCancel = () => {
-    // восстанавливаем исходное состояние при отмене
     setFormState({
       lastName: teacher.lastName || '',
       firstName: teacher.firstName || '',

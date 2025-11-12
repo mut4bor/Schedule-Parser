@@ -36,7 +36,6 @@ export const LessonListItemAdmin = ({
   const [isModalOpen, setIsModalOpen] = useState(false)
   const { data: teachersData } = useGetAllTeachersQuery()
 
-  // локальное состояние для формы
   const [formState, setFormState] = useState({
     time: lesson.time || '',
     subject: lesson.subject || '',

@@ -90,7 +90,6 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
         lessonType,
       }).unwrap()
 
-      // Сброс формы
       setFormState({
         time: '',
         subject: '',

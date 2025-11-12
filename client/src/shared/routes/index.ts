@@ -6,6 +6,7 @@ const routes = {
   FAVORITE_PATH: '/favorite',
   LOGIN_PATH: '/login',
   TEACHERS_PATH: '/teachers',
+  TEACHERS_SCHEDULE_PATH: '/teachersSchedule',
 }
 
 export default routes
