@@ -20,6 +20,7 @@ import { ModalInput } from '../modal-input'
 import { ModalSelect } from '../modal-select'
 import { useGetAllTeachersQuery } from '@/shared/redux/slices/api/teachersApi'
 import { TimeSlots } from '@/shared/redux/types'
+import { useGetAllClassroomsQuery } from '@/shared/redux/slices/api/classroomsApi'
 
 interface Props {
   groupsIDs: string
@@ -35,7 +36,9 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
   const [createLesson] = useCreateLessonMutation()
   const [updateLesson] = useUpdateLessonMutation()
   const [deleteLesson] = useDeleteLessonMutation()
+
   const { data: teachersData } = useGetAllTeachersQuery()
+  const { data: classroomsData } = useGetAllClassroomsQuery()
 
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -56,7 +59,7 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
     subject: '',
     teacherID: '',
     lessonType: '',
-    classroom: '',
+    classroomID: '',
   })
 
   const handleChange = (field: keyof typeof formState, value: string) => {
@@ -71,7 +74,7 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
   ) => {
     e.preventDefault()
 
-    const { time, classroom, teacherID, lessonType, subject } = formState
+    const { time, classroomID, teacherID, lessonType, subject } = formState
 
     if (!isValidLessonType(lessonType)) {
       console.error('Недопустимый тип занятия:', lessonType)
@@ -84,7 +87,7 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
         weekName,
         dayIndex,
         time,
-        classroom,
+        classroomID,
         teacherID,
         subject,
         lessonType,
@@ -95,7 +98,7 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
         subject: '',
         teacherID: '',
         lessonType: '',
-        classroom: '',
+        classroomID: '',
       })
     } catch (err) {
       console.error('Ошибка при создании урока:', err)
@@ -118,7 +121,7 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
     }
   }
 
-  if (!scheduleData || !teachersData) return null
+  if (!scheduleData || !teachersData || !classroomsData) return null
 
   return (
     <div className={style.scheduleTableWrapper}>
@@ -262,11 +265,15 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
               }))}
             />
 
-            <ModalInput
+            <ModalSelect
               label="Аудитория:"
-              name="classroom"
-              value={formState.classroom}
-              onChange={(e) => handleChange('classroom', e.target.value)}
+              name="classroomID"
+              value={formState.classroomID}
+              onChange={(e) => handleChange('classroomID', e.target.value)}
+              options={classroomsData.map((classroom) => ({
+                value: classroom._id,
+                label: `${classroom.name} (до ${classroom.capacity} человек)`,
+              }))}
             />
           </ModalForm>
         </Modal>

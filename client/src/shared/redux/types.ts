@@ -1,5 +1,6 @@
 import { ITeacher } from '@/shared/redux/slices/api/teachersApi'
 import { LessonType } from './slices/api/scheduleApi'
+import { Classroom } from './slices/api/classroomsApi'
 
 export enum DayOfWeek {
   None = -1,
@@ -15,7 +16,7 @@ export const TimeSlots = ['09:45', '11:30', '13:30', '15:15', '17:00']
 
 export interface ILesson {
   time: string
-  classroom: string
+  classroom: Classroom
   subject: string
   teacher: ITeacher
   lessonType: LessonType

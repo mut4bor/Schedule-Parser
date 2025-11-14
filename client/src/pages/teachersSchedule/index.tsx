@@ -1,7 +1,5 @@
-// src/pages/teachers/TeachersEditPage.tsx
 import * as style from './style.module.scss'
 import { useParams, useNavigate } from 'react-router-dom'
-import { useAppSelector } from '@/shared/redux/hooks'
 import { useCallback, useReducer } from 'react'
 import routes from '@/shared/routes'
 import { MultiSelect } from '@/entities/multi-select'
@@ -30,7 +28,6 @@ export const TeachersSchedulePage = () => {
   const navigate = useNavigate()
   const teacherIdsArray = teachersIDs ? teachersIDs.split(',') : []
 
-  const accessToken = useAppSelector((store) => store.auth.accessToken)
   const { data: teachersData } = useGetAllTeachersQuery()
 
   const [teacherList, dispatchTeacherList] = useReducer(idsReducer, teacherIdsArray)
@@ -44,10 +41,6 @@ export const TeachersSchedulePage = () => {
   const handleChange = useCallback((selectedIds: string[]) => {
     dispatchTeacherList({ type: 'SET', payload: selectedIds })
   }, [])
-
-  if (!accessToken) {
-    return null
-  }
 
   return (
     <div className={style.container}>

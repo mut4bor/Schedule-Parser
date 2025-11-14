@@ -14,6 +14,7 @@ import {
 } from '@/shared/redux/slices/api/scheduleApi'
 import { ModalSelect } from '@/widgets/modal-select'
 import { useGetAllTeachersQuery } from '@/shared/redux/slices/api/teachersApi'
+import { useGetAllClassroomsQuery } from '@/shared/redux/slices/api/classroomsApi'
 
 interface Props {
   lesson: ILesson
@@ -34,14 +35,16 @@ export const LessonListItemAdmin = ({
 }: Props) => {
   const accessToken = useAppSelector((store) => store.auth.accessToken)
   const [isModalOpen, setIsModalOpen] = useState(false)
+
   const { data: teachersData } = useGetAllTeachersQuery()
+  const { data: classroomsData } = useGetAllClassroomsQuery()
 
   const [formState, setFormState] = useState({
     time: lesson.time || '',
     subject: lesson.subject || '',
     teacherID: lesson.teacher?._id || '',
     lessonType: lesson.lessonType || '',
-    classroom: lesson.classroom || '',
+    classroomID: lesson.classroom._id || '',
   })
 
   const handleChange = (field: keyof typeof formState, value: string) => {
@@ -51,11 +54,11 @@ export const LessonListItemAdmin = ({
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    const { time, subject, teacherID, classroom, lessonType } = formState
+    const { time, subject, teacherID, classroomID, lessonType } = formState
 
     const typedForm: Omit<UpdateLessonDTO, 'scheduleID' | 'dayIndex' | 'lessonIndex'> = {
       time,
-      classroom,
+      classroomID,
       teacherID,
       subject,
       lessonType: isValidLessonType(lessonType) ? lessonType : undefined,
@@ -106,7 +109,7 @@ export const LessonListItemAdmin = ({
         )}
       </div>
 
-      {isModalOpen && accessToken && teachersData && (
+      {isModalOpen && accessToken && teachersData && classroomsData && (
         <Modal onClose={handleCancel}>
           <ModalForm onSubmit={handleSave} onCancel={handleCancel}>
             <ModalSelect
@@ -149,11 +152,15 @@ export const LessonListItemAdmin = ({
               }))}
             />
 
-            <ModalInput
+            <ModalSelect
               label="Аудитория:"
-              name="classroom"
-              value={formState.classroom}
-              onChange={(e) => handleChange('classroom', e.target.value)}
+              name="classroomID"
+              value={formState.classroomID}
+              onChange={(e) => handleChange('classroomID', e.target.value)}
+              options={classroomsData.map((classroom) => ({
+                value: classroom._id,
+                label: `${classroom.name} (до ${classroom.capacity} человек)`,
+              }))}
             />
           </ModalForm>
         </Modal>

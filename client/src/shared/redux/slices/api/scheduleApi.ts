@@ -17,7 +17,7 @@ export interface CreateLessonDTO {
   weekName: string
   dayIndex: number
   time: string
-  classroom: string
+  classroomID: string
   teacherID: string
   subject: string
   lessonType: LessonType
@@ -28,7 +28,7 @@ export interface UpdateLessonDTO {
   dayIndex: number
   lessonIndex: number
   time?: string
-  classroom?: string
+  classroomID?: string
   teacherID?: string
   subject?: string
   lessonType?: LessonType

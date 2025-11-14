@@ -22,6 +22,7 @@ import { ModalSelect } from '../modal-select'
 import { RefreshDate } from '../refresh-date'
 import { DayOfWeek, TimeSlots } from '@/shared/redux/types'
 import { PickedWeekType } from '@/pages/groupID'
+import { useGetAllClassroomsQuery } from '@/shared/redux/slices/api/classroomsApi'
 
 interface Props {
   groupID: string
@@ -38,6 +39,7 @@ export const Schedule = ({ groupID, pickedDayIndex, pickedWeek }: Props) => {
   )
 
   const { data: teachersData } = useGetAllTeachersQuery()
+  const { data: classroomsData } = useGetAllClassroomsQuery()
 
   const [createLesson] = useCreateLessonMutation()
   const [updateLesson] = useUpdateLessonMutation()
@@ -51,7 +53,7 @@ export const Schedule = ({ groupID, pickedDayIndex, pickedWeek }: Props) => {
     subject: '',
     teacherID: '',
     lessonType: '',
-    classroom: '',
+    classroomID: '',
   })
 
   const handleChange = (field: keyof typeof formState, value: string) => {
@@ -61,7 +63,7 @@ export const Schedule = ({ groupID, pickedDayIndex, pickedWeek }: Props) => {
   const handleCreateLesson = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    const { time, subject, teacherID, classroom, lessonType } = formState
+    const { time, subject, teacherID, classroomID, lessonType } = formState
 
     if (!groupID || !pickedWeek || pickedDayIndex === -1) return
 
@@ -76,7 +78,7 @@ export const Schedule = ({ groupID, pickedDayIndex, pickedWeek }: Props) => {
         weekName: pickedWeek.name,
         dayIndex: pickedDayIndex,
         time,
-        classroom,
+        classroomID,
         teacherID,
         subject,
         lessonType,
@@ -87,7 +89,7 @@ export const Schedule = ({ groupID, pickedDayIndex, pickedWeek }: Props) => {
         subject: '',
         teacherID: '',
         lessonType: '',
-        classroom: '',
+        classroomID: '',
       })
 
       setIsModalOpen(false)
@@ -148,7 +150,7 @@ export const Schedule = ({ groupID, pickedDayIndex, pickedWeek }: Props) => {
 
       <RefreshDate date={scheduleData?.updatedAt} />
 
-      {isModalOpen && teachersData && (
+      {isModalOpen && teachersData && classroomsData && (
         <Modal onClose={handleCancel}>
           <ModalForm onSubmit={handleCreateLesson} onCancel={handleCancel}>
             <ModalSelect
@@ -191,11 +193,15 @@ export const Schedule = ({ groupID, pickedDayIndex, pickedWeek }: Props) => {
               }))}
             />
 
-            <ModalInput
+            <ModalSelect
               label="Аудитория:"
-              name="classroom"
-              value={formState.classroom}
-              onChange={(e) => handleChange('classroom', e.target.value)}
+              name="classroomID"
+              value={formState.classroomID}
+              onChange={(e) => handleChange('classroomID', e.target.value)}
+              options={classroomsData.map((classroom) => ({
+                value: classroom._id,
+                label: `${classroom.name} (до ${classroom.capacity} человек)`,
+              }))}
             />
           </ModalForm>
         </Modal>

@@ -1,11 +1,8 @@
-// src/widgets/teachers-schedule/index.tsx
 import * as style from './style.module.scss'
 import { CSSProperties, Fragment } from 'react'
 import { Link } from 'react-router-dom'
 import { useGetTeachersSchedulesQuery } from '@/shared/redux/slices/api/teachersApi'
-
-// Если у вас уже есть утилита преобразования weekName в читаемый вид — импортируйте
-const getWeekValue = (weekName: string) => weekName
+import { getWeekValue } from '../weeks-list/utils'
 
 interface Props {
   teachersIDs: string

@@ -239,14 +239,14 @@ const deleteWeekSchedule = async (req: Request, res: Response) => {
 
 const createLesson = async (req: Request, res: Response) => {
   try {
-    const { id: groupID, weekName, dayIndex: dayOfWeek, time, classroom, teacherID, subject, lessonType } = req.body
+    const { id: groupID, weekName, dayIndex: dayOfWeek, time, classroomID, teacherID, subject, lessonType } = req.body
 
     if (
       !weekName ||
       !groupID ||
       dayOfWeek === undefined ||
       !time ||
-      !classroom ||
+      !classroomID ||
       !subject ||
       !teacherID ||
       !lessonType
@@ -307,7 +307,7 @@ const createLesson = async (req: Request, res: Response) => {
 
     schedule.days[dayIndex].lessons.push({
       time,
-      classroom,
+      classroom: classroomID,
       subject,
       teacher: teacherID,
       lessonType,
@@ -332,7 +332,7 @@ const createLesson = async (req: Request, res: Response) => {
 const updateLesson = async (req: Request, res: Response) => {
   try {
     const { scheduleID, dayIndex, lessonIndex } = req.params
-    const { time, classroom, teacherID, subject, lessonType } = req.body
+    const { time, classroomID, teacherID, subject, lessonType } = req.body
 
     const parsedDayIndex = parseInt(dayIndex)
     const parsedLessonIndex = parseInt(lessonIndex)
@@ -355,7 +355,7 @@ const updateLesson = async (req: Request, res: Response) => {
 
     const lesson = schedule.days[parsedDayIndex].lessons[parsedLessonIndex]
     if (time) lesson.time = time
-    if (classroom) lesson.classroom = classroom
+    if (classroomID) lesson.classroom = classroomID
     if (subject) lesson.subject = subject
     if (teacherID) lesson.teacher = teacherID
     if (lessonType) {

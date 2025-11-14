@@ -6,9 +6,9 @@ interface Props {
   href: string
 }
 
-export const HeaderTextLink = ({ text, href }: Props) => {
+export const HeaderLink = ({ text, href }: Props) => {
   return (
-    <Link className={style.link} to={href}>
+    <Link to={href} className={style.link}>
       {text}
     </Link>
   )

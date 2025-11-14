@@ -14,6 +14,7 @@ import { ModalInput } from '@/widgets/modal-input'
 import { ModalSelect } from '@/widgets/modal-select'
 import { EditDeleteActions } from '@/entities/admin'
 import { useGetAllTeachersQuery } from '@/shared/redux/slices/api/teachersApi'
+import { useGetAllClassroomsQuery } from '@/shared/redux/slices/api/classroomsApi'
 
 interface Props {
   lesson: ILesson
@@ -34,14 +35,16 @@ export const LessonListItem = ({
 }: Props) => {
   const accessToken = useAppSelector((store) => store.auth.accessToken)
   const { data: teachersData } = useGetAllTeachersQuery()
+  const { data: classroomsData } = useGetAllClassroomsQuery()
+
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const [formState, setFormState] = useState({
     time: lesson.time || '',
     subject: lesson.subject || '',
     teacherID: lesson.teacher?._id || '',
-    classroom: lesson.classroom || '',
     lessonType: lesson.lessonType || '',
+    classroomID: lesson.classroom?._id || '',
   })
 
   const handleChange = (field: keyof typeof formState, value: string) => {
@@ -51,11 +54,11 @@ export const LessonListItem = ({
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    const { time, subject, teacherID, classroom, lessonType } = formState
+    const { time, subject, teacherID, classroomID, lessonType } = formState
 
     const typedForm: Omit<UpdateLessonDTO, 'scheduleID' | 'dayIndex' | 'lessonIndex'> = {
       time,
-      classroom,
+      classroomID,
       teacherID,
       subject,
       lessonType: isValidLessonType(lessonType) ? lessonType : undefined,
@@ -90,7 +93,7 @@ export const LessonListItem = ({
           {lesson.teacher?.middleName
             ? ` ${lesson.teacher.middleName.charAt(0).toUpperCase()}.`
             : ''}
-          {`, ${lesson.classroom}`}
+          {lesson.classroom ? `, ${lesson.classroom.name}` : null}
         </p>
 
         {accessToken && (
@@ -110,7 +113,7 @@ export const LessonListItem = ({
         )}
       </div>
 
-      {isModalOpen && accessToken && teachersData && (
+      {isModalOpen && accessToken && teachersData && classroomsData && (
         <Modal onClose={handleCancel}>
           <ModalForm onSubmit={handleSave} onCancel={handleCancel}>
             <ModalSelect
@@ -153,11 +156,15 @@ export const LessonListItem = ({
               }))}
             />
 
-            <ModalInput
+            <ModalSelect
               label="Аудитория:"
-              name="classroom"
-              value={formState.classroom}
-              onChange={(e) => handleChange('classroom', e.target.value)}
+              name="classroomID"
+              value={formState.classroomID}
+              onChange={(e) => handleChange('classroomID', e.target.value)}
+              options={classroomsData.map((classroom) => ({
+                value: classroom._id,
+                label: `${classroom.name} (до ${classroom.capacity} человек)`,
+              }))}
             />
           </ModalForm>
         </Modal>
