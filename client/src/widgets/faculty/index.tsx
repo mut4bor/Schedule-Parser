@@ -4,9 +4,9 @@ import { FacultyLink } from '@/entities/faculty'
 import { Fragment, useState } from 'react'
 import { EditableItem } from '@/widgets/editable-item'
 import { AdminAddButton } from '@/entities/admin'
-import { Modal } from '../modal'
-import { ModalForm } from '../modal-form'
-import { ModalInput } from '../modal-input'
+import { Modal } from '@/widgets/modal'
+import { ModalForm } from '@/widgets/modal-form'
+import { ModalInput } from '@/widgets/modal-input'
 import {
   useUpdateEducationTypeMutation,
   useDeleteEducationTypeMutation,

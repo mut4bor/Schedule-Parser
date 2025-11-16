@@ -1,4 +1,4 @@
-import { baseApi } from '../baseApi'
+import { baseApi } from '@/shared/redux/slices/baseApi'
 import { setAccessToken, logout } from '@/shared/redux/slices/authSlice'
 
 export const authApi = baseApi.injectEndpoints({

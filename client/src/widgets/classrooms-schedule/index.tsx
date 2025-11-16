@@ -1,7 +1,7 @@
 import * as style from './style.module.scss'
 import { CSSProperties, Fragment } from 'react'
 import { Link } from 'react-router-dom'
-import { getWeekValue } from '../weeks-list/utils'
+import { getWeekValue } from '@/widgets/weeks-list/utils'
 import { useGetClassroomsSchedulesQuery } from '@/shared/redux/slices/api/classroomsApi'
 
 interface Props {

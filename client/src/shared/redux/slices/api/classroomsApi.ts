@@ -1,5 +1,5 @@
-import { DayOfWeek } from '../../types'
-import baseApi from '../baseApi'
+import { DayOfWeek } from '@/shared/redux/types'
+import baseApi from '@/shared/redux/slices/baseApi'
 
 export interface Classroom {
   _id: string

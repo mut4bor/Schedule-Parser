@@ -2,7 +2,7 @@ import * as style from './style.module.scss'
 import { CSSProperties, Fragment } from 'react'
 import { Link } from 'react-router-dom'
 import { useGetTeachersSchedulesQuery } from '@/shared/redux/slices/api/teachersApi'
-import { getWeekValue } from '../weeks-list/utils'
+import { getWeekValue } from '@/widgets/weeks-list/utils'
 
 interface Props {
   teachersIDs: string

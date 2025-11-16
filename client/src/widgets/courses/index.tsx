@@ -14,10 +14,10 @@ import {
 import { useAppSelector } from '@/shared/redux/hooks'
 import routes from '@/shared/routes'
 import { AdminAddButton } from '@/entities/admin'
-import { EditableItem } from '../editable-item'
-import { ModalForm } from '../modal-form'
-import { Modal } from '../modal'
-import { ModalInput } from '../modal-input'
+import { EditableItem } from '@/widgets/editable-item'
+import { ModalForm } from '@/widgets/modal-form'
+import { Modal } from '@/widgets/modal'
+import { ModalInput } from '@/widgets/modal-input'
 
 export const Courses = () => {
   const navigate = useNavigate()

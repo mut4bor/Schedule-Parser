@@ -1,7 +1,7 @@
 import { Group } from '@/database/models/group.model.js'
 import { Schedule } from '@/database/models/schedule.model.js'
 import { Teacher } from '@/database/models/teacher.model.js'
-import '../models/classroom.model.js'
+import '@/database/models/classroom.model.js'
 import { dayNames, ISchedule, LessonType, TimeSlots } from '@/types/index.js'
 import { Request, Response } from 'express'
 

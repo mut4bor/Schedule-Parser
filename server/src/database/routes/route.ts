@@ -1,6 +1,6 @@
 import { Router } from 'express'
-import { authMiddleware } from '@/middleware/authMiddleware.js'
-import { login, refresh, logout } from '@/database/controllers/auth.controller.js'
+import { authMiddleware, requireRole } from '@/middleware/authMiddleware.js'
+import { login, register, refresh, logout } from '@/database/controllers/auth.controller.js'
 import {
   getAllGroups,
   getGroupById,
@@ -49,10 +49,12 @@ import {
   updateClassroom,
   deleteClassroom,
 } from '@/database/controllers/classroom.controller.js'
+import { approveUser, changeRole, listPending, rejectUser } from '@/database/controllers/admin.controller.js'
 
 // --- Router ---
 const router = Router()
 
+const adminPath = `/admin`
 const educationTypePath = `/education-types`
 const facultyPath = `/faculty`
 const coursePath = `/course`
@@ -63,9 +65,10 @@ const schedulesPath = `/schedules`
 const classroomsPath = `/classrooms`
 
 // --- Авторизация ---
+router.post('/register', register)
 router.post('/login', login)
-router.post('/logout', logout)
 router.post('/refresh', refresh)
+router.post('/logout', logout)
 
 router.use(authMiddleware)
 
@@ -126,5 +129,13 @@ router.post(classroomsPath, createClassroom)
 router.put(`${classroomsPath}/:id`, updateClassroom)
 router.delete(`${classroomsPath}/:id`, deleteClassroom)
 router.get(`${classroomsPath}/:ids/schedules`, getClassroomsSchedules)
+
+// Только админ/суперадмин
+router.use(authMiddleware, requireRole('admin'))
+
+router.get(`${adminPath}/users/pending`, listPending)
+router.patch(`${adminPath}/users/:id/approve`, approveUser)
+router.delete(`${adminPath}/users/:id/reject`, rejectUser)
+router.patch(`${adminPath}/users/:id/role`, changeRole)
 
 export { router }

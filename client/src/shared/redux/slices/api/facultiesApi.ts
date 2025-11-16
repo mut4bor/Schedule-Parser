@@ -1,4 +1,4 @@
-import { baseApi } from '../baseApi'
+import { baseApi } from '@/shared/redux/slices/baseApi'
 import { EducationType } from './educationTypesApi'
 
 export interface Facultie {

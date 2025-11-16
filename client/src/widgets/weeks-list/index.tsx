@@ -14,13 +14,13 @@ import {
 import { useAppSelector } from '@/shared/redux/hooks'
 import { Skeleton } from '@/shared/ui'
 import { useParams } from 'react-router-dom'
-import { EditableItem } from '../editable-item'
+import { EditableItem } from '@/widgets/editable-item'
 import { AdminAddButton } from '@/entities/admin'
-import { ModalForm } from '../modal-form'
-import { ModalInput } from '../modal-input'
-import { Modal } from '../modal'
+import { ModalForm } from '@/widgets/modal-form'
+import { ModalInput } from '@/widgets/modal-input'
+import { Modal } from '@/widgets/modal'
 import { PickedWeekType } from '@/pages/groupID'
-import { ModalSelect } from '../modal-select'
+import { ModalSelect } from '@/widgets/modal-select'
 
 const currentWeek = getWeekNumber(new Date())
 const formattedCurrentWeek = `${currentWeek.year}-W${currentWeek.week}`

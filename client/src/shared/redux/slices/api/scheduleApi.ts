@@ -1,4 +1,4 @@
-import { baseApi } from '../baseApi'
+import { baseApi } from '@/shared/redux/slices/baseApi'
 import { IGroupsSchedule, IDay, ISchedule } from '@/shared/redux/types'
 
 export enum LessonType {

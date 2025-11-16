@@ -1,4 +1,4 @@
-import { baseApi } from '../baseApi'
+import { baseApi } from '@/shared/redux/slices/baseApi'
 import { EducationType } from '@/shared/redux/slices/api/educationTypesApi'
 import { Facultie } from '@/shared/redux/slices/api/facultiesApi'
 import { Course } from '@/shared/redux/slices/api/coursesApi'

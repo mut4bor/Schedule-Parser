@@ -41,16 +41,10 @@ export const GroupIDPage = () => {
 
   const week = getWeekDates(pickedWeek?.name)
 
-  const hideGroupDays = () => setIsSidebarVisible(false)
-  const showGroupDays = () => setIsSidebarVisible(true)
-  const toggleGroupDays = () => setIsSidebarVisible((prev) => !prev)
-
   const contentSwipeHandler = useSwipeable({
-    onSwipedLeft: hideGroupDays,
-    onSwipedRight: showGroupDays,
-    onTap: () => {
-      hideGroupDays()
-    },
+    onSwipedLeft: () => setIsSidebarVisible(false),
+    onSwipedRight: () => setIsSidebarVisible(true),
+    onTap: () => setIsSidebarVisible(false),
     preventScrollOnSwipe: true,
   })
 
@@ -93,7 +87,7 @@ export const GroupIDPage = () => {
       <div className={style.content} {...contentSwipeHandler}>
         <div className={style.wrapper}>
           <Sibebar
-            toggleIsSidebarVisible={toggleGroupDays}
+            toggleIsSidebarVisible={() => setIsSidebarVisible((prev) => !prev)}
             isSidebarVisible={isSidebarVisible}
             {...daysListStopPropagationHandler}
           >

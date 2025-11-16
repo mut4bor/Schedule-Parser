@@ -1,6 +1,25 @@
 import { Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
 import { env } from '@/config/index.js'
+import { User, UserRole } from '@/database/models/user.model.js'
+
+export interface JwtPayload {
+  id: string
+  username: string
+  role: UserRole
+  iat?: number
+  exp?: number
+}
+
+declare module 'express-serve-static-core' {
+  interface Request {
+    authUser?: {
+      id: string
+      username: string
+      role: UserRole
+    }
+  }
+}
 
 export function authMiddleware(req: Request, res: Response, next: NextFunction) {
   if (req.method === 'GET') return next()
@@ -11,9 +30,49 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
     return res.status(401).json({ message: 'No token provided' })
   }
 
-  jwt.verify(token, env.JWT_SECRET, (err, user) => {
+  jwt.verify(token, env.JWT_SECRET, async (err, decoded) => {
     if (err) return res.status(403).json({ message: 'Invalid token' })
-    ;(req as any).user = user
+
+    const payload = decoded as JwtPayload
+    // Подтянем пользователя из БД, чтобы проверить isApproved/isActive/role
+    const user = await User.findById(payload.id).select('username role isApproved isActive')
+
+    if (!user || !user.isActive) {
+      return res.status(403).json({ message: 'Access denied' })
+    }
+
+    // Не пускаем в небезопасные методы, если не подтвержден
+    if (!user.isApproved) {
+      return res.status(403).json({ message: 'Учетная запись не подтверждена' })
+    }
+
+    req.authUser = {
+      id: user.id,
+      username: user.username,
+      role: user.role,
+    }
+
     next()
   })
+}
+
+export function requireApproved(req: Request, res: Response, next: NextFunction) {
+  // Если вызвали отдельно, предполагается, что authMiddleware уже прошел
+  if (!req.authUser) {
+    return res.status(401).json({ message: 'Unauthorized' })
+  }
+  next()
+}
+
+export function requireRole(role: 'superadmin' | 'admin'): (req: Request, res: Response, next: NextFunction) => void {
+  return (req, res, next) => {
+    if (!req.authUser) {
+      return res.status(401).json({ message: 'Unauthorized' })
+    }
+    const order = { user: 0, admin: 1, superadmin: 2 }
+    if (order[req.authUser.role] < order[role]) {
+      return res.status(403).json({ message: 'Forbidden' })
+    }
+    next()
+  }
 }

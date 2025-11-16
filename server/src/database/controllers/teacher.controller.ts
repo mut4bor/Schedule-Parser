@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { Teacher } from '@/database/models/teacher.model.js'
-import { Schedule } from '../models/schedule.model.js'
+import { Schedule } from '@/database/models/schedule.model.js'
 import { dayNames, ISchedule, TimeSlots } from '@/types/index.js'
 
 const getAllTeachers = async (_req: Request, res: Response) => {
