@@ -242,13 +242,13 @@ const createLesson = async (req: Request, res: Response) => {
     const { id: groupID, weekName, dayIndex: dayOfWeek, time, classroomID, teacherID, subject, lessonType } = req.body
 
     if (
-      !weekName ||
       !groupID ||
+      !weekName ||
       dayOfWeek === undefined ||
       !time ||
       !classroomID ||
-      !subject ||
       !teacherID ||
+      !subject ||
       !lessonType
     ) {
       return res.status(400).json({

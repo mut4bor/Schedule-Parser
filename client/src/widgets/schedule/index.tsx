@@ -65,6 +65,17 @@ export const Schedule = ({ groupID, pickedDayIndex, pickedWeek }: Props) => {
 
     const { time, subject, teacherID, classroomID, lessonType } = formState
 
+    console.log('formState', {
+      id: groupID,
+      weekName: pickedWeek?.name,
+      dayIndex: pickedDayIndex,
+      time,
+      classroomID,
+      teacherID,
+      subject,
+      lessonType,
+    })
+
     if (!groupID || !pickedWeek || pickedDayIndex === -1) return
 
     if (!isValidLessonType(lessonType)) {

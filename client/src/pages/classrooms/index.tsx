@@ -6,6 +6,7 @@ import {
   useDeleteClassroomMutation,
   UpdateClassroomDTO,
   DeleteClassroomDTO,
+  useGetClassroomsSchedulesQuery,
 } from '@/shared/redux/slices/api/classroomsApi'
 import * as style from './style.module.scss'
 import { useAppSelector } from '@/shared/redux/hooks'
@@ -17,6 +18,13 @@ import { ClassroomCell } from '@/widgets/classroom-cell'
 
 export const ClassroomsPage = () => {
   const { data: classroomsData } = useGetAllClassroomsQuery()
+
+  const ids = classroomsData?.map((classroom) => classroom._id) ?? []
+  const { data: classroomsSchedulesData } = useGetClassroomsSchedulesQuery(ids, {
+    skip: !ids.length,
+  })
+
+  console.log('classroomsSchedulesData', classroomsSchedulesData)
 
   const accessToken = useAppSelector((s) => s.auth.accessToken)
 

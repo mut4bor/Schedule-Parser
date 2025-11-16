@@ -1,5 +1,7 @@
 import { Request, Response } from 'express'
 import { Classroom } from '@/database/models/classroom.model.js'
+import { Schedule } from '@/database/models/schedule.model.js'
+import { dayNames, TimeSlots } from '@/types/index.js'
 
 const getAllClassrooms = async (req: Request, res: Response) => {
   try {
@@ -21,6 +23,114 @@ const getClassroomById = async (req: Request, res: Response) => {
     }
     res.status(200).json(classroom)
   } catch (error: any) {
+    res.status(500).json({
+      message: error instanceof Error ? error.message : 'Неизвестная ошибка',
+    })
+  }
+}
+
+const getClassroomsSchedules = async (req: Request, res: Response) => {
+  try {
+    const { ids } = req.params
+
+    if (!ids) {
+      return res.status(400).json({ message: 'ID обязателен' })
+    }
+
+    console.log('1')
+
+    const idArray = ids
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean)
+
+    const classrooms = await Classroom.find({
+      _id: { $in: idArray },
+    }).lean()
+    console.log('2')
+
+    if (!classrooms || classrooms.length === 0) {
+      return res.status(404).json({ message: 'Аудитории не найдены' })
+    }
+    console.log('3')
+
+    const classroomsList = classrooms.map((c) => ({
+      id: String(c._id),
+      name: c.name || '',
+      capacity: typeof c.capacity === 'number' ? c.capacity : null,
+      description: c.description || '',
+    }))
+    console.log('4')
+
+    const schedules = await Schedule.find({
+      'days.lessons.classroom': { $in: idArray },
+    })
+      .populate('group')
+      .populate('days.lessons.teacher')
+      .populate('days.lessons.classroom')
+      .lean()
+    console.log('5')
+
+    const weekMap = new Map<string, { weekName: string; isActive: boolean; schedules: any[] }>()
+
+    schedules.forEach((schedule: any) => {
+      const weekKey = schedule.weekName
+      if (!weekMap.has(weekKey)) {
+        weekMap.set(weekKey, {
+          weekName: schedule.weekName,
+          isActive: schedule.isActive,
+          schedules: [],
+        })
+      }
+      weekMap.get(weekKey)!.schedules.push(schedule)
+    })
+
+    console.log('6')
+
+    const weeks = Array.from(weekMap.values()).map((week) => {
+      const days = dayNames.map((dayName: string, dayIndex: number) => {
+        const timeSlots = TimeSlots.map((time: string) => {
+          const lessons = classroomsList.map((classroom) => {
+            const classroomLessons = week.schedules
+              .flatMap((schedule: any) => {
+                const day = schedule.days.find((d: any) => d.dayOfWeek === dayIndex)
+                if (!day) return []
+
+                return day.lessons
+                  .filter((l: any) => {
+                    if (!l.time || !l.classroom) return false
+                    const classroomId = typeof l.classroom === 'object' ? String(l.classroom._id) : String(l.classroom)
+                    return l.time === time && classroomId === classroom.id
+                  })
+                  .map((lesson: any) => ({
+                    subject: lesson.subject,
+                    teacher: lesson.teacher,
+                    lessonType: lesson.lessonType,
+                    group: schedule.group,
+                  }))
+              })
+              .filter(Boolean)
+
+            return classroomLessons.length > 0 ? classroomLessons : null
+          })
+
+          return { time, lessons }
+        })
+
+        return { dayName, dayIndex, timeSlots }
+      })
+
+      return {
+        weekName: week.weekName,
+        isActive: week.isActive,
+        days,
+      }
+    })
+
+    console.log('7')
+
+    res.status(200).json({ classrooms: classroomsList, weeks })
+  } catch (error) {
     res.status(500).json({
       message: error instanceof Error ? error.message : 'Неизвестная ошибка',
     })
@@ -107,4 +217,4 @@ const deleteClassroom = async (req: Request, res: Response) => {
   }
 }
 
-export { getAllClassrooms, getClassroomById, createClassroom, updateClassroom, deleteClassroom }
+export { getAllClassrooms, getClassroomById, getClassroomsSchedules, createClassroom, updateClassroom, deleteClassroom }

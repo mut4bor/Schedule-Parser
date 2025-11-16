@@ -17,6 +17,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import routes from '@/shared/routes'
 import { store } from '@/shared/redux/store'
+import { ClassroomsSchedulePage } from './classroomsSchedule'
 
 const routesArray = [
   { path: routes.BASE_URL, Component: MainPage },
@@ -36,6 +37,8 @@ const routesArray = [
   { path: routes.TEACHERS_SCHEDULE_PATH, Component: TeachersSchedulePage },
   { path: `${routes.TEACHERS_SCHEDULE_PATH}/:teachersIDs`, Component: TeachersSchedulePage },
   { path: routes.CLASSROOMS_PATH, Component: ClassroomsPage },
+  { path: routes.CLASSROOMS_SCHEDULE_PATH, Component: ClassroomsSchedulePage },
+  { path: `${routes.CLASSROOMS_SCHEDULE_PATH}/:classroomsIDs`, Component: ClassroomsSchedulePage },
   { path: routes.LOGIN_PATH, Component: LoginPage },
 ]
 

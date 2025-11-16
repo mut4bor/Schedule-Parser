@@ -44,9 +44,10 @@ import {
 import {
   getAllClassrooms,
   getClassroomById,
+  getClassroomsSchedules,
   createClassroom,
-  deleteClassroom,
   updateClassroom,
+  deleteClassroom,
 } from '@/database/controllers/classroom.controller.js'
 
 // --- Router ---
@@ -124,5 +125,6 @@ router.get(`${classroomsPath}/:id`, getClassroomById)
 router.post(classroomsPath, createClassroom)
 router.put(`${classroomsPath}/:id`, updateClassroom)
 router.delete(`${classroomsPath}/:id`, deleteClassroom)
+router.get(`${classroomsPath}/:ids/schedules`, getClassroomsSchedules)
 
 export { router }

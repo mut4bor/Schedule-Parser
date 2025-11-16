@@ -53,11 +53,9 @@ export const ClassroomCell = ({ classroom, onUpdate, onDelete }: Props) => {
     try {
       await onUpdate({
         id: classroom._id,
-        data: {
-          name,
-          capacity: capacityNum,
-          description,
-        },
+        name,
+        capacity: capacityNum,
+        description,
       })
       setIsModalOpen(false)
     } catch (err) {

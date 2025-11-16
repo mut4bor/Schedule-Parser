@@ -1,3 +1,4 @@
+import { DayOfWeek } from '../../types'
 import baseApi from '../baseApi'
 
 export interface Classroom {
@@ -17,15 +18,58 @@ export interface CreateClassroomDTO {
 
 export interface UpdateClassroomDTO {
   id: string
-  data: {
-    name?: string
-    capacity: number
-    description?: string
-  }
+  name?: string
+  capacity: number
+  description?: string
 }
 
 export interface DeleteClassroomDTO {
   id: string
+}
+
+interface ClassroomsSchedule {
+  classrooms: {
+    id: string
+    name: string
+    capacity: number
+    description?: string
+  }[]
+  weeks: {
+    weekName: 'odd' | 'even' | string
+    isActive: boolean
+    days: {
+      dayName: string
+      dayIndex: DayOfWeek
+      timeSlots: {
+        time: string
+        lessons: (
+          | {
+              subject: string
+              teacher: {
+                _id: string
+                firstName: string
+                middleName: string
+                lastName: string
+                title: string
+                createdAt: string
+                updatedAt: string
+                __v: number
+              }
+              lessonType: string
+              group: {
+                _id: string
+                name: string
+                educationType: string
+                faculty: string
+                course: string
+                __v: number
+              }
+            }[]
+          | null
+        )[]
+      }[]
+    }[]
+  }[]
 }
 
 export const classroomsApi = baseApi.injectEndpoints({
@@ -38,6 +82,10 @@ export const classroomsApi = baseApi.injectEndpoints({
       query: (id) => `/classrooms/${id}`,
       providesTags: ['Classrooms'],
     }),
+    getClassroomsSchedules: builder.query<ClassroomsSchedule, string[]>({
+      query: (ids) => `/classrooms/${ids.join(',')}/schedules`,
+      providesTags: ['Classrooms'],
+    }),
     createClassroom: builder.mutation<Classroom, CreateClassroomDTO>({
       query: (body) => ({
         url: '/classrooms',
@@ -47,10 +95,10 @@ export const classroomsApi = baseApi.injectEndpoints({
       invalidatesTags: ['Classrooms'],
     }),
     updateClassroom: builder.mutation<Classroom, UpdateClassroomDTO>({
-      query: ({ id, data }) => ({
+      query: ({ id, ...body }) => ({
         url: `/classrooms/${id}`,
-        method: 'PATCH',
-        body: data,
+        method: 'PUT',
+        body,
       }),
       invalidatesTags: ['Classrooms'],
     }),
@@ -66,6 +114,8 @@ export const classroomsApi = baseApi.injectEndpoints({
 
 export const {
   useGetAllClassroomsQuery,
+  useGetClassroomByIdQuery,
+  useGetClassroomsSchedulesQuery,
   useCreateClassroomMutation,
   useUpdateClassroomMutation,
   useDeleteClassroomMutation,
