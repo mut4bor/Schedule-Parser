@@ -130,8 +130,8 @@ router.put(`${classroomsPath}/:id`, updateClassroom)
 router.delete(`${classroomsPath}/:id`, deleteClassroom)
 router.get(`${classroomsPath}/:ids/schedules`, getClassroomsSchedules)
 
-// Только админ/суперадмин
-router.use(authMiddleware, requireRole('admin'))
+// Только суперадмин
+router.use(authMiddleware, requireRole('superadmin'))
 
 router.get(`${adminPath}/users/pending`, listPending)
 router.patch(`${adminPath}/users/:id/approve`, approveUser)

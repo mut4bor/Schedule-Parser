@@ -34,16 +34,10 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
     if (err) return res.status(403).json({ message: 'Invalid token' })
 
     const payload = decoded as JwtPayload
-    // Подтянем пользователя из БД, чтобы проверить isApproved/isActive/role
     const user = await User.findById(payload.id).select('username role isApproved isActive')
 
-    if (!user || !user.isActive) {
+    if (!user || !user.isActive || !user.isApproved || !['superadmin', 'admin'].includes(user.role)) {
       return res.status(403).json({ message: 'Access denied' })
-    }
-
-    // Не пускаем в небезопасные методы, если не подтвержден
-    if (!user.isApproved) {
-      return res.status(403).json({ message: 'Учетная запись не подтверждена' })
     }
 
     req.authUser = {

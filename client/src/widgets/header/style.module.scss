@@ -56,13 +56,23 @@
     transition: 0.15s ease-in-out;
     border-radius: 50%;
     background: $accentColor;
+    padding: 6px;
     aspect-ratio: 1;
+    height: 36px;
 
     @media (hover: hover) {
       &:hover {
         background: $white;
+
+        .menuIcon {
+          stroke: $accentColor;
+        }
       }
     }
+  }
+
+  .menuIcon {
+    transition: 0.15s ease-in-out;
   }
 
   .menu {
