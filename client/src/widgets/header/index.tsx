@@ -82,9 +82,9 @@ export const Header = () => {
                   className={style.menuIcon}
                   d="M3 12H21M3 6H21M3 18H21"
                   stroke="#fff"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
               </svg>
             </button>
@@ -96,6 +96,7 @@ export const Header = () => {
                 <HeaderLink text="Расписание аудиторий" href={routes.CLASSROOMS_SCHEDULE_PATH} />
                 {accessToken && (
                   <>
+                    <HeaderLink text="Редактирование преподавателей" href={routes.TEACHERS_PATH} />
                     <HeaderLink
                       text="Редактирование расписания групп"
                       href={routes.GROUPS_EDIT_PATH}

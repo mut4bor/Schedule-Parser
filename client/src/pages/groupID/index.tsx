@@ -12,6 +12,7 @@ import { DaysButton } from '@/entities/days'
 import { GroupInfo } from '@/widgets/groupInfo'
 import { getTodayIndex } from '@/widgets/groupInfo/utils'
 import { DayOfWeek } from '@/shared/redux/types'
+import { useSubscribeToLocksQuery, useUpdateLocksMutation } from '@/shared/redux/slices/api/wsApi'
 
 const { dayWeekIndex } = getTodayIndex()
 
@@ -33,6 +34,19 @@ export const GroupIDPage = () => {
   const { educationType, faculty, course, groupID = '' } = useParams()
 
   const navigate = useNavigate()
+
+  const { data: subscribeLocks } = useSubscribeToLocksQuery()
+  const [updateLocks] = useUpdateLocksMutation()
+
+  console.log('subscribeLocks', subscribeLocks)
+
+  useEffect(() => {
+    updateLocks({
+      classroomsIDs: [],
+      teachersIDs: [],
+      groupsIDs: [groupID],
+    })
+  }, [groupID, updateLocks])
 
   const [pickedWeek, setPickedWeek] = useState<PickedWeekType | null>(null)
   const [pickedDayIndex, setPickedDayIndex] = useState<DayOfWeek>(DayOfWeek.None)
