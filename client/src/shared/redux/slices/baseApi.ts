@@ -6,11 +6,11 @@ import {
   FetchBaseQueryError,
 } from '@reduxjs/toolkit/query/react'
 import { RootState } from '@/shared/redux/store'
-import { API_URL } from '@/shared/config'
+import { env } from '@/shared/config'
 import { logout, setAccessToken } from '@/shared/redux/slices/authSlice'
 
 const rawBaseQuery = fetchBaseQuery({
-  baseUrl: API_URL,
+  baseUrl: env.API_URL,
   credentials: 'include',
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth.accessToken
@@ -55,6 +55,8 @@ export const baseApi = createApi({
     'GroupsSchedule',
     'Teachers',
     'Classrooms',
+    'AdminUsers',
+    'Locks',
   ],
   endpoints: () => ({}),
 })

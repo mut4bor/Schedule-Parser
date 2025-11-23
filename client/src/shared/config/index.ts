@@ -5,6 +5,9 @@ const getEnvVar = (key: string) => {
   return import.meta.env[key] || ''
 }
 
-const API_URL = getEnvVar('VITE_API_URL')
+const env = {
+  API_URL: getEnvVar('VITE_API_URL'),
+  WEBSOCKET_URL: getEnvVar('VITE_WEBSOCKET_URL'),
+}
 
-export { API_URL }
+export { env }

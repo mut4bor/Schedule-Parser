@@ -22,8 +22,6 @@ declare module 'express-serve-static-core' {
 }
 
 export function authMiddleware(req: Request, res: Response, next: NextFunction) {
-  if (req.method === 'GET') return next()
-
   const authHeader = req.headers['authorization']
   const token = authHeader?.split(' ')[1]
   if (!token) {
@@ -36,7 +34,7 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
     const payload = decoded as JwtPayload
     const user = await User.findById(payload.id).select('username role isApproved isActive')
 
-    if (!user || !user.isActive || !user.isApproved || !['superadmin', 'admin'].includes(user.role)) {
+    if (!user || !user.isActive || !user.isApproved) {
       return res.status(403).json({ message: 'Access denied' })
     }
 
@@ -58,12 +56,14 @@ export function requireApproved(req: Request, res: Response, next: NextFunction)
   next()
 }
 
-export function requireRole(role: 'superadmin' | 'admin'): (req: Request, res: Response, next: NextFunction) => void {
+export function requireRole(role: UserRole): (req: Request, res: Response, next: NextFunction) => void {
   return (req, res, next) => {
     if (!req.authUser) {
+      console.log('No authUser')
       return res.status(401).json({ message: 'Unauthorized' })
     }
-    const order = { user: 0, admin: 1, superadmin: 2 }
+
+    const order = { admin: 1, superadmin: 2 }
     if (order[req.authUser.role] < order[role]) {
       return res.status(403).json({ message: 'Forbidden' })
     }

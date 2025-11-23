@@ -3,6 +3,13 @@ import { setAccessToken, logout } from '@/shared/redux/slices/authSlice'
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
+    register: builder.mutation<{ accessToken: string }, { username: string; password: string }>({
+      query: (credentials) => ({
+        url: `/register`,
+        method: 'POST',
+        body: credentials,
+      }),
+    }),
     login: builder.mutation<{ accessToken: string }, { username: string; password: string }>({
       query: (credentials) => ({
         url: `/login`,
@@ -33,4 +40,4 @@ export const authApi = baseApi.injectEndpoints({
   overrideExisting: false,
 })
 
-export const { useLoginMutation, useLogoutMutation } = authApi
+export const { useRegisterMutation, useLoginMutation, useLogoutMutation } = authApi

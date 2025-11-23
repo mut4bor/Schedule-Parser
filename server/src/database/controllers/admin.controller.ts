@@ -1,11 +1,10 @@
 import { Request, Response } from 'express'
 import { User } from '@/database/models/user.model.js'
 
-export const listPending = async (_req: Request, res: Response) => {
+const listAllUsers = async (_req: Request, res: Response) => {
   try {
-    const users = await User.find({ isApproved: false }).select('username email role createdAt')
-
-    return res.json({ users })
+    const users = await User.find().select('username role isApproved createdAt')
+    return res.json(users)
   } catch (error) {
     res.status(500).json({
       message: error instanceof Error ? error.message : 'Неизвестная ошибка',
@@ -13,7 +12,19 @@ export const listPending = async (_req: Request, res: Response) => {
   }
 }
 
-export const approveUser = async (req: Request, res: Response) => {
+const listPendingUsers = async (_req: Request, res: Response) => {
+  try {
+    const users = await User.find({ isApproved: false }).select('username role createdAt')
+
+    return res.json(users)
+  } catch (error) {
+    res.status(500).json({
+      message: error instanceof Error ? error.message : 'Неизвестная ошибка',
+    })
+  }
+}
+
+const approveUser = async (req: Request, res: Response) => {
   try {
     const { id } = req.params
 
@@ -33,7 +44,7 @@ export const approveUser = async (req: Request, res: Response) => {
   }
 }
 
-export const rejectUser = async (req: Request, res: Response) => {
+const rejectUser = async (req: Request, res: Response) => {
   try {
     const { id } = req.params
 
@@ -51,7 +62,7 @@ export const rejectUser = async (req: Request, res: Response) => {
   }
 }
 
-export const changeRole = async (req: Request, res: Response) => {
+const changeUserRole = async (req: Request, res: Response) => {
   try {
     const { id } = req.params
     const { role } = req.body
@@ -73,3 +84,5 @@ export const changeRole = async (req: Request, res: Response) => {
     })
   }
 }
+
+export { listAllUsers, listPendingUsers, approveUser, rejectUser, changeUserRole }

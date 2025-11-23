@@ -34,11 +34,13 @@
     "@vitejs/plugin-react": "^5.0.2",
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
+    "jwt-decode": "^4.0.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.8.2",
     "react-swipeable": "^7.0.2",
+    "socket.io-client": "^4.8.1",
     "usehooks-ts": "^3.1.1",
     "vite": "^7.1.4",
     "vite-plugin-checker": "^0.10.3"

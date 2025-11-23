@@ -12,6 +12,10 @@
     min-height: calc(100svh - $headerHeight);
   }
 
+  .title {
+    font-size: 20px;
+  }
+
   .form {
     display: flex;
     flex-direction: column;
@@ -76,6 +80,11 @@
         background: color.scale($accentColor, $lightness: -8%);
       }
     }
+  }
+
+  .switchButton {
+    background: none;
+    color: $white;
   }
 
   .errorMessage {

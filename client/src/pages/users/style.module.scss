@@ -27,6 +27,12 @@
     width: 100%;
   }
 
+  .user {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+  }
+
   .text {
     display: flex;
     align-items: center;

@@ -4,7 +4,6 @@ export type UserRole = 'superadmin' | 'admin'
 
 export interface IUser extends Document {
   username: string
-  email?: string
   passwordHash: string
   role: UserRole
   isApproved: boolean
@@ -16,7 +15,6 @@ export interface IUser extends Document {
 const UserSchema = new Schema<IUser>(
   {
     username: { type: String, required: true, unique: true, trim: true },
-    email: { type: String, trim: true, lowercase: true },
     passwordHash: { type: String, required: true },
     role: {
       type: String,

@@ -12,7 +12,8 @@ import { DaysButton } from '@/entities/days'
 import { GroupInfo } from '@/widgets/groupInfo'
 import { getTodayIndex } from '@/widgets/groupInfo/utils'
 import { DayOfWeek } from '@/shared/redux/types'
-import { useSubscribeToLocksQuery, useUpdateLocksMutation } from '@/shared/redux/slices/api/wsApi'
+import { useAppSelector } from '@/shared/redux/hooks'
+import { useLocks } from '@/shared/hooks/useLocks'
 
 const { dayWeekIndex } = getTodayIndex()
 
@@ -33,20 +34,24 @@ export const GroupIDPage = () => {
 
   const { educationType, faculty, course, groupID = '' } = useParams()
 
+  const { user } = useAppSelector((store) => store.auth)
+
   const navigate = useNavigate()
 
-  const { data: subscribeLocks } = useSubscribeToLocksQuery()
-  const [updateLocks] = useUpdateLocksMutation()
+  const { locked, lock, unlock } = useLocks(user?.id)
 
-  console.log('subscribeLocks', subscribeLocks)
+  // const isGroupLocked = locked.groups.includes(groupID)
 
   useEffect(() => {
-    updateLocks({
-      classroomsIDs: [],
-      teachersIDs: [],
-      groupsIDs: [groupID],
-    })
-  }, [groupID, updateLocks])
+    if (!user) return
+
+    console.log('useEffect rerender')
+
+    lock('groups', groupID, user.id)
+    return () => unlock('groups', groupID, user.id)
+  }, [groupID])
+
+  console.log('locked', locked)
 
   const [pickedWeek, setPickedWeek] = useState<PickedWeekType | null>(null)
   const [pickedDayIndex, setPickedDayIndex] = useState<DayOfWeek>(DayOfWeek.None)

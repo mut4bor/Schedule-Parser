@@ -1,10 +1,27 @@
 import * as style from './style.module.scss'
-import { useLoginMutation } from '@/shared/redux/slices/api/authApi'
+import { useLoginMutation, useRegisterMutation } from '@/shared/redux/slices/api/authApi'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+type AuthMode = 'login' | 'register'
+
 export const LoginPage = () => {
-  const [login, { data: loginData, error, isLoading, isSuccess }] = useLoginMutation()
+  const [
+    registerUser,
+    {
+      data: registerData,
+      error: registerError,
+      isLoading: registerIsLoading,
+      isSuccess: registerIsSuccess,
+    },
+  ] = useRegisterMutation()
+
+  const [
+    login,
+    { data: loginData, error: loginError, isLoading: loginIsLoading, isSuccess: loginIsSuccess },
+  ] = useLoginMutation()
+
+  const [mode, setMode] = useState<AuthMode>('login')
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [showSuccess, setShowSuccess] = useState(false)
@@ -12,11 +29,15 @@ export const LoginPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    await login({ username, password })
+    if (mode === 'login') {
+      await login({ username, password })
+    } else {
+      await registerUser({ username, password })
+    }
   }
 
   useEffect(() => {
-    if (isSuccess) {
+    if (loginIsSuccess || registerIsSuccess) {
       setShowSuccess(true)
       const timer = setTimeout(() => {
         setShowSuccess(false)
@@ -24,11 +45,16 @@ export const LoginPage = () => {
       }, 1200)
       return () => clearTimeout(timer)
     }
-  }, [isSuccess, navigate])
+  }, [loginIsSuccess, registerIsSuccess, navigate])
+
+  const isLoading = loginIsLoading || registerIsLoading
+  const error = mode === 'login' ? loginError : registerError
 
   return (
     <div className={style.container}>
       <form className={style.form} onSubmit={handleSubmit}>
+        <h2 className={style.title}>{mode === 'login' ? 'Вход' : 'Регистрация'}</h2>
+
         <div className={style.formGroup}>
           <label className={style.label} htmlFor="username">
             Логин:
@@ -43,6 +69,7 @@ export const LoginPage = () => {
             required
           />
         </div>
+
         <div className={style.formGroup}>
           <label className={style.label} htmlFor="password">
             Пароль:
@@ -53,17 +80,30 @@ export const LoginPage = () => {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            autoComplete="current-password"
+            autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
             required
           />
         </div>
+
         <button className={style.submitButton} type="submit" disabled={isLoading}>
-          {isLoading ? 'Загрузка...' : 'Войти'}
+          {isLoading ? 'Загрузка...' : mode === 'login' ? 'Войти' : 'Зарегистрироваться'}
         </button>
-        {error && <div className={style.errorMessage}>Произошла ошибка</div>}
+
+        <button
+          className={style.switchButton}
+          type="button"
+          onClick={() => setMode((prev) => (prev === 'login' ? 'register' : 'login'))}
+        >
+          {mode === 'login' ? 'Нет аккаунта? Зарегистрироваться' : 'Уже есть аккаунт? Войти'}
+        </button>
+
+        {error && <div className={style.errorMessage}>Произошла ошибка, попробуйте ещё раз</div>}
+
         {showSuccess && (
           <div className={style.errorMessage} style={{ color: 'limegreen' }}>
-            Успешный вход! Перенаправление...
+            {mode === 'login'
+              ? 'Успешный вход! Перенаправление...'
+              : 'Успешная регистрация! Перенаправление...'}
           </div>
         )}
       </form>

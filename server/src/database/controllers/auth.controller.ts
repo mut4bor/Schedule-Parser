@@ -14,7 +14,7 @@ function signRefreshToken(payload: object) {
 
 export const register = async (req: Request, res: Response) => {
   try {
-    const { username, password, email } = req.body
+    const { username, password } = req.body
 
     if (!username || !password) {
       return res.status(400).json({ message: 'Username и password обязательны' })
@@ -29,7 +29,6 @@ export const register = async (req: Request, res: Response) => {
 
     await User.create({
       username,
-      email,
       passwordHash,
       role: 'admin',
       isApproved: false,

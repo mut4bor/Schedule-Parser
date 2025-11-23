@@ -6,7 +6,7 @@ import mongoose from 'mongoose'
 import { router } from '@/database/routes/route.js'
 import { env } from '@/config/index.js'
 import cookieParser from 'cookie-parser'
-import { setupWebSocket } from '@/websocket/server.js'
+import { initSocket } from './websocket/socket.js'
 
 const app = express()
 const server = http.createServer(app)
@@ -39,7 +39,7 @@ mongoose
   .then(() => {
     console.log('✅ Connected to database!')
 
-    setupWebSocket(server)
+    initSocket(server)
     console.log('🔌 WebSocket server initialized')
 
     server.listen(HOST_PORT, () => {
