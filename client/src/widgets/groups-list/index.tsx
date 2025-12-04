@@ -120,7 +120,9 @@ export const GroupsList = () => {
       </ul>
 
       {accessToken && course && (
-        <AdminAddButton onClick={() => setIsModalOpen(true)}>Добавить группу</AdminAddButton>
+        <AdminAddButton onClick={() => setIsModalOpen(true)} isLocked={false}>
+          Добавить группу
+        </AdminAddButton>
       )}
 
       {isModalOpen && (

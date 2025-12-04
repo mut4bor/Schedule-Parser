@@ -51,6 +51,11 @@ const scheduleSchema = new Schema(
               required: true,
               enum: Object.values(LessonType),
             },
+            description: {
+              type: String,
+              required: false,
+              trim: true,
+            },
           },
         ],
       },

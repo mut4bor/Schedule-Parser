@@ -18,6 +18,9 @@ interface Props {
 }
 
 export const ClassroomCell = ({ classroom, onUpdate, onDelete }: Props) => {
+  const locked = useAppSelector((store) => store.locked)
+  const isLocked = !!locked.classrooms.find((item) => item[0] === classroom._id)
+
   const accessToken = useAppSelector((s) => s.auth.accessToken)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -74,6 +77,7 @@ export const ClassroomCell = ({ classroom, onUpdate, onDelete }: Props) => {
         <EditDeleteActions
           onEdit={() => setIsModalOpen(true)}
           onDelete={() => onDelete({ id: classroom._id })}
+          isLocked={isLocked}
         />
       )}
 

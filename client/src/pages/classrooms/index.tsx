@@ -113,7 +113,9 @@ export const ClassroomsPage = () => {
         ))}
 
         {accessToken && (
-          <AdminAddButton onClick={() => setIsModalOpen(true)}>Добавить аудиторию</AdminAddButton>
+          <AdminAddButton onClick={() => setIsModalOpen(true)} isLocked={false}>
+            Добавить аудиторию
+          </AdminAddButton>
         )}
       </div>
 

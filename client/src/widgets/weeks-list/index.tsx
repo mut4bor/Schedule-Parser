@@ -30,8 +30,11 @@ interface Props {
 }
 
 export const WeeksList = ({ pickedWeek, setPickedWeek }: Props) => {
-  const accessToken = useAppSelector((store) => store.auth.accessToken)
+  const locked = useAppSelector((store) => store.locked)
   const { groupID } = useParams()
+  const isLocked = !!locked.groups.find((item) => item[0] === groupID)
+
+  const accessToken = useAppSelector((store) => store.auth.accessToken)
 
   const { data: weeksData } = useGetWeeksByGroupIdQuery(groupID ?? '', {
     skip: !groupID,
@@ -54,6 +57,7 @@ export const WeeksList = ({ pickedWeek, setPickedWeek }: Props) => {
 
   const handleCreateWeek = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+
     const formData = new FormData(e.currentTarget)
 
     if (!groupID) return
@@ -134,7 +138,9 @@ export const WeeksList = ({ pickedWeek, setPickedWeek }: Props) => {
           ))}
 
       {accessToken && (
-        <AdminAddButton onClick={() => setIsModalOpen(true)}>Добавить неделю</AdminAddButton>
+        <AdminAddButton onClick={() => setIsModalOpen(true)} isLocked={isLocked}>
+          Добавить неделю
+        </AdminAddButton>
       )}
 
       {isModalOpen && (

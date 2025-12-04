@@ -40,6 +40,7 @@ import {
   deleteTeacher,
   getTeacherById,
   getTeachersSchedules,
+  getTeacherScheduleBySlot,
 } from '@/database/controllers/teacher.controller.js'
 import {
   getAllClassrooms,
@@ -135,6 +136,7 @@ router.post(teachersPath, authMiddleware, requireRole('admin'), createTeacher)
 router.put(`${teachersPath}/:id`, authMiddleware, requireRole('admin'), updateTeacher)
 router.delete(`${teachersPath}/:id`, authMiddleware, requireRole('admin'), deleteTeacher)
 router.get(`${teachersPath}/:ids/schedules`, getTeachersSchedules)
+router.get(`${teachersPath}/:id/schedule-slot`, getTeacherScheduleBySlot)
 
 // --- Аудитории ---
 router.get(classroomsPath, getAllClassrooms)

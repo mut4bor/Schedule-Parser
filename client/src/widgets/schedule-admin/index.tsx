@@ -9,7 +9,7 @@ import {
   useDeleteLessonMutation,
   useGetGroupsSchedulesQuery,
 } from '@/shared/redux/slices/api/scheduleApi'
-import { CSSProperties, Fragment, useState } from 'react'
+import { CSSProperties, Fragment, useEffect, useMemo, useState } from 'react'
 import { getWeekValue } from '@/widgets/weeks-list/utils'
 import { Link } from 'react-router-dom'
 import { LessonListItemAdmin } from './LessonListItem'
@@ -18,16 +18,41 @@ import { Modal } from '@/widgets/modal'
 import { ModalForm } from '@/widgets/modal-form'
 import { ModalInput } from '@/widgets/modal-input'
 import { ModalSelect } from '@/widgets/modal-select'
-import { useGetAllTeachersQuery } from '@/shared/redux/slices/api/teachersApi'
+import {
+  useGetAllTeachersQuery,
+  useGetTeacherScheduleBySlotQuery,
+} from '@/shared/redux/slices/api/teachersApi'
 import { TimeSlots } from '@/shared/redux/types'
 import { useGetAllClassroomsQuery } from '@/shared/redux/slices/api/classroomsApi'
+import { useAppSelector } from '@/shared/redux/hooks'
+import { useLocks } from '@/shared/hooks/useLocks'
 
 interface Props {
   groupsIDs: string
 }
 
 export const ScheduleAdmin = ({ groupsIDs }: Props) => {
-  const groupsIdsArray = groupsIDs.split(',')
+  const locked = useAppSelector((store) => store.locked)
+
+  const groupsIdsArray = useMemo(() => groupsIDs.split(','), [groupsIDs])
+
+  const { lock, unlock } = useLocks()
+
+  useEffect(() => {
+    groupsIdsArray.forEach((groupID) => lock('groups', groupID))
+
+    const interval = setInterval(
+      () => {
+        groupsIdsArray.forEach((groupID) => lock('groups', groupID))
+      },
+      1000 * 60 * 3,
+    ) // каждые 3 минуты
+
+    return () => {
+      clearInterval(interval)
+      groupsIdsArray.forEach((groupID) => unlock('groups', groupID))
+    }
+  }, [groupsIdsArray])
 
   const { data: scheduleData } = useGetGroupsSchedulesQuery(groupsIdsArray, {
     skip: !groupsIdsArray.length,
@@ -60,7 +85,24 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
     teacherID: '',
     lessonType: '',
     classroomID: '',
+    description: '',
   })
+
+  const { currentData: teacherSlotData } = useGetTeacherScheduleBySlotQuery(
+    {
+      id: formState.teacherID,
+      time: formState.time,
+      dayOfWeek: Number(selectedContext?.dayIndex),
+      weekName: selectedContext?.weekName ?? '',
+    },
+    {
+      skip:
+        !formState.teacherID ||
+        !formState.time ||
+        !selectedContext?.dayIndex ||
+        !selectedContext?.weekName,
+    },
+  )
 
   const handleChange = (field: keyof typeof formState, value: string) => {
     setFormState((prev) => ({ ...prev, [field]: value }))
@@ -74,7 +116,7 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
   ) => {
     e.preventDefault()
 
-    const { time, classroomID, teacherID, lessonType, subject } = formState
+    const { time, classroomID, teacherID, lessonType, subject, description } = formState
 
     if (!isValidLessonType(lessonType)) {
       console.error('Недопустимый тип занятия:', lessonType)
@@ -91,6 +133,7 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
         teacherID,
         subject,
         lessonType,
+        description,
       }).unwrap()
 
       setFormState({
@@ -99,6 +142,7 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
         teacherID: '',
         lessonType: '',
         classroomID: '',
+        description: '',
       })
     } catch (err) {
       console.error('Ошибка при создании урока:', err)
@@ -170,6 +214,7 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
                     {timeSlot.lessons.map((lesson, lessonIndex) => {
                       const group = scheduleData.groups[lessonIndex]
                       const cellId = `${week.weekName}-${weekIndex}-${dayIndex}-${timeIndex}-${lessonIndex}`
+                      const isLocked = !!locked.groups.find((item) => item[0] === group.id)
 
                       if (!lesson) {
                         return (
@@ -184,6 +229,7 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
                               handleChange('time', timeSlot.time)
                               setIsModalOpen(true)
                             }}
+                            isLocked={isLocked}
                             key={cellId}
                           >
                             Добавить пару
@@ -194,6 +240,7 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
                       return (
                         <div className={`${style.scheduleCell} ${style.lessonCell}`} key={cellId}>
                           <LessonListItemAdmin
+                            groupID={group.id}
                             lesson={lesson}
                             scheduleID={''}
                             dayIndex={day.dayIndex}
@@ -252,6 +299,7 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
                 value: teacher._id,
                 label: `${teacher.firstName} ${teacher.middleName} ${teacher.lastName}`,
               }))}
+              isWarning={!!teacherSlotData}
             />
 
             <ModalSelect
@@ -274,6 +322,13 @@ export const ScheduleAdmin = ({ groupsIDs }: Props) => {
                 value: classroom._id,
                 label: `${classroom.name} (до ${classroom.capacity} человек)`,
               }))}
+            />
+
+            <ModalInput
+              label="Описание (необязательно):"
+              name="description"
+              value={formState.description}
+              onChange={(e) => handleChange('description', e.target.value)}
             />
           </ModalForm>
         </Modal>

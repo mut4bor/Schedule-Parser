@@ -239,7 +239,17 @@ const deleteWeekSchedule = async (req: Request, res: Response) => {
 
 const createLesson = async (req: Request, res: Response) => {
   try {
-    const { id: groupID, weekName, dayIndex: dayOfWeek, time, classroomID, teacherID, subject, lessonType } = req.body
+    const {
+      id: groupID,
+      weekName,
+      dayIndex: dayOfWeek,
+      time,
+      classroomID,
+      teacherID,
+      subject,
+      lessonType,
+      description,
+    } = req.body
 
     if (
       !groupID ||
@@ -305,13 +315,19 @@ const createLesson = async (req: Request, res: Response) => {
       })
     }
 
-    schedule.days[dayIndex].lessons.push({
+    const newLesson: any = {
       time,
       classroom: classroomID,
       subject,
       teacher: teacherID,
       lessonType,
-    })
+    }
+
+    if (typeof description === 'string' && description.trim() !== '') {
+      newLesson.description = description
+    }
+
+    schedule.days[dayIndex].lessons.push(newLesson)
 
     schedule.days[dayIndex].lessons.sort((a, b) => {
       return a.time.localeCompare(b.time)
@@ -332,7 +348,7 @@ const createLesson = async (req: Request, res: Response) => {
 const updateLesson = async (req: Request, res: Response) => {
   try {
     const { scheduleID, dayIndex, lessonIndex } = req.params
-    const { time, classroomID, teacherID, subject, lessonType } = req.body
+    const { time, classroomID, teacherID, subject, lessonType, description } = req.body
 
     const parsedDayIndex = parseInt(dayIndex)
     const parsedLessonIndex = parseInt(lessonIndex)
@@ -365,6 +381,9 @@ const updateLesson = async (req: Request, res: Response) => {
         })
       }
       lesson.lessonType = lessonType
+    }
+    if (description !== undefined) {
+      lesson.description = description
     }
 
     await schedule.save()

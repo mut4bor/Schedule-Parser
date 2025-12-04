@@ -79,6 +79,44 @@ interface TeachersSchedule {
   }[]
 }
 
+// ===== типы для слота расписания преподавателя =====
+
+export interface TeacherScheduleSlotLesson {
+  subject: string
+  classroom: Classroom
+  lessonType: string
+  group: {
+    _id: string
+    name: string
+    educationType: string
+    faculty: string
+    course: string
+    __v: number
+  }
+}
+
+export interface TeacherScheduleSlotResponse {
+  teacher: {
+    id: string
+    firstName: string
+    middleName: string
+    lastName: string
+    title: string
+  }
+  weekName: string
+  dayName: string
+  dayIndex: DayOfWeek
+  time: string
+  lessons: TeacherScheduleSlotLesson[]
+}
+
+export interface GetTeacherScheduleSlotDTO {
+  id: string
+  weekName: string
+  dayOfWeek: DayOfWeek
+  time: string
+}
+
 export const teachersApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAllTeachers: builder.query<ITeacher[], string | void>({
@@ -93,6 +131,21 @@ export const teachersApi = baseApi.injectEndpoints({
       query: (ids) => `/teachers/${ids.join(',')}/schedules`,
       providesTags: ['GroupsSchedule'],
     }),
+
+    getTeacherScheduleBySlot: builder.query<TeacherScheduleSlotResponse, GetTeacherScheduleSlotDTO>(
+      {
+        query: ({ id, weekName, dayOfWeek, time }) => ({
+          url: `/teachers/${id}/schedule-slot`,
+          params: {
+            weekName,
+            dayOfWeek,
+            time,
+          },
+        }),
+        providesTags: ['GroupsSchedule'],
+      },
+    ),
+
     createTeacher: builder.mutation<{ message: string }, CreateTeacherDTO>({
       query: (body) => ({
         url: `/teachers`,
@@ -124,6 +177,7 @@ export const {
   useGetAllTeachersQuery,
   useGetTeacherByIdQuery,
   useGetTeachersSchedulesQuery,
+  useGetTeacherScheduleBySlotQuery,
   useCreateTeacherMutation,
   useUpdateTeacherMutation,
   useDeleteTeacherMutation,

@@ -21,7 +21,6 @@
   background: rgba($white, 0.1);
   padding: 0 0.4rem;
   height: 100%;
-
   color: $white;
   font-size: 1.4rem;
 
@@ -33,5 +32,10 @@
     &:hover {
       background: $accentColor;
     }
+  }
+
+  &.isLocked {
+    cursor: not-allowed;
+    background: rgba($notAllowedColor, 0.1);
   }
 }

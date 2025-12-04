@@ -12,7 +12,6 @@ import { ErrorComponent } from '@/widgets/error'
 import { Options } from '@/widgets/options'
 import { Skeleton } from '@/shared/ui'
 import { PickedWeekType } from '@/pages/groupID'
-import { LockedItems } from '@/shared/redux/slices/locksSlice'
 
 const CreateTapStopPropagationHandler = () =>
   useSwipeable({
@@ -25,7 +24,6 @@ interface Props {
   groupID: string
   pickedWeek: PickedWeekType | null
   pickedDayIndex: number
-  locked: LockedItems
 }
 
 export const GroupInfo = ({ groupID, pickedWeek, pickedDayIndex }: Props) => {

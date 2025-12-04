@@ -107,7 +107,7 @@ export const TeachersPage = () => {
         ))}
 
         {accessToken && (
-          <AdminAddButton onClick={() => setIsModalOpen(true)}>
+          <AdminAddButton onClick={() => setIsModalOpen(true)} isLocked={false}>
             Добавить преподавателя
           </AdminAddButton>
         )}

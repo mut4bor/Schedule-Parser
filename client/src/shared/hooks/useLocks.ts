@@ -12,7 +12,6 @@ function filterLocked(items: LockedItemTuple[], userId: string): LockedItemTuple
 export function useLocks() {
   const dispatch = useAppDispatch()
   const userID = useAppSelector((store) => store.auth.user?.id)
-  const locked = useAppSelector((store) => store.locked)
 
   useEffect(() => {
     if (!userID) return
@@ -44,5 +43,5 @@ export function useLocks() {
     socket.emit('unlock', { type, id, userId: userID })
   }
 
-  return { locked, lock, unlock }
+  return { lock, unlock }
 }

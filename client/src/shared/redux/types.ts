@@ -20,6 +20,7 @@ export interface ILesson {
   subject: string
   teacher: ITeacher
   lessonType: LessonType
+  description?: string
 }
 
 export interface IDay {

@@ -125,7 +125,9 @@ export const Courses = () => {
           ))}
 
       {accessToken && (
-        <AdminAddButton onClick={() => setIsModalOpen(true)}>Добавить курс</AdminAddButton>
+        <AdminAddButton onClick={() => setIsModalOpen(true)} isLocked={false}>
+          Добавить курс
+        </AdminAddButton>
       )}
 
       {isModalOpen && (

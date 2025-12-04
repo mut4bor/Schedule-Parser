@@ -6,6 +6,7 @@ import { Modal } from '@/widgets/modal'
 import { ModalForm } from '@/widgets/modal-form'
 import { ModalInput } from '@/widgets/modal-input'
 import { EditDeleteActions } from '@/entities/admin'
+import { useLocks } from '@/shared/hooks/useLocks'
 
 interface Props {
   teacher: ITeacher
@@ -14,6 +15,10 @@ interface Props {
 }
 
 export const TeacherCell = ({ teacher, onUpdate, onDelete }: Props) => {
+  const locked = useAppSelector((store) => store.locked)
+  const isLocked = !!locked.teachers.find((item) => item[0] === teacher._id)
+  const { lock, unlock } = useLocks()
+
   const accessToken = useAppSelector((store) => store.auth.accessToken)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -35,6 +40,7 @@ export const TeacherCell = ({ teacher, onUpdate, onDelete }: Props) => {
       middleName: teacher.middleName || '',
       title: teacher.title || '',
     })
+    unlock('teachers', teacher._id)
     setIsModalOpen(false)
   }
 
@@ -69,8 +75,12 @@ export const TeacherCell = ({ teacher, onUpdate, onDelete }: Props) => {
 
       {accessToken && (
         <EditDeleteActions
-          onEdit={() => setIsModalOpen(true)}
+          onEdit={() => {
+            lock('teachers', teacher._id)
+            setIsModalOpen(true)
+          }}
           onDelete={() => onDelete({ id: teacher._id })}
+          isLocked={isLocked}
         />
       )}
 

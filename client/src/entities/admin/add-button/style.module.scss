@@ -1,3 +1,5 @@
+@use '@/shared/vars/vars' as *;
+
 .addButton {
   cursor: pointer;
   border: 1px dashed #ccc;
@@ -8,8 +10,13 @@
   color: #666;
   white-space: nowrap;
 
-  &:hover {
+  &:hover:not(.isLocked) {
     border-color: #fff;
     color: #999;
+  }
+
+  &.isLocked {
+    cursor: not-allowed;
+    border-color: $notAllowedColor;
   }
 }

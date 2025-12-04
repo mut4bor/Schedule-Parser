@@ -10,7 +10,10 @@ import {
   LessonType,
 } from '@/shared/redux/slices/api/scheduleApi'
 import { useGetScheduleByIdQuery } from '@/shared/redux/slices/api/scheduleApi'
-import { useGetAllTeachersQuery } from '@/shared/redux/slices/api/teachersApi'
+import {
+  useGetAllTeachersQuery,
+  useGetTeacherScheduleBySlotQuery,
+} from '@/shared/redux/slices/api/teachersApi'
 import { useAppSelector } from '@/shared/redux/hooks'
 import { AdminAddButton } from '@/entities/admin'
 import { LessonListItem } from './LessonListItem'
@@ -31,6 +34,9 @@ interface Props {
 }
 
 export const Schedule = ({ groupID, pickedDayIndex, pickedWeek }: Props) => {
+  const locked = useAppSelector((store) => store.locked)
+  const isLocked = !!locked.groups.find((item) => item[0] === groupID)
+
   const accessToken = useAppSelector((store) => store.auth.accessToken)
 
   const { data: scheduleData } = useGetScheduleByIdQuery(
@@ -54,7 +60,20 @@ export const Schedule = ({ groupID, pickedDayIndex, pickedWeek }: Props) => {
     teacherID: '',
     lessonType: '',
     classroomID: '',
+    description: '',
   })
+
+  const { currentData: teacherSlotData } = useGetTeacherScheduleBySlotQuery(
+    {
+      id: formState.teacherID,
+      time: formState.time,
+      dayOfWeek: pickedDayIndex,
+      weekName: pickedWeek?.name ?? '',
+    },
+    {
+      skip: !formState.teacherID || !formState.time || !pickedDayIndex || !pickedWeek?.name,
+    },
+  )
 
   const handleChange = (field: keyof typeof formState, value: string) => {
     setFormState((prev) => ({ ...prev, [field]: value }))
@@ -63,18 +82,7 @@ export const Schedule = ({ groupID, pickedDayIndex, pickedWeek }: Props) => {
   const handleCreateLesson = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    const { time, subject, teacherID, classroomID, lessonType } = formState
-
-    console.log('formState', {
-      id: groupID,
-      weekName: pickedWeek?.name,
-      dayIndex: pickedDayIndex,
-      time,
-      classroomID,
-      teacherID,
-      subject,
-      lessonType,
-    })
+    const { time, subject, teacherID, classroomID, lessonType, description } = formState
 
     if (!groupID || !pickedWeek || pickedDayIndex === -1) return
 
@@ -93,6 +101,7 @@ export const Schedule = ({ groupID, pickedDayIndex, pickedWeek }: Props) => {
         teacherID,
         subject,
         lessonType,
+        description,
       }).unwrap()
 
       setFormState({
@@ -101,6 +110,7 @@ export const Schedule = ({ groupID, pickedDayIndex, pickedWeek }: Props) => {
         teacherID: '',
         lessonType: '',
         classroomID: '',
+        description: '',
       })
 
       setIsModalOpen(false)
@@ -145,6 +155,7 @@ export const Schedule = ({ groupID, pickedDayIndex, pickedWeek }: Props) => {
           : selectedDay?.lessons.map((lesson, index) => (
               <LessonListItem
                 key={index}
+                groupID={groupID}
                 lesson={lesson}
                 scheduleID={scheduleData._id}
                 dayIndex={pickedDayIndex}
@@ -155,7 +166,9 @@ export const Schedule = ({ groupID, pickedDayIndex, pickedWeek }: Props) => {
             ))}
 
         {accessToken && !!availableTimeSlots.length && scheduleData && pickedWeek?.id && (
-          <AdminAddButton onClick={() => setIsModalOpen(true)}>Добавить пару</AdminAddButton>
+          <AdminAddButton onClick={() => setIsModalOpen(true)} isLocked={isLocked}>
+            Добавить пару
+          </AdminAddButton>
         )}
       </ul>
 
@@ -191,6 +204,7 @@ export const Schedule = ({ groupID, pickedDayIndex, pickedWeek }: Props) => {
                 value: teacher._id,
                 label: `${teacher.firstName} ${teacher.middleName} ${teacher.lastName}`,
               }))}
+              isWarning={!!teacherSlotData}
             />
 
             <ModalSelect
@@ -213,6 +227,13 @@ export const Schedule = ({ groupID, pickedDayIndex, pickedWeek }: Props) => {
                 value: classroom._id,
                 label: `${classroom.name} (до ${classroom.capacity} человек)`,
               }))}
+            />
+
+            <ModalInput
+              label="Описание (необязательно):"
+              name="description"
+              value={formState.description}
+              onChange={(e) => handleChange('description', e.target.value)}
             />
           </ModalForm>
         </Modal>

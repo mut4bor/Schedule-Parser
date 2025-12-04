@@ -21,6 +21,7 @@ export interface CreateLessonDTO {
   teacherID: string
   subject: string
   lessonType: LessonType
+  description: string
 }
 
 export interface UpdateLessonDTO {
@@ -32,6 +33,7 @@ export interface UpdateLessonDTO {
   teacherID?: string
   subject?: string
   lessonType?: LessonType
+  description: string
 }
 
 export interface DeleteLessonDTO {

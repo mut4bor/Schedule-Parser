@@ -5,7 +5,7 @@ interface LockData {
   expiresAt: number
 }
 
-const LOCK_TTL = 1000 * 60 * 60 * 12 // 12 часов
+const LOCK_TTL = 1000 * 60 * 5 // 5 минут
 
 const locks = {
   groups: new Map<string, LockData>(),

@@ -17,6 +17,7 @@ import { useGetAllTeachersQuery } from '@/shared/redux/slices/api/teachersApi'
 import { useGetAllClassroomsQuery } from '@/shared/redux/slices/api/classroomsApi'
 
 interface Props {
+  groupID: string
   lesson: ILesson
   scheduleID: string
   dayIndex: DayOfWeek
@@ -26,6 +27,7 @@ interface Props {
 }
 
 export const LessonListItem = ({
+  groupID,
   lesson,
   scheduleID,
   dayIndex,
@@ -33,6 +35,9 @@ export const LessonListItem = ({
   onUpdate,
   onDelete,
 }: Props) => {
+  const locked = useAppSelector((store) => store.locked)
+  const isLocked = !!locked.groups.find((item) => item[0] === groupID)
+
   const accessToken = useAppSelector((store) => store.auth.accessToken)
   const { data: teachersData } = useGetAllTeachersQuery()
   const { data: classroomsData } = useGetAllClassroomsQuery()
@@ -45,6 +50,7 @@ export const LessonListItem = ({
     teacherID: lesson.teacher?._id || '',
     lessonType: lesson.lessonType || '',
     classroomID: lesson.classroom?._id || '',
+    description: lesson.description || '',
   })
 
   const handleChange = (field: keyof typeof formState, value: string) => {
@@ -54,7 +60,7 @@ export const LessonListItem = ({
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    const { time, subject, teacherID, classroomID, lessonType } = formState
+    const { time, subject, teacherID, classroomID, lessonType, description } = formState
 
     const typedForm: Omit<UpdateLessonDTO, 'scheduleID' | 'dayIndex' | 'lessonIndex'> = {
       time,
@@ -62,6 +68,7 @@ export const LessonListItem = ({
       teacherID,
       subject,
       lessonType: isValidLessonType(lessonType) ? lessonType : undefined,
+      description,
     }
 
     try {
@@ -93,7 +100,8 @@ export const LessonListItem = ({
           {lesson.teacher?.middleName
             ? ` ${lesson.teacher.middleName.charAt(0).toUpperCase()}.`
             : ''}
-          {lesson.classroom ? `, ${lesson.classroom.name}` : null}
+          {lesson.classroom ? `, ${lesson.classroom.name}` : ''}
+          {lesson.description ? `, ${lesson.description}` : ''}
         </p>
 
         {accessToken && (
@@ -109,6 +117,7 @@ export const LessonListItem = ({
                     })
                 : null
             }
+            isLocked={isLocked}
           />
         )}
       </div>
@@ -165,6 +174,13 @@ export const LessonListItem = ({
                 value: classroom._id,
                 label: `${classroom.name} (до ${classroom.capacity} человек)`,
               }))}
+            />
+
+            <ModalInput
+              label="Описание (необязательно):"
+              name="description"
+              value={formState.description}
+              onChange={(e) => handleChange('description', e.target.value)}
             />
           </ModalForm>
         </Modal>

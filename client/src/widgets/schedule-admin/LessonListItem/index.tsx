@@ -17,6 +17,7 @@ import { useGetAllTeachersQuery } from '@/shared/redux/slices/api/teachersApi'
 import { useGetAllClassroomsQuery } from '@/shared/redux/slices/api/classroomsApi'
 
 interface Props {
+  groupID: string
   lesson: ILesson
   scheduleID: string
   dayIndex: DayOfWeek
@@ -26,6 +27,7 @@ interface Props {
 }
 
 export const LessonListItemAdmin = ({
+  groupID,
   lesson,
   scheduleID,
   dayIndex,
@@ -33,7 +35,8 @@ export const LessonListItemAdmin = ({
   onUpdate,
   onDelete,
 }: Props) => {
-  console.log('lesson', lesson)
+  const locked = useAppSelector((store) => store.locked)
+  const isLocked = !!locked.groups.find((item) => item[0] === groupID)
 
   const accessToken = useAppSelector((store) => store.auth.accessToken)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -47,6 +50,7 @@ export const LessonListItemAdmin = ({
     teacherID: lesson.teacher?._id || '',
     lessonType: lesson.lessonType || '',
     classroomID: lesson.classroom._id || '',
+    description: lesson.description || '',
   })
 
   const handleChange = (field: keyof typeof formState, value: string) => {
@@ -56,7 +60,7 @@ export const LessonListItemAdmin = ({
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    const { time, subject, teacherID, classroomID, lessonType } = formState
+    const { time, subject, teacherID, classroomID, lessonType, description } = formState
 
     const typedForm: Omit<UpdateLessonDTO, 'scheduleID' | 'dayIndex' | 'lessonIndex'> = {
       time,
@@ -64,6 +68,7 @@ export const LessonListItemAdmin = ({
       teacherID,
       subject,
       lessonType: isValidLessonType(lessonType) ? lessonType : undefined,
+      description,
     }
 
     try {
@@ -92,6 +97,7 @@ export const LessonListItemAdmin = ({
           {lesson.teacher?.firstName && ` ${lesson.teacher.firstName.charAt(0).toUpperCase()}.`}
           {lesson.teacher?.middleName && ` ${lesson.teacher.middleName.charAt(0).toUpperCase()}.`}
           {lesson.classroom?.name && `, ${lesson.classroom.name}`}
+          {lesson.description && `, ${lesson.description}`}
         </p>
 
         {accessToken && (
@@ -107,6 +113,7 @@ export const LessonListItemAdmin = ({
                     })
                 : null
             }
+            isLocked={isLocked}
           />
         )}
       </div>
@@ -163,6 +170,13 @@ export const LessonListItemAdmin = ({
                 value: classroom._id,
                 label: `${classroom.name} (до ${classroom.capacity} человек)`,
               }))}
+            />
+
+            <ModalInput
+              label="Описание (необязательно):"
+              name="description"
+              value={formState.description}
+              onChange={(e) => handleChange('description', e.target.value)}
             />
           </ModalForm>
         </Modal>

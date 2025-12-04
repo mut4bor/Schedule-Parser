@@ -11,13 +11,19 @@ interface Props {
   value: string
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
   options: Option[]
+  isWarning?: boolean
 }
 
-export const ModalSelect = ({ label, name, value, onChange, options }: Props) => {
+export const ModalSelect = ({ label, name, value, onChange, options, isWarning }: Props) => {
   return (
     <label className={style.label}>
       {label}
-      <select name={name} className={style.select} value={value} onChange={onChange}>
+      <select
+        name={name}
+        className={`${style.select} ${isWarning ? style.isWarning : ''}`}
+        value={value}
+        onChange={onChange}
+      >
         <option value="" disabled>
           Выберите значение
         </option>

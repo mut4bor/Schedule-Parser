@@ -10,6 +10,7 @@ import { ModalSelect } from '@/widgets/modal-select'
 import { EditDeleteActions } from '@/entities/admin'
 import { getWeekValue } from '../utils'
 import { PickedWeekType } from '@/pages/groupID'
+import { useParams } from 'react-router-dom'
 
 interface Week {
   _id: string
@@ -35,6 +36,10 @@ const getInitialWeekValue = (weekName: string) => {
 }
 
 export const WeekListItem = ({ week, pickedWeek, setPickedWeek, onUpdate, onDelete }: Props) => {
+  const locked = useAppSelector((store) => store.locked)
+  const { groupID } = useParams()
+  const isLocked = !!locked.groups.find((item) => item[0] === groupID)
+
   const accessToken = useAppSelector((store) => store.auth.accessToken)
 
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -103,7 +108,11 @@ export const WeekListItem = ({ week, pickedWeek, setPickedWeek, onUpdate, onDele
         </WeeksButton>
 
         {accessToken && (
-          <EditDeleteActions onEdit={() => setIsModalOpen(true)} onDelete={handleDeleteClick} />
+          <EditDeleteActions
+            onEdit={() => setIsModalOpen(true)}
+            onDelete={handleDeleteClick}
+            isLocked={isLocked}
+          />
         )}
       </div>
 

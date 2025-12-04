@@ -175,7 +175,7 @@ export const Faculty = ({ educationType, columnsAmount }: Props) => {
               <Fragment>
                 {facultiesData.length > 0 && <Pipe />}
                 <div>
-                  <AdminAddButton onClick={() => setIsModalOpen(true)}>
+                  <AdminAddButton onClick={() => setIsModalOpen(true)} isLocked={false}>
                     Добавить факультет
                   </AdminAddButton>
                 </div>

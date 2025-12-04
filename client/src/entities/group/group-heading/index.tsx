@@ -21,6 +21,9 @@ interface Props {
 }
 
 export const GroupHeading = ({ group, onUpdate }: Props) => {
+  const locked = useAppSelector((store) => store.locked)
+  const isLocked = !!locked.groups.find((item) => item[0] === group?._id)
+
   const accessToken = useAppSelector((store) => store.auth.accessToken)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -81,7 +84,13 @@ export const GroupHeading = ({ group, onUpdate }: Props) => {
           {accessToken && group.description && `, ${group.description}`}
         </p>
 
-        {accessToken && <EditDeleteActions onEdit={() => setIsModalOpen(true)} onDelete={null} />}
+        {accessToken && (
+          <EditDeleteActions
+            onEdit={() => setIsModalOpen(true)}
+            onDelete={null}
+            isLocked={isLocked}
+          />
+        )}
       </div>
 
       {isModalOpen && (

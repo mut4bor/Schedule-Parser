@@ -86,6 +86,7 @@ export const EditableItem = ({
             <EditDeleteActions
               onEdit={!!crudHandlers?.onUpdate ? () => setIsEditing(true) : null}
               onDelete={!!crudHandlers?.onDelete ? handleDelete : null}
+              isLocked={false}
             />
           )}
         </>

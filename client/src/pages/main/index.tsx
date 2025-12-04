@@ -52,7 +52,9 @@ export const MainPage = () => {
       </ul>
 
       {accessToken && (
-        <AdminAddButton onClick={() => setIsModalOpen(true)}>Добавить тип обучения</AdminAddButton>
+        <AdminAddButton onClick={() => setIsModalOpen(true)} isLocked={false}>
+          Добавить тип обучения
+        </AdminAddButton>
       )}
 
       {isModalOpen && (
