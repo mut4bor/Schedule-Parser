@@ -1,0 +1,83 @@
+@use '@/shared/vars/vars' as *;
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (min-width: $pageWidth320) {
+  .modalBackdrop {
+    display: flex;
+    position: fixed;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.3s ease forwards;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+  }
+
+  .modalContent {
+    position: relative;
+    animation: slideUp 0.3s ease forwards;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+    border-radius: 1rem;
+    background-color: $darkGray;
+    padding: 2rem;
+    width: 90%;
+    max-width: 480px;
+    color: $white;
+  }
+
+  .modalTitle {
+    margin-bottom: 1.5rem;
+    color: $white;
+    font-size: 2rem;
+    text-align: center;
+  }
+
+  .modalCloseBtn {
+    display: flex;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    justify-content: center;
+    align-items: center;
+    transition: color 0.2s ease-in-out;
+    cursor: pointer;
+    border: none;
+    background: none;
+    aspect-ratio: 1;
+    width: 2rem;
+    height: 2rem;
+    color: rgba($white, 0.7);
+    font-size: 2rem;
+    line-height: 2rem;
+
+    &:hover {
+      color: $accentColor;
+    }
+  }
+}
+
+@media (min-width: $pageWidth425) {
+  .modalContent {
+    padding: 2.5rem;
+  }
+}

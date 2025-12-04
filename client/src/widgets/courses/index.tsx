@@ -1,18 +1,23 @@
 import * as style from './style.module.scss'
 import { Skeleton } from '@/shared/ui'
 import { CourseButton } from '@/entities/courses'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import {
   useGetCoursesQuery,
   useCreateCourseMutation,
   useUpdateCourseMutation,
   useDeleteCourseMutation,
-  useAppSelector,
-} from '@/shared/redux'
+  DeleteCourseDTO,
+  UpdateCourseDTO,
+} from '@/shared/redux/slices/api/coursesApi'
+import { useAppSelector } from '@/shared/redux/hooks'
 import routes from '@/shared/routes'
-import { AddItem } from '@/widgets/add-item'
-import { EditableItem } from '../editable-item'
+import { AdminAddButton } from '@/entities/admin'
+import { EditableItem } from '@/widgets/editable-item'
+import { ModalForm } from '@/widgets/modal-form'
+import { Modal } from '@/widgets/modal'
+import { ModalInput } from '@/widgets/modal-input'
 
 export const Courses = () => {
   const navigate = useNavigate()
@@ -29,72 +34,64 @@ export const Courses = () => {
     skip: !educationType || !faculty,
   })
 
-  useEffect(() => {
-    if (
-      coursesData?.length === 0 ||
-      !educationType ||
-      educationType === 'undefined' ||
-      !faculty ||
-      faculty === 'undefined'
-    ) {
-      navigate(routes.BASE_URL)
-    }
-  }, [coursesData, educationType, faculty, navigate])
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const [createCourse] = useCreateCourseMutation()
   const [updateCourse] = useUpdateCourseMutation()
   const [deleteCourse] = useDeleteCourseMutation()
 
-  const handleCreateCourse = async (newCourse: string) => {
-    if (!newCourse || !educationType || !faculty) return
+  const [formState, setFormState] = useState('')
+
+  const handleCreateCourse = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    if (!faculty) return
+
     try {
       await createCourse({
-        educationType,
-        faculty,
-        course: newCourse,
+        name: formState,
+        facultyId: faculty,
       }).unwrap()
     } catch (err) {
       console.error('Ошибка при создании курса:', err)
     }
   }
 
-  const handleUpdateCourse = async (oldCourse: string, newCourse: string) => {
-    if (!educationType || !faculty) return
-
+  const handleUpdateCourse = async (args: UpdateCourseDTO) => {
     try {
-      await updateCourse({
-        educationType,
-        faculty,
-        oldCourse,
-        newCourse,
-      }).unwrap()
+      await updateCourse(args).unwrap()
     } catch (err) {
       console.error('Ошибка при обновлении курса:', err)
     }
   }
 
-  const handleDeleteCourse = async (course: string) => {
-    if (!educationType || !faculty) return
-
+  const handleDeleteCourse = async (args: DeleteCourseDTO) => {
     try {
-      await deleteCourse({
-        educationType,
-        faculty,
-        course,
-      }).unwrap()
+      await deleteCourse(args).unwrap()
     } catch (err) {
       console.error('Ошибка при удалении курса:', err)
     }
   }
 
+  const handleCancel = () => {
+    setIsModalOpen(false)
+  }
+
   useEffect(() => {
+    if (!educationType || educationType === 'undefined' || !faculty || faculty === 'undefined') {
+      navigate(routes.BASE_URL)
+    }
+
     if (!coursesData?.length) return
 
-    if (course && coursesData.includes(course)) return
+    if (course && coursesData.find((courseItem) => courseItem.name === course)) return
 
-    navigate(`/educationTypes/${educationType}/faculties/${faculty}/courses/${coursesData[0]}`, {
-      replace: true,
-    })
+    navigate(
+      `/educationTypes/${educationType}/faculties/${faculty}/courses/${coursesData[0]._id}`,
+      {
+        replace: true,
+      },
+    )
   }, [course, coursesData, educationType, faculty, navigate])
 
   return (
@@ -108,23 +105,43 @@ export const Courses = () => {
         : coursesData.map((course, index) => (
             <li className={style.listElement} key={index}>
               <EditableItem
-                value={course}
+                value={course.name}
                 type="number"
                 min={1}
                 max={6}
                 crudHandlers={{
-                  onUpdate: (_, newValue) => handleUpdateCourse(course, newValue),
-                  onDelete: () => handleDeleteCourse(course),
+                  onUpdate: (newValue) =>
+                    handleUpdateCourse({
+                      id: course._id,
+                      name: newValue,
+                      facultyId: faculty ?? '',
+                    }),
+                  onDelete: () => handleDeleteCourse({ id: course._id }),
                 }}
               >
                 <CourseButton course={course} />
               </EditableItem>
             </li>
           ))}
+
       {accessToken && (
-        <AddItem type="number" min={1} max={6} onAdd={handleCreateCourse}>
+        <AdminAddButton onClick={() => setIsModalOpen(true)} isLocked={false}>
           Добавить курс
-        </AddItem>
+        </AdminAddButton>
+      )}
+
+      {isModalOpen && (
+        <Modal onClose={handleCancel}>
+          <ModalForm onSubmit={handleCreateCourse} onCancel={handleCancel}>
+            <ModalInput
+              label="Добавить курс:"
+              name="course"
+              value={formState}
+              onChange={(e) => setFormState(e.target.value)}
+              type="number"
+            />
+          </ModalForm>
+        </Modal>
       )}
     </ul>
   )

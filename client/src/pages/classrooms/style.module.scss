@@ -1,0 +1,54 @@
+@use '@/shared/vars/vars' as *;
+@use 'sass:color';
+
+@media (min-width: $pageWidth320) {
+  .container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 0 auto;
+    padding: $containerPaddingTopMobile - 0.5rem $containerPaddingX $containerPaddingBottomMobile;
+    max-width: $containerWidth;
+    min-height: calc(100svh - $headerHeight);
+  }
+
+  .content {
+    flex: 1;
+  }
+
+  .wrapper {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    gap: 10px;
+    border-radius: 0.5rem;
+    background: $darkGray;
+    padding: 20px;
+    width: 100%;
+  }
+
+  .teacherContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .text {
+    display: flex;
+    align-items: center;
+    border-radius: 0.5rem;
+    background: rgba($white, 0.1);
+    padding: 0.8rem 1.5rem;
+    width: 100%;
+    color: $white;
+    font-size: 2rem;
+  }
+}
+
+@media (min-width: $pageWidth768) {
+  .container {
+    padding: $containerPaddingTop - 0.5rem $containerPaddingX $containerPaddingBottom;
+  }
+}

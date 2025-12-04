@@ -1,0 +1,29 @@
+@use '@/shared/vars/vars' as *;
+
+@media (min-width: $pageWidth320) {
+  .button {
+    display: block;
+    transition: 0.15s ease-in-out;
+    border-radius: 0.5rem;
+    background: rgba($white, 0.1);
+    padding: 0 2rem;
+    overflow: hidden;
+    color: $white;
+    font-size: 1.6rem;
+    line-height: 3.6rem;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    word-break: break-all;
+
+    &.active {
+      background: $accentColor;
+    }
+
+    @media (hover: hover) {
+      &:hover {
+        background: $accentColor;
+      }
+    }
+  }
+}

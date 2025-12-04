@@ -1,12 +1,15 @@
 import express from 'express'
+import http from 'http'
 import bodyParser from 'body-parser'
 import cors, { CorsOptions } from 'cors'
 import mongoose from 'mongoose'
 import { router } from '@/database/routes/route.js'
 import { env } from '@/config/index.js'
 import cookieParser from 'cookie-parser'
+import { initSocket } from './websocket/socket.js'
 
 const app = express()
+const server = http.createServer(app)
 const HOST_PORT = env.PORT || 3000
 
 const corsOptions: CorsOptions = {
@@ -35,7 +38,11 @@ mongoose
   .connect(env.MONGODB_URL)
   .then(() => {
     console.log('✅ Connected to database!')
-    app.listen(HOST_PORT, () => {
+
+    initSocket(server)
+    console.log('🔌 WebSocket server initialized')
+
+    server.listen(HOST_PORT, () => {
       console.log(`🚀 Server running on port ${HOST_PORT}...`)
     })
   })

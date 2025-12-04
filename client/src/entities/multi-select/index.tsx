@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useCallback, useMemo, useEffect } from 'react'
 import style from './style.module.scss'
 
 interface Option {
@@ -9,55 +9,103 @@ interface Option {
 interface Props {
   options: Option[]
   onChange?: (selected: string[]) => void
-  defaultValue?: string
+  defaultValue?: string | string[]
+  alwaysOpen?: boolean
 }
 
-export const MultiSelect = ({ options, onChange, defaultValue }: Props) => {
-  const [selected, setSelected] = useState<string[]>(
-    defaultValue ? [defaultValue] : [],
-  )
-  const [open, setOpen] = useState(false)
+const OptionItem = ({
+  option,
+  isSelected,
+  onToggle,
+}: {
+  option: Option
+  isSelected: boolean
+  onToggle: (value: string) => void
+}) => (
+  <li className={`${style.option} ${isSelected ? style.selected : ''}`}>
+    <button
+      type="button"
+      className={style.optionButton}
+      onClick={() => onToggle(option.value)}
+      aria-pressed={isSelected}
+    >
+      <input type="checkbox" className={style.input} checked={isSelected} readOnly tabIndex={-1} />
+      <span>{option.label}</span>
+    </button>
+  </li>
+)
 
-  const toggleOption = (value: string) => {
-    const newSelected = selected.includes(value)
-      ? selected.filter((v) => v !== value)
-      : [...selected, value]
+export const MultiSelect = ({ options, onChange, defaultValue, alwaysOpen = false }: Props) => {
+  const [selected, setSelected] = useState<Set<string>>(() => {
+    const initial = defaultValue
+      ? Array.isArray(defaultValue)
+        ? defaultValue
+        : [defaultValue]
+      : []
+    return new Set(initial)
+  })
+  const [open, setOpen] = useState(alwaysOpen)
 
-    setSelected(newSelected)
-    onChange?.(newSelected)
-  }
+  const optionsMap = useMemo(() => new Map(options.map((o) => [o.value, o.label])), [options])
+
+  useEffect(() => {
+    onChange?.(Array.from(selected))
+  }, [selected, onChange])
+
+  const toggleOption = useCallback((value: string) => {
+    setSelected((prev) => {
+      const next = new Set(prev)
+      if (next.has(value)) {
+        next.delete(value)
+      } else {
+        next.add(value)
+      }
+      return next
+    })
+  }, [])
+
+  const toggleDropdown = useCallback(() => {
+    if (!alwaysOpen) setOpen((prev) => !prev)
+  }, [alwaysOpen])
+
+  const selectedLabel = useMemo(() => {
+    if (selected.size === 0) return 'Выберите значения'
+    return Array.from(selected)
+      .map((v) => optionsMap.get(v))
+      .filter(Boolean)
+      .join(', ')
+  }, [selected, optionsMap])
 
   return (
     <div className={style.multiSelect}>
-      <div className={style.control} onClick={() => setOpen((prev) => !prev)}>
-        <span className={style.selectedValue}>
-          {selected.length > 0
-            ? selected
-                .map((v) => options.find((o) => o.value === v)?.label)
-                .join(', ')
-            : 'Выберите значения'}
-        </span>
-        <span className={style.arrow}>{open ? '▲' : '▼'}</span>
-      </div>
+      {!alwaysOpen && (
+        <button
+          type="button"
+          className={style.control}
+          onClick={toggleDropdown}
+          aria-expanded={open}
+          aria-haspopup="listbox"
+        >
+          <span className={style.selectedValue}>{selectedLabel}</span>
+          <span className={style.arrow} aria-hidden="true">
+            {open ? '▲' : '▼'}
+          </span>
+        </button>
+      )}
 
-      {open && (
-        <ul className={style.dropdown}>
+      {(alwaysOpen || open) && (
+        <ul
+          className={`${style.dropdown} ${alwaysOpen ? style.alwaysOpen : ''}`}
+          role="listbox"
+          aria-multiselectable="true"
+        >
           {options.map((option) => (
-            <li
+            <OptionItem
               key={option.value}
-              className={`${style.option} ${
-                selected.includes(option.value) ? style.selected : ''
-              }`}
-              onClick={() => toggleOption(option.value)}
-            >
-              <input
-                type="checkbox"
-                className={style.input}
-                checked={selected.includes(option.value)}
-                readOnly
-              />
-              <span>{option.label}</span>
-            </li>
+              option={option}
+              isSelected={selected.has(option.value)}
+              onToggle={toggleOption}
+            />
           ))}
         </ul>
       )}

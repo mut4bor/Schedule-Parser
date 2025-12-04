@@ -6,13 +6,19 @@ import { MainPage } from './main'
 import { CoursesPage } from './courses'
 import { GroupIDPage } from './groupID'
 import { FavoritePage } from './favorite'
-import { LoginPage } from './login'
 import { GroupRedirectPage } from './groupRedirect'
+import { GroupsEditPage } from './groupsEdit'
+import { TeachersPage } from './teachers'
+import { TeachersSchedulePage } from './teachersSchedule'
+import { LoginPage } from './login'
+import { ClassroomsPage } from './classrooms'
+import { UsersPage } from './users'
 
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import routes from '@/shared/routes'
-import { store } from '@/shared/redux'
+import { store } from '@/shared/redux/store'
+import { ClassroomsSchedulePage } from './classroomsSchedule'
 
 const routesArray = [
   { path: routes.BASE_URL, Component: MainPage },
@@ -26,6 +32,15 @@ const routesArray = [
   },
   { path: routes.GROUP_PATH, Component: GroupIDPage },
   { path: `/groups/:groupID`, Component: GroupRedirectPage },
+  { path: `${routes.GROUPS_EDIT_PATH}`, Component: GroupsEditPage },
+  { path: `/${routes.GROUPS_EDIT_PATH}/:groupsIDs`, Component: GroupsEditPage },
+  { path: routes.TEACHERS_PATH, Component: TeachersPage },
+  { path: routes.TEACHERS_SCHEDULE_PATH, Component: TeachersSchedulePage },
+  { path: `${routes.TEACHERS_SCHEDULE_PATH}/:teachersIDs`, Component: TeachersSchedulePage },
+  { path: routes.CLASSROOMS_PATH, Component: ClassroomsPage },
+  { path: routes.CLASSROOMS_SCHEDULE_PATH, Component: ClassroomsSchedulePage },
+  { path: `${routes.CLASSROOMS_SCHEDULE_PATH}/:classroomsIDs`, Component: ClassroomsSchedulePage },
+  { path: routes.USERS_PATH, Component: UsersPage },
   { path: routes.LOGIN_PATH, Component: LoginPage },
 ]
 

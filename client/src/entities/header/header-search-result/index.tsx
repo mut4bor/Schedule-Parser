@@ -1,6 +1,6 @@
 import * as style from './style.module.scss'
 import { Link } from 'react-router-dom'
-import { IName } from '@/shared/redux'
+import { IName } from '@/shared/redux/slices/api/namesApi'
 
 interface Props {
   namesData?: IName[]
@@ -26,7 +26,7 @@ export const HeaderSearchResult = ({ namesData, isSearchInputFocused }: Props) =
         {isNamesData &&
           namesData.map((item, index) => (
             <Link className={style.link} to={`/groups/${item._id}`} replace key={index}>
-              {item.group}
+              {item.name}
             </Link>
           ))}
       </div>

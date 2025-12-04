@@ -51,6 +51,43 @@
     flex: 1;
     height: 3.6rem;
   }
+
+  .menuButton {
+    transition: 0.15s ease-in-out;
+    border-radius: 50%;
+    background: $accentColor;
+    padding: 6px;
+    aspect-ratio: 1;
+    height: 36px;
+
+    @media (hover: hover) {
+      &:hover {
+        background: $white;
+
+        .menuIcon {
+          stroke: $accentColor;
+        }
+      }
+    }
+  }
+
+  .menuIcon {
+    transition: 0.15s ease-in-out;
+  }
+
+  .menu {
+    display: flex;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    transform: translateY(100%);
+    border-radius: 10px;
+    background: $darkGray;
+    padding: 10px;
+  }
 }
 
 @media (min-width: $pageWidth768) {

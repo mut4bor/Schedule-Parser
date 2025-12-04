@@ -4,17 +4,15 @@ type AdminAddButtonProps = {
   onClick: () => void
   className?: string
   children: React.ReactNode
+  isLocked: boolean
 }
 
-export const AdminAddButton = ({
-  onClick,
-  className,
-  children,
-}: AdminAddButtonProps) => {
+export const AdminAddButton = ({ onClick, className, children, isLocked }: AdminAddButtonProps) => {
   return (
     <button
       onClick={onClick}
-      className={`${style.addButton}${className ? ` ${className}` : ''}`}
+      className={`${style.addButton} ${isLocked ? `${style.isLocked}` : ''} ${className ? ` ${className}` : ''}`}
+      disabled={isLocked}
     >
       ➕ {children}
     </button>

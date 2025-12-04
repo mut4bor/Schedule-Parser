@@ -1,0 +1,91 @@
+@use '@/shared/vars/vars' as *;
+
+@media (min-width: $pageWidth320) {
+  .scheduleTableWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    width: 100%;
+  }
+
+  .groupSelect {
+    align-self: flex-start;
+    width: 100%;
+    max-width: 28rem;
+  }
+
+  .scheduleTable {
+    display: grid;
+    grid-template-columns: auto auto auto repeat(var(--groups-count), minmax(20rem, 1fr));
+    border-radius: 0.8rem;
+    background: rgba($white, 0.05);
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .scheduleCell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid rgba($white, 0.05);
+    padding: 0.8rem 1rem;
+    color: $white;
+    font-size: 1.4rem;
+    text-align: center;
+  }
+
+  .scheduleHeadCell {
+    background: rgba($white, 0.1);
+    padding: 1rem 1.2rem;
+    color: $white;
+    font-weight: 600;
+    font-size: 1.4rem;
+  }
+
+  .dayCell {
+    color: $white;
+    font-weight: 600;
+    font-size: 1.5rem;
+    white-space: nowrap;
+  }
+
+  .timeCell {
+    font-weight: 500;
+  }
+
+  .weekCell {
+    color: $white;
+  }
+
+  .lessonCell {
+    padding: 0.5rem;
+  }
+
+  .emptyCell {
+    color: rgba($white, 0.5);
+  }
+
+  .addWeekButton {
+    transition: 0.2s;
+    cursor: pointer;
+    border: 1px dashed #aaa;
+    border-radius: 4px;
+    background: none;
+    padding: 2px 8px;
+    color: #555;
+    font-size: 12px;
+
+    &:hover {
+      border-color: #666;
+      background-color: #f8f8f8;
+      color: #000;
+    }
+  }
+}
+
+@media (min-width: $pageWidth425) {
+  .scheduleHeadCell,
+  .scheduleCell {
+    font-size: 1.6rem;
+  }
+}

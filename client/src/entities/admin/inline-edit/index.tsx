@@ -3,7 +3,7 @@ import { useState } from 'react'
 
 type InlineEditProps = {
   initialValue: string
-  onSave: (value: string) => Promise<void> | void
+  onSave: (value: string) => Promise<void>
   onCancel?: () => void
   className?: string
   inputClassName?: string
@@ -58,10 +58,7 @@ export const InlineEdit = ({
         className={`${style.editInput} ${inputClassName || ''}`}
         {...(type === 'number' ? { min, max } : {})}
       />
-      <button
-        onClick={handleSave}
-        className={`${style.saveButton} ${saveButtonClassName || ''}`}
-      >
+      <button onClick={handleSave} className={`${style.saveButton} ${saveButtonClassName || ''}`}>
         ✓
       </button>
       <button

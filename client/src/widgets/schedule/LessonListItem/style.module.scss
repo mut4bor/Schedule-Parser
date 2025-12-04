@@ -39,15 +39,10 @@
 
   .editList {
     display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
+    flex-direction: column;
+    flex-wrap: nowrap;
     gap: 0.5rem;
     padding-left: 1rem;
-
-    &.isColumned {
-      flex-direction: column;
-      flex-wrap: nowrap;
-    }
   }
 
   .editListItem {
@@ -66,7 +61,7 @@
     display: flex;
     align-items: center;
     border-radius: 0.5rem;
-    background: $white10Alpha;
+    background: rgba($white, 0.1);
     width: 100%;
     color: $white;
   }
@@ -85,7 +80,7 @@
 
   .editLabel {
     display: block;
-    flex: 0 1 auto; // позволяет сжиматься
+    flex: 0 1 auto;
     background: none;
     width: fit-content;
     max-width: 100%;
@@ -98,7 +93,7 @@
     background: $accentColor;
 
     &.empty {
-      background: $white10Alpha;
+      background: rgba($white, 0.1);
       min-width: 7rem;
     }
   }

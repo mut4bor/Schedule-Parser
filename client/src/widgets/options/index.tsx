@@ -13,10 +13,7 @@ export const Options = forwardRef<HTMLDivElement, Props>(
   ({ groupID, isOptionsListVisible, toggleOptionsList }, ref) => {
     return (
       <div className={style.options} ref={ref}>
-        <OptionsList
-          groupID={groupID}
-          isOptionsListVisible={isOptionsListVisible}
-        />
+        <OptionsList groupID={groupID} isOptionsListVisible={isOptionsListVisible} />
         <OptionsButton
           toggleIsOptionsListVisible={toggleOptionsList}
           isOptionsListVisible={isOptionsListVisible}

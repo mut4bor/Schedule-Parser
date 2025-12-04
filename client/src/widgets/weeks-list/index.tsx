@@ -1,121 +1,174 @@
 import * as style from './style.module.scss'
-import { getWeekNumber, getWeekValue, useProcessedWeeks } from './utils'
-import { useEffect } from 'react'
-import { WeeksButton } from '@/entities/weeks'
+import { getWeekNumber } from './utils'
+import { useEffect, useState } from 'react'
 import {
-  useGetWeeksByIDQuery,
-  useAddWeekToGroupMutation,
-  useUpdateWeekInGroupMutation,
-  useDeleteWeekFromGroupMutation,
-  useAppSelector,
-} from '@/shared/redux'
+  useGetWeeksByGroupIdQuery,
+  useCreateWeekScheduleMutation,
+  useUpdateWeekScheduleMutation,
+  useDeleteWeekScheduleMutation,
+  CreateWeekDTO,
+  UpdateWeekDTO,
+  DeleteWeekDTO,
+} from '@/shared/redux/slices/api/scheduleApi'
+import { useAppSelector } from '@/shared/redux/hooks'
 import { Skeleton } from '@/shared/ui'
 import { useParams } from 'react-router-dom'
-import { EditableItem } from '../editable-item'
-import { AddItem } from '../add-item'
+import { AdminAddButton } from '@/entities/admin'
+import { ModalForm } from '@/widgets/modal-form'
+import { ModalInput } from '@/widgets/modal-input'
+import { Modal } from '@/widgets/modal'
+import { PickedWeekType } from '@/pages/groupID'
+import { ModalSelect } from '@/widgets/modal-select'
+import { WeekListItem } from './weeks-list-item'
 
 const currentWeek = getWeekNumber(new Date())
 const formattedCurrentWeek = `${currentWeek.year}-W${currentWeek.week}`
 
 interface Props {
-  pickedWeek: string
-  setPickedWeek: (week: string) => void
-  groupList: string[]
+  pickedWeek: PickedWeekType | null
+  setPickedWeek: (week: PickedWeekType) => void
 }
 
-export const WeeksList = ({ pickedWeek, setPickedWeek, groupList }: Props) => {
+export const WeeksList = ({ pickedWeek, setPickedWeek }: Props) => {
+  const locked = useAppSelector((store) => store.locked)
+  const { groupID } = useParams()
+  const isLocked = !!locked.groups.find((item) => item[0] === groupID)
+
   const accessToken = useAppSelector((store) => store.auth.accessToken)
 
-  const { groupID } = useParams()
-  const { data: weeksData } = useGetWeeksByIDQuery(groupID ?? '', {
+  const { data: weeksData } = useGetWeeksByGroupIdQuery(groupID ?? '', {
     skip: !groupID,
   })
 
-  const processedWeeks = useProcessedWeeks(weeksData, groupList)
+  const [createWeek] = useCreateWeekScheduleMutation()
+  const [updateWeek] = useUpdateWeekScheduleMutation()
+  const [deleteWeek] = useDeleteWeekScheduleMutation()
 
-  const [addWeek] = useAddWeekToGroupMutation()
-  const [updateWeek] = useUpdateWeekInGroupMutation()
-  const [deleteWeek] = useDeleteWeekFromGroupMutation()
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const handleCreateWeek = async (newWeek: string) => {
-    if (!newWeek || !groupID) return
+  const [formState, setFormState] = useState({
+    weekType: 'odd',
+    weekValue: '',
+  })
+
+  const handleChange = (field: keyof typeof formState, value: string) => {
+    setFormState((prev) => ({ ...prev, [field]: value }))
+  }
+
+  const handleCreateWeek = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    const formData = new FormData(e.currentTarget)
+
+    if (!groupID) return
+
+    const selectedType = formData.get('weekType') as string
+    const weekName =
+      selectedType === 'specific' ? String(formData.get('weekName') || '') : selectedType
+
+    if (!weekName) return
+
+    const typedForm: CreateWeekDTO = {
+      weekName,
+      groupID,
+      days: [],
+      isActive: false,
+    }
+
     try {
-      await addWeek({ id: groupID, weekName: newWeek }).unwrap()
+      await createWeek(typedForm)
+      setIsModalOpen(false)
     } catch (err) {
       console.error('Ошибка при создании недели:', err)
     }
   }
 
-  const handleUpdateWeek = async (oldWeek: string, newWeek: string) => {
-    if (!groupID) return
+  const handleUpdateWeek = async (args: UpdateWeekDTO) => {
     try {
-      await updateWeek({
-        id: groupID,
-        oldWeekName: oldWeek,
-        newWeekName: newWeek,
-      }).unwrap()
-      setPickedWeek(newWeek)
+      await updateWeek(args).unwrap()
     } catch (err) {
       console.error('Ошибка при обновлении недели:', err)
     }
   }
 
-  const handleDeleteWeek = async (week: string) => {
-    if (!groupID) return
+  const handleDeleteWeek = async (args: DeleteWeekDTO) => {
     try {
-      await deleteWeek({ id: groupID, weekName: week }).unwrap()
+      await deleteWeek(args).unwrap()
     } catch (err) {
       console.error('Ошибка при удалении недели:', err)
     }
   }
 
-  useEffect(() => {
-    if (!processedWeeks?.length) return
-    if (pickedWeek && processedWeeks.includes(pickedWeek)) return
+  const handleCancel = () => setIsModalOpen(false)
 
-    setPickedWeek(
-      processedWeeks.includes(formattedCurrentWeek) && groupList.length === 1
-        ? formattedCurrentWeek
-        : processedWeeks[0],
-    )
-  }, [processedWeeks, groupList, pickedWeek, setPickedWeek])
+  useEffect(() => {
+    if (!weeksData?.length) return
+
+    const pickedWeekInWeekData = weeksData.find((week) => week._id === pickedWeek?.id)
+
+    if (pickedWeek && !!pickedWeekInWeekData) return
+
+    const weekToPick = weeksData.find((week) => week.weekName === formattedCurrentWeek)
+
+    const pickedWeekObject = {
+      id: weekToPick?._id ?? weeksData[0]._id,
+      name: weekToPick?.weekName ?? weeksData[0].weekName,
+    }
+
+    setPickedWeek(pickedWeekObject)
+  }, [weeksData, pickedWeek, setPickedWeek])
 
   return (
     <ul className={style.list}>
-      {!processedWeeks
+      {!weeksData
         ? Array.from({ length: 7 }).map((_, index) => (
             <li key={index}>
               <Skeleton className={style.skeleton} />
             </li>
           ))
-        : processedWeeks.map((week, index) => (
-            <li className={style.listItem} key={index}>
-              <EditableItem
-                value={week}
-                crudHandlers={
-                  week === 'odd' || week === 'even'
-                    ? null
-                    : {
-                        onUpdate: handleUpdateWeek,
-                        onDelete: handleDeleteWeek,
-                      }
-                }
-                type="week"
-                min={formattedCurrentWeek}
-              >
-                <WeeksButton onClick={() => setPickedWeek(week)} isActive={pickedWeek === week}>
-                  {getWeekValue(week)}
-                </WeeksButton>
-              </EditableItem>
-            </li>
+        : weeksData.map((week) => (
+            <WeekListItem
+              key={week._id}
+              week={week}
+              pickedWeek={pickedWeek}
+              setPickedWeek={setPickedWeek}
+              onUpdate={handleUpdateWeek}
+              onDelete={handleDeleteWeek}
+            />
           ))}
 
-      {accessToken && groupList.length === 1 && (
-        <li>
-          <AddItem onAdd={handleCreateWeek} type="week">
-            Добавить неделю
-          </AddItem>
-        </li>
+      {accessToken && (
+        <AdminAddButton onClick={() => setIsModalOpen(true)} isLocked={isLocked}>
+          Добавить неделю
+        </AdminAddButton>
+      )}
+
+      {isModalOpen && (
+        <Modal onClose={handleCancel}>
+          <ModalForm onSubmit={handleCreateWeek} onCancel={handleCancel}>
+            <ModalSelect
+              label="Выберите тип недели"
+              name="weekType"
+              value={formState.weekType}
+              onChange={(e) => handleChange('weekType', e.target.value)}
+              options={[
+                { value: 'odd', label: 'Нечетная' },
+                { value: 'even', label: 'Четная' },
+                { value: 'specific', label: 'Конкретная неделя' },
+              ]}
+            />
+
+            {formState.weekType === 'specific' && (
+              <ModalInput
+                label="Добавить неделю:"
+                name="weekName"
+                type="week"
+                value={formState.weekValue}
+                onChange={(e) => handleChange('weekValue', e.target.value)}
+              />
+            )}
+          </ModalForm>
+        </Modal>
       )}
     </ul>
   )

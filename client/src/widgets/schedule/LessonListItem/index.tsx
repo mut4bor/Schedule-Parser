@@ -1,176 +1,189 @@
-import { useState } from 'react'
-import { EditableItem } from '@/widgets/editable-item'
 import * as style from './style.module.scss'
-import { ILesson } from '@/shared/redux/types'
-import { useAppSelector } from '@/shared/redux'
+import { useState } from 'react'
+import { DayOfWeek, ILesson, TimeSlots } from '@/shared/redux/types'
+import { useAppSelector } from '@/shared/redux/hooks'
+import {
+  UpdateLessonDTO,
+  DeleteLessonDTO,
+  LessonType,
+  isValidLessonType,
+} from '@/shared/redux/slices/api/scheduleApi'
+import { Modal } from '@/widgets/modal'
+import { ModalForm } from '@/widgets/modal-form'
+import { ModalInput } from '@/widgets/modal-input'
+import { ModalSelect } from '@/widgets/modal-select'
+import { EditDeleteActions } from '@/entities/admin'
+import { useGetAllTeachersQuery } from '@/shared/redux/slices/api/teachersApi'
+import { useGetAllClassroomsQuery } from '@/shared/redux/slices/api/classroomsApi'
 
 interface Props {
+  groupID: string
   lesson: ILesson
-  onDelete: (id: string) => Promise<void>
-  onUpdate: (id: string, newLesson: Partial<ILesson>) => Promise<void>
-  groupList: string[]
+  scheduleID: string
+  dayIndex: DayOfWeek
+  lessonIndex: number
+  onUpdate: (args: UpdateLessonDTO) => Promise<void>
+  onDelete: (args: DeleteLessonDTO) => Promise<void>
 }
 
 export const LessonListItem = ({
+  groupID,
   lesson,
-  onDelete,
+  scheduleID,
+  dayIndex,
+  lessonIndex,
   onUpdate,
-  groupList,
+  onDelete,
 }: Props) => {
+  const locked = useAppSelector((store) => store.locked)
+  const isLocked = !!locked.groups.find((item) => item[0] === groupID)
+
   const accessToken = useAppSelector((store) => store.auth.accessToken)
-  const [isCollapsed, setIsCollapsed] = useState(true)
+  const { data: teachersData } = useGetAllTeachersQuery()
+  const { data: classroomsData } = useGetAllClassroomsQuery()
+
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const [formState, setFormState] = useState({
+    time: lesson.time || '',
+    subject: lesson.subject || '',
+    teacherID: lesson.teacher?._id || '',
+    lessonType: lesson.lessonType || '',
+    classroomID: lesson.classroom?._id || '',
+    description: lesson.description || '',
+  })
+
+  const handleChange = (field: keyof typeof formState, value: string) => {
+    setFormState((prev) => ({ ...prev, [field]: value }))
+  }
+
+  const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    const { time, subject, teacherID, classroomID, lessonType, description } = formState
+
+    const typedForm: Omit<UpdateLessonDTO, 'scheduleID' | 'dayIndex' | 'lessonIndex'> = {
+      time,
+      classroomID,
+      teacherID,
+      subject,
+      lessonType: isValidLessonType(lessonType) ? lessonType : undefined,
+      description,
+    }
+
+    try {
+      await onUpdate({
+        scheduleID,
+        dayIndex,
+        lessonIndex,
+        ...typedForm,
+      })
+      setIsModalOpen(false)
+    } catch (err) {
+      console.error('Ошибка при обновлении урока:', err)
+    }
+  }
+
+  const handleCancel = () => {
+    setIsModalOpen(false)
+  }
 
   return (
     <li className={style.lessonListItem}>
       <div className={style.lessonHeader}>
-        <EditableItem
-          value={lesson.time}
-          crudHandlers={{
-            onDelete: async () => onDelete(lesson._id),
-          }}
-        >
-          <p className={style.text}>
-            {lesson.time} - {lesson.subject}
-            {lesson.lessonType && ` (${lesson.lessonType})`}
-            {(lesson.teacher.title ||
-              lesson.teacher.lastName ||
-              lesson.teacher.firstName ||
-              lesson.teacher.middleName) && (
-              <>
-                {lesson.teacher.title && `, ${lesson.teacher.title}`}
-                {lesson.teacher.lastName && ` ${lesson.teacher.lastName}`}
-                {lesson.teacher.firstName &&
-                  ` ${lesson.teacher.firstName.charAt(0).toUpperCase()}.`}
-                {lesson.teacher.middleName &&
-                  ` ${lesson.teacher.middleName.charAt(0).toUpperCase()}.`}
-              </>
-            )}
-            {lesson.classroom && `, ${lesson.classroom}`}
-          </p>
-        </EditableItem>
+        <p className={style.text}>
+          {lesson.time} - {lesson.subject}
+          {` (${lesson.lessonType})`}
+          {lesson.teacher?.title ? `, ${lesson.teacher.title}` : ''}
+          {lesson.teacher?.lastName ? ` ${lesson.teacher.lastName}` : ''}
+          {lesson.teacher?.firstName ? ` ${lesson.teacher.firstName.charAt(0).toUpperCase()}.` : ''}
+          {lesson.teacher?.middleName
+            ? ` ${lesson.teacher.middleName.charAt(0).toUpperCase()}.`
+            : ''}
+          {lesson.classroom ? `, ${lesson.classroom.name}` : ''}
+          {lesson.description ? `, ${lesson.description}` : ''}
+        </p>
 
         {accessToken && (
-          <button
-            className={style.toggleBtn}
-            onClick={() => setIsCollapsed((prev) => !prev)}
-          >
-            {isCollapsed ? '▼' : '▲'}
-          </button>
+          <EditDeleteActions
+            onEdit={() => setIsModalOpen(true)}
+            onDelete={
+              !!onDelete
+                ? () =>
+                    onDelete({
+                      scheduleID,
+                      dayIndex,
+                      lessonIndex,
+                    })
+                : null
+            }
+            isLocked={isLocked}
+          />
         )}
       </div>
 
-      {!isCollapsed && accessToken && (
-        <ul
-          className={`${style.editList} ${groupList.length === 1 ? style.isColumned : ''}`}
-        >
-          {[
-            {
-              label: 'Время',
-              value: lesson.time,
-              type: 'time',
-              update: (newValue: string) =>
-                onUpdate(lesson._id, { time: newValue }),
-              delete: () => onUpdate(lesson._id, { time: '' }),
-            },
-            {
-              label: 'Предмет',
-              value: lesson.subject,
-              update: (newValue: string) =>
-                onUpdate(lesson._id, { subject: newValue }),
-              delete: () => onUpdate(lesson._id, { subject: '' }),
-            },
-            {
-              label: 'Тип',
-              value: lesson.lessonType,
-              update: (newValue: string) =>
-                onUpdate(lesson._id, {
-                  lessonType: newValue,
-                }),
-              delete: () => onUpdate(lesson._id, { lessonType: '' }),
-            },
-            {
-              label: 'Титул преподавателя',
-              value: lesson.teacher.title ?? '',
-              update: (newValue: string) =>
-                onUpdate(lesson._id, {
-                  teacher: { ...lesson.teacher, title: newValue },
-                }),
-              delete: () =>
-                onUpdate(lesson._id, {
-                  teacher: { ...lesson.teacher, title: '' },
-                }),
-            },
-            {
-              label: 'Фамилия преподавателя',
-              value: lesson.teacher.lastName,
-              update: (newValue: string) =>
-                onUpdate(lesson._id, {
-                  teacher: { ...lesson.teacher, lastName: newValue },
-                }),
-              delete: () =>
-                onUpdate(lesson._id, {
-                  teacher: { ...lesson.teacher, lastName: '' },
-                }),
-            },
-            {
-              label: 'Имя преподавателя',
-              value: lesson.teacher.firstName,
-              update: (newValue: string) =>
-                onUpdate(lesson._id, {
-                  teacher: { ...lesson.teacher, firstName: newValue },
-                }),
-              delete: () =>
-                onUpdate(lesson._id, {
-                  teacher: { ...lesson.teacher, firstName: '' },
-                }),
-            },
-            {
-              label: 'Отчество преподавателя',
-              value: lesson.teacher.middleName,
-              update: (newValue: string) =>
-                onUpdate(lesson._id, {
-                  teacher: {
-                    ...lesson.teacher,
-                    middleName: newValue,
-                  },
-                }),
-              delete: () =>
-                onUpdate(lesson._id, {
-                  teacher: { ...lesson.teacher, middleName: '' },
-                }),
-            },
-            {
-              label: 'Аудитория',
-              value: lesson.classroom,
-              update: (newValue: string) =>
-                onUpdate(lesson._id, {
-                  classroom: newValue,
-                }),
-              delete: () => onUpdate(lesson._id, { classroom: '' }),
-            },
-          ].map((field, index) => (
-            <li className={style.editListItem} key={index}>
-              <p className={style.editLabel}>{field.label}:</p>
-              <div className={style.editContainer}>
-                <EditableItem
-                  value={field.value}
-                  type={
-                    (field?.type as 'text' | 'date' | 'week' | 'time') ?? 'text'
-                  }
-                  crudHandlers={{
-                    onUpdate: async (_, newValue) => field.update(newValue),
-                  }}
-                >
-                  <p
-                    className={`${style.editValue} ${!field.value ? style.empty : ''}`}
-                  >
-                    {field.value}
-                  </p>
-                </EditableItem>
-              </div>
-            </li>
-          ))}
-        </ul>
+      {isModalOpen && accessToken && teachersData && classroomsData && (
+        <Modal onClose={handleCancel}>
+          <ModalForm onSubmit={handleSave} onCancel={handleCancel}>
+            <ModalSelect
+              label="Время:"
+              name="time"
+              value={formState.time}
+              onChange={(e) => handleChange('time', e.target.value)}
+              options={TimeSlots.map((time) => ({
+                value: time,
+                label: time,
+              }))}
+            />
+
+            <ModalInput
+              label="Название предмета:"
+              name="subject"
+              value={formState.subject}
+              onChange={(e) => handleChange('subject', e.target.value)}
+            />
+
+            <ModalSelect
+              label="Преподаватель:"
+              name="teacherID"
+              value={formState.teacherID}
+              onChange={(e) => handleChange('teacherID', e.target.value)}
+              options={teachersData.map((teacher) => ({
+                value: teacher._id,
+                label: `${teacher.firstName} ${teacher.middleName} ${teacher.lastName}`,
+              }))}
+            />
+
+            <ModalSelect
+              label="Тип занятия:"
+              name="lessonType"
+              value={formState.lessonType}
+              onChange={(e) => handleChange('lessonType', e.target.value)}
+              options={Object.values(LessonType).map((value) => ({
+                value,
+                label: value,
+              }))}
+            />
+
+            <ModalSelect
+              label="Аудитория:"
+              name="classroomID"
+              value={formState.classroomID}
+              onChange={(e) => handleChange('classroomID', e.target.value)}
+              options={classroomsData.map((classroom) => ({
+                value: classroom._id,
+                label: `${classroom.name} (до ${classroom.capacity} человек)`,
+              }))}
+            />
+
+            <ModalInput
+              label="Описание (необязательно):"
+              name="description"
+              value={formState.description}
+              onChange={(e) => handleChange('description', e.target.value)}
+            />
+          </ModalForm>
+        </Modal>
       )}
     </li>
   )

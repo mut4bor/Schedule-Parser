@@ -1,145 +1,54 @@
-export interface IName {
-  group: string
-  _id: string
+import { ITeacher } from '@/shared/redux/slices/api/teachersApi'
+import { LessonType } from './slices/api/scheduleApi'
+import { Classroom } from './slices/api/classroomsApi'
+
+export enum DayOfWeek {
+  None = -1,
+  Monday = 0,
+  Tuesday = 1,
+  Wednesday = 2,
+  Thursday = 3,
+  Friday = 4,
+  Saturday = 5,
 }
 
-export interface IFaculties {
-  [educationType: string]: string[]
-}
-
-export interface ITeacher {
-  firstName: string
-  middleName: string
-  lastName: string
-  title?: string
-}
+export const TimeSlots = ['09:45', '11:30', '13:30', '15:15', '17:00']
 
 export interface ILesson {
   time: string
-  classroom: string
-  teacher: ITeacher
+  classroom: Classroom
   subject: string
-  lessonType: string
+  teacher: ITeacher
+  lessonType: LessonType
+  description?: string
+}
+
+export interface IDay {
+  dayOfWeek: DayOfWeek
+  lessons: ILesson[]
+}
+
+export interface ISchedule {
   _id: string
-}
-
-export type IDay = ILesson[]
-export type IWeek = IDay[]
-export type ISchedule = Map<string, IWeek>
-
-export interface IGroup {
-  educationType: string
-  faculty: string
-  course: string
+  weekName: string
+  isActive: boolean
   group: string
-  dates: ISchedule
-  createdAt: string
-  updatedAt: string
-  __v: number
-  _id: string
+  days: IDay[]
+  createdAt?: string
+  updatedAt?: string
 }
 
-// --- Education Types ---
-export interface CreateEducationTypeDTO {
-  educationType: string
-}
-
-export interface UpdateEducationTypeDTO {
-  oldEducationType: string
-  newEducationType: string
-}
-
-// --- Faculties ---
-export interface CreateFacultyDTO {
-  educationType: string
-  faculty: string
-}
-
-export interface UpdateFacultyDTO {
-  educationType: string
-  oldFaculty: string
-  newFaculty: string
-}
-
-export interface DeleteFacultyDTO {
-  educationType: string
-  faculty: string
-}
-
-// --- Courses ---
-export interface CreateCourseDTO {
-  educationType: string
-  faculty: string
-  course: string
-}
-
-export interface UpdateCourseDTO {
-  educationType: string
-  faculty: string
-  oldCourse: string
-  newCourse: string
-}
-
-export interface DeleteCourseDTO {
-  educationType: string
-  faculty: string
-  course: string
-}
-
-// --- Groups ---
-export interface CreateGroupDTO {
-  educationType: string
-  faculty: string
-  course: string
-  group: string
-}
-
-export interface UpdateGroupDTO {
-  educationType?: string
-  faculty?: string
-  course?: string
-  group?: string
-}
-
-// --- Weeks ---
-export interface AddWeekDTO {
-  id: string
-  weekName: string
-}
-
-export interface UpdateWeekDTO {
-  id: string
-  oldWeekName: string
-  newWeekName: string
-}
-
-export interface DeleteWeekDTO {
-  id: string
-  weekName: string
-}
-
-export interface CreateLessonDTO {
-  id: string
-  weekName: string
-  dayIndex: number
-  time: string
-}
-
-export interface UpdateLessonDTO {
-  id: string
-  weekName: string
-  dayIndex: number
-  lessonId: string
-  time?: string
-  classroom?: string
-  teacher?: ITeacher
-  subject?: string
-  lessonType?: string
-}
-
-export interface DeleteLessonDTO {
-  id: string
-  weekName: string
-  dayIndex: number
-  lessonId: string
+export interface IGroupsSchedule {
+  groups: { id: string; name: string }[]
+  weeks: {
+    weekName: string
+    days: {
+      dayName: string
+      dayIndex: number
+      timeSlots: {
+        time: string
+        lessons: (ILesson | null)[]
+      }[]
+    }[]
+  }[]
 }

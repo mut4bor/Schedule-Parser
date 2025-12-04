@@ -11,6 +11,7 @@ type EditDeleteActionsProps = {
   editButtonClassName?: string
   duplicateButtonClassName?: string
   deleteButtonClassName?: string
+  isLocked: boolean
 }
 
 export const EditDeleteActions = ({
@@ -24,13 +25,15 @@ export const EditDeleteActions = ({
   editButtonClassName,
   duplicateButtonClassName,
   deleteButtonClassName,
+  isLocked,
 }: EditDeleteActionsProps) => {
   return (
     <div className={`${style.container} ${className || ''}`}>
       {onEdit && (
         <button
           onClick={onEdit}
-          className={`${style.editButton} ${editButtonClassName || ''}`}
+          className={`${style.editButton} ${isLocked ? `${style.isLocked}` : ''} ${editButtonClassName || ''}`}
+          disabled={isLocked}
         >
           {editLabel}
         </button>
@@ -38,7 +41,8 @@ export const EditDeleteActions = ({
       {onDuplicate && (
         <button
           onClick={onDuplicate}
-          className={`${style.duplicateButton} ${duplicateButtonClassName || ''}`}
+          className={`${style.duplicateButton} ${isLocked ? style.isLocked : ''} ${duplicateButtonClassName || ''}`}
+          disabled={isLocked}
         >
           {duplicateLabel}
         </button>
@@ -46,7 +50,8 @@ export const EditDeleteActions = ({
       {onDelete && (
         <button
           onClick={onDelete}
-          className={`${style.deleteButton} ${deleteButtonClassName || ''}`}
+          className={`${style.deleteButton} ${isLocked ? style.isLocked : ''} ${deleteButtonClassName || ''}`}
+          disabled={isLocked}
         >
           {deleteLabel}
         </button>

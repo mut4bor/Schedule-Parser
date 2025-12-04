@@ -1,51 +1,51 @@
-import { Document, ObjectId } from 'mongoose'
-
 export interface ITeacher {
   firstName: string
   middleName: string
   lastName: string
   title?: string
+  _id: string
 }
+
+export enum LessonType {
+  Lecture = 'Лекция',
+  Practice = 'Практика',
+  Laboratory = 'Лабораторная',
+  Seminar = 'Семинар',
+}
+
+export enum DayOfWeek {
+  None = -1,
+  Monday = 0,
+  Tuesday = 1,
+  Wednesday = 2,
+  Thursday = 3,
+  Friday = 4,
+  Saturday = 5,
+}
+
+export const dayNames = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота']
+
+export const TimeSlots = ['09:45', '11:30', '13:30', '15:15', '17:00']
 
 export interface ILesson {
   time: string
   classroom: string
-  teacher: ITeacher
   subject: string
-  lessonType: string
-  _id?: ObjectId
+  teacher: ITeacher
+  lessonType: LessonType
 }
 
-export type IDay = ILesson[]
-export type IWeek = IDay[]
+export interface IDay {
+  dayOfWeek: DayOfWeek
+  lessons: ILesson[]
+}
 
-export type ISchedule = Map<string, IWeek>
-
-export interface IGroup extends Document {
-  educationType: string
-  faculty: string
-  course: string
+export interface ISchedule {
+  _id: string
+  weekName: string
+  isActive: boolean
   group: string
-  dates: ISchedule
-}
-
-export interface User {
-  id: string
-  email: string
-  password: string
-  role: 'admin' | 'user'
-}
-
-export interface JwtPayload {
-  userId: string
-  email: string
-  role: string
-}
-
-declare global {
-  namespace Express {
-    interface Request {
-      user?: JwtPayload
-    }
-  }
+  days: IDay[]
+  createdAt?: string
+  updatedAt?: string
 }

@@ -19,15 +19,11 @@ export const getWeekDates = (weekStr: string | undefined | null) => {
   const year = parseInt(match[1], 10)
   const week = parseInt(match[2], 10)
 
-  // Находим первый четверг года (ISO 8601)
   const jan4 = new Date(Date.UTC(year, 0, 4))
   const dayOfWeek = jan4.getUTCDay() || 7
   const firstThursday = new Date(Date.UTC(year, 0, 4 + (4 - dayOfWeek)))
 
-  // Первая неделя ISO начинается с понедельника
-  const weekStart = new Date(
-    firstThursday.getTime() + (week - 1) * 7 * 24 * 60 * 60 * 1000,
-  )
+  const weekStart = new Date(firstThursday.getTime() + (week - 1) * 7 * 24 * 60 * 60 * 1000)
   weekStart.setUTCDate(weekStart.getUTCDate() - 3)
 
   const daysOfWeek = ['Вс.', 'Пн.', 'Вт.', 'Ср.', 'Чт.', 'Пт.', 'Сб.']

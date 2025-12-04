@@ -1,0 +1,45 @@
+@use '@/shared/vars/vars' as *;
+@use 'sass:color';
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.formButtons {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.submitButton,
+.cancelButton {
+  flex: 1;
+  transition: 0.2s ease-in-out;
+  cursor: pointer;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  font-size: 1.4rem;
+}
+
+.submitButton {
+  background-color: $accentColor;
+  color: $white;
+
+  &:hover {
+    background-color: color.scale($accentColor, $lightness: 7%);
+  }
+}
+
+.cancelButton {
+  border: 1px solid rgba($white, 0.3);
+  background-color: transparent;
+  color: rgba($white, 0.7);
+
+  &:hover {
+    border-color: $accentColor;
+    color: $accentColor;
+  }
+}

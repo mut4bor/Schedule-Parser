@@ -1,61 +1,37 @@
 import mongoose, { Schema } from 'mongoose'
-import { IGroup, ILesson } from '@/types/index.js'
 
-const teacherSchema = new Schema(
-  {
-    firstName: { type: String, required: false },
-    middleName: { type: String, required: false },
-    lastName: { type: String, required: false },
-    title: { type: String },
+const groupSchema = new Schema({
+  name: {
+    type: String,
+    required: true,
+    trim: true,
   },
-  { _id: false },
-)
-
-const lessonSchema = new Schema<ILesson>(
-  {
-    time: { type: String, required: false },
-    classroom: { type: String, required: false },
-    teacher: { type: teacherSchema, required: false },
-    subject: { type: String, required: false },
-    lessonType: { type: String, required: false },
+  educationType: {
+    type: Schema.Types.ObjectId,
+    ref: 'EducationType',
+    required: true,
   },
-  { _id: true },
-)
-
-const groupSchema = new Schema<IGroup>(
-  {
-    educationType: {
-      type: String,
-      default: '',
-      required: [true, 'Please enter educationType'],
-    },
-    faculty: {
-      type: String,
-      default: '',
-      required: [true, 'Please enter faculty'],
-    },
-    course: {
-      type: String,
-      default: '',
-      required: [true, 'Please enter course'],
-    },
-    group: {
-      type: String,
-      default: '',
-      required: [true, 'Please enter group number'],
-    },
-    dates: {
-      type: Map,
-      of: {
-        type: [[lessonSchema]],
-        required: true,
-        default: [],
-      },
-      default: {},
-      required: true,
-    },
+  faculty: {
+    type: Schema.Types.ObjectId,
+    ref: 'Faculty',
+    required: true,
   },
-  { timestamps: true },
-)
+  course: {
+    type: Schema.Types.ObjectId,
+    ref: 'Course',
+    required: true,
+  },
+  capacity: {
+    type: Number,
+    required: true,
+  },
+  description: {
+    type: String,
+    required: false,
+    trim: true,
+  },
+})
 
-export const Group = mongoose.model<IGroup>('Group', groupSchema)
+groupSchema.index({ name: 1, faculty: 1, course: 1 }, { unique: true })
+
+export const Group = mongoose.model('Group', groupSchema)

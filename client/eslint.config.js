@@ -13,7 +13,7 @@ export default [
       parserOptions: {
         ecmaVersion: 'latest',
         sourceType: 'module',
-        project: './tsconfig.json', // если нужен строгий парсинг TS
+        project: './tsconfig.json',
       },
       globals: {
         browser: true,
@@ -40,7 +40,14 @@ export default [
       'react-hooks/exhaustive-deps': 'warn',
 
       // TypeScript
-      '@typescript-eslint/no-unused-vars': 'warn',
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
     },
 
     settings: {

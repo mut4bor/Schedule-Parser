@@ -1,0 +1,9 @@
+@use '@/shared/vars/vars' as *;
+
+@media (min-width: $pageWidth320) {
+  .lessonHeader {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+  }
+}

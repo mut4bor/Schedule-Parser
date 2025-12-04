@@ -1,3 +1,5 @@
+@use 'sass:color';
+
 $pageWidth320: 320px;
 $pageWidth425: 425px;
 $pageWidth768: 768px;
@@ -15,8 +17,8 @@ $gray: #464646;
 $grayHover: #4a4a4a;
 $lightGray: #ccc;
 $white: #fff;
-$white10Alpha: #ffffff10;
 $accentColor: #525373;
+$notAllowedColor: rgba(255, 0, 0, 0.3);
 
 $headerHeightMobile: 9rem;
 $headerHeight: 6rem;
