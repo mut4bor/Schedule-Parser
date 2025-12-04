@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import { LockedItemTuple, LockedItems, LockType, setLocked } from '@/shared/redux/slices/locksSlice'
 import { env } from '../config'
 
-const socket = io(env.WEBSOCKET_URL)
+const socket = io(env.WEBSOCKET_URL, { secure: true })
 
 function filterLocked(items: LockedItemTuple[], userId: string): LockedItemTuple[] {
   return items.filter(([_, meta]) => meta.lockedBy !== userId)
