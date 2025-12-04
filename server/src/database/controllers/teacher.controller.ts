@@ -168,6 +168,7 @@ const getTeacherScheduleBySlot = async (req: Request, res: Response) => {
       .populate('days.lessons.classroom')
       .lean()
 
+    //@ts-ignore
     const lessons = schedules.flatMap((schedule: ISchedule) => {
       const day = schedule.days.find((d) => d.dayOfWeek === dayIndex)
       if (!day) return []
