@@ -2,8 +2,9 @@ import { useEffect } from 'react'
 import { io } from 'socket.io-client'
 import { useAppDispatch, useAppSelector } from '../redux/hooks'
 import { LockedItemTuple, LockedItems, LockType, setLocked } from '@/shared/redux/slices/locksSlice'
+import { env } from '../config'
 
-const socket = io('http://localhost:8080')
+const socket = io(env.WEBSOCKET_URL)
 
 function filterLocked(items: LockedItemTuple[], userId: string): LockedItemTuple[] {
   return items.filter(([_, meta]) => meta.lockedBy !== userId)
