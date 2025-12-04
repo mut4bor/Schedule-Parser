@@ -12,7 +12,6 @@ import { DaysButton } from '@/entities/days'
 import { GroupInfo } from '@/widgets/groupInfo'
 import { getTodayIndex } from '@/widgets/groupInfo/utils'
 import { DayOfWeek } from '@/shared/redux/types'
-import { useAppSelector } from '@/shared/redux/hooks'
 import { useLocks } from '@/shared/hooks/useLocks'
 
 const { dayWeekIndex } = getTodayIndex()
@@ -34,24 +33,14 @@ export const GroupIDPage = () => {
 
   const { educationType, faculty, course, groupID = '' } = useParams()
 
-  const { user } = useAppSelector((store) => store.auth)
-
   const navigate = useNavigate()
 
-  const { locked, lock, unlock } = useLocks(user?.id)
-
-  // const isGroupLocked = locked.groups.includes(groupID)
+  const { locked, lock, unlock } = useLocks()
 
   useEffect(() => {
-    if (!user) return
-
-    console.log('useEffect rerender')
-
-    lock('groups', groupID, user.id)
-    return () => unlock('groups', groupID, user.id)
+    lock('groups', groupID)
+    return () => unlock('groups', groupID)
   }, [groupID])
-
-  console.log('locked', locked)
 
   const [pickedWeek, setPickedWeek] = useState<PickedWeekType | null>(null)
   const [pickedDayIndex, setPickedDayIndex] = useState<DayOfWeek>(DayOfWeek.None)
@@ -133,7 +122,12 @@ export const GroupIDPage = () => {
           </Sibebar>
 
           <div className={style.groups}>
-            <GroupInfo groupID={groupID} pickedWeek={pickedWeek} pickedDayIndex={pickedDayIndex} />
+            <GroupInfo
+              groupID={groupID}
+              pickedWeek={pickedWeek}
+              pickedDayIndex={pickedDayIndex}
+              locked={locked}
+            />
           </div>
         </div>
       </div>

@@ -24,8 +24,6 @@ export const ClassroomsPage = () => {
     skip: !ids.length,
   })
 
-  console.log('classroomsSchedulesData', classroomsSchedulesData)
-
   const accessToken = useAppSelector((s) => s.auth.accessToken)
 
   const [isModalOpen, setIsModalOpen] = useState(false)

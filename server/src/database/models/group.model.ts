@@ -21,6 +21,15 @@ const groupSchema = new Schema({
     ref: 'Course',
     required: true,
   },
+  capacity: {
+    type: Number,
+    required: true,
+  },
+  description: {
+    type: String,
+    required: false,
+    trim: true,
+  },
 })
 
 groupSchema.index({ name: 1, faculty: 1, course: 1 }, { unique: true })

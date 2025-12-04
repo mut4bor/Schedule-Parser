@@ -41,7 +41,11 @@ export const GroupsList = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const [formState, setFormState] = useState('')
+  const [formState, setFormState] = useState({
+    name: '',
+    capacity: 0,
+    description: '',
+  })
 
   const handleCreateGroup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -49,10 +53,12 @@ export const GroupsList = () => {
     if (!educationType || !faculty || !course) return
 
     const typedForm: CreateGroupDTO = {
-      name: formState,
+      name: formState.name,
       educationType,
       faculty,
       course,
+      capacity: formState.capacity,
+      description: formState.description,
     }
 
     try {
@@ -70,9 +76,9 @@ export const GroupsList = () => {
     }
   }
 
-  const handleDeleteGroup = async ({ id }: DeleteGroupDTO) => {
+  const handleDeleteGroup = async (args: DeleteGroupDTO) => {
     try {
-      await deleteGroupByID({ id }).unwrap()
+      await deleteGroupByID(args).unwrap()
     } catch (err) {
       console.error('Ошибка при удалении группы:', err)
     }
@@ -80,6 +86,10 @@ export const GroupsList = () => {
 
   const handleCancel = () => {
     setIsModalOpen(false)
+  }
+
+  const handleChange = (field: keyof typeof formState, value: string) => {
+    setFormState((prev) => ({ ...prev, [field]: value }))
   }
 
   return (
@@ -117,10 +127,25 @@ export const GroupsList = () => {
         <Modal onClose={handleCancel}>
           <ModalForm onSubmit={handleCreateGroup} onCancel={handleCancel}>
             <ModalInput
-              label="Добавить группу:"
+              label="Название группы:"
               name="groupName"
-              value={formState}
-              onChange={(e) => setFormState(e.target.value)}
+              value={formState.name}
+              onChange={(e) => handleChange('name', e.target.value)}
+            />
+
+            <ModalInput
+              label="Количество человек:"
+              name="capacity"
+              type="number"
+              value={`${formState.capacity || ''}`}
+              onChange={(e) => handleChange('capacity', e.target.value)}
+            />
+
+            <ModalInput
+              label="Описание (необязательно):"
+              name="description"
+              value={formState.description}
+              onChange={(e) => handleChange('description', e.target.value)}
             />
           </ModalForm>
         </Modal>

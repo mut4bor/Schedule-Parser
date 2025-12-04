@@ -54,11 +54,11 @@ const getGroupById = async (req: Request, res: Response) => {
 
 const createGroup = async (req: Request, res: Response) => {
   try {
-    const { name, educationType, faculty, course } = req.body
+    const { name, educationType, faculty, course, capacity, description } = req.body
 
-    if (!name || !educationType || !faculty || !course) {
+    if (!name || !educationType || !faculty || !course || !capacity) {
       return res.status(400).json({
-        message: 'Название, тип образования, факультет и курс обязательны',
+        message: 'Название, тип образования, факультет, курс и количество человек обязательны',
       })
     }
 
@@ -100,6 +100,8 @@ const createGroup = async (req: Request, res: Response) => {
       educationType,
       faculty,
       course,
+      capacity,
+      description,
     })
 
     await newGroup.save()
@@ -117,7 +119,7 @@ const createGroup = async (req: Request, res: Response) => {
 const updateGroupById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params
-    const { name, educationType, faculty, course } = req.body
+    const { name, educationType, faculty, course, capacity, description } = req.body
 
     const group = await Group.findById(id)
 
@@ -157,6 +159,14 @@ const updateGroupById = async (req: Request, res: Response) => {
 
     if (name) {
       group.name = name.trim()
+    }
+
+    if (capacity) {
+      group.capacity = capacity
+    }
+
+    if (description) {
+      group.description = description
     }
 
     // Проверяем уникальность с новыми значениями

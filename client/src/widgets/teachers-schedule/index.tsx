@@ -85,7 +85,7 @@ export const TeachersSchedule = ({ teachersIDs }: Props) => {
                               {lesson.group.name}
                               {`, ${lesson.subject}`}
                               {lesson.lessonType && ` (${lesson.lessonType})`}
-                              {`, ${lesson.classroom}`}
+                              {`, ${lesson?.classroom && lesson.classroom.name}`}
                             </p>
                           ))}
                         </div>

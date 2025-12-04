@@ -1,4 +1,6 @@
 import { baseApi } from '@/shared/redux/slices/baseApi'
+import { Classroom } from './classroomsApi'
+import { DayOfWeek } from '../../types'
 
 export enum TeacherTitle {
   None = 'Без степени',
@@ -53,13 +55,13 @@ interface TeachersSchedule {
     isActive: boolean
     days: {
       dayName: string
-      dayIndex: number
+      dayIndex: DayOfWeek
       timeSlots: {
         time: string
         lessons: (
           | {
               subject: string
-              classroom: string
+              classroom: Classroom
               lessonType: string
               group: {
                 _id: string

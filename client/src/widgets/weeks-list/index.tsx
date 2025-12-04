@@ -1,7 +1,6 @@
 import * as style from './style.module.scss'
-import { getWeekNumber, getWeekValue } from './utils'
+import { getWeekNumber } from './utils'
 import { useEffect, useState } from 'react'
-import { WeeksButton } from '@/entities/weeks'
 import {
   useGetWeeksByGroupIdQuery,
   useCreateWeekScheduleMutation,
@@ -14,13 +13,13 @@ import {
 import { useAppSelector } from '@/shared/redux/hooks'
 import { Skeleton } from '@/shared/ui'
 import { useParams } from 'react-router-dom'
-import { EditableItem } from '@/widgets/editable-item'
 import { AdminAddButton } from '@/entities/admin'
 import { ModalForm } from '@/widgets/modal-form'
 import { ModalInput } from '@/widgets/modal-input'
 import { Modal } from '@/widgets/modal'
 import { PickedWeekType } from '@/pages/groupID'
 import { ModalSelect } from '@/widgets/modal-select'
+import { WeekListItem } from './weeks-list-item'
 
 const currentWeek = getWeekNumber(new Date())
 const formattedCurrentWeek = `${currentWeek.year}-W${currentWeek.week}`
@@ -123,37 +122,15 @@ export const WeeksList = ({ pickedWeek, setPickedWeek }: Props) => {
               <Skeleton className={style.skeleton} />
             </li>
           ))
-        : weeksData.map((week, index) => (
-            <li className={style.listItem} key={index}>
-              <EditableItem
-                value={week.weekName}
-                crudHandlers={{
-                  onUpdate: (newValue) => {
-                    setPickedWeek({
-                      id: week._id,
-                      name: newValue,
-                    })
-                    return handleUpdateWeek({
-                      id: week._id,
-                      weekName: newValue,
-                    })
-                  },
-                  onDelete: () =>
-                    handleDeleteWeek({
-                      id: week._id,
-                    }),
-                }}
-                type="week"
-                min={formattedCurrentWeek}
-              >
-                <WeeksButton
-                  onClick={() => setPickedWeek({ id: week._id, name: week.weekName })}
-                  isActive={pickedWeek?.name === week.weekName}
-                >
-                  {getWeekValue(week.weekName)}
-                </WeeksButton>
-              </EditableItem>
-            </li>
+        : weeksData.map((week) => (
+            <WeekListItem
+              key={week._id}
+              week={week}
+              pickedWeek={pickedWeek}
+              setPickedWeek={setPickedWeek}
+              onUpdate={handleUpdateWeek}
+              onDelete={handleDeleteWeek}
+            />
           ))}
 
       {accessToken && (

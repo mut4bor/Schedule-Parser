@@ -10,6 +10,8 @@ export interface IGroup {
   faculty: Pick<Facultie, '_id' | 'name'>
   course: Pick<Course, '_id' | 'name'>
   name: string
+  capacity: number
+  description?: string
   _id: string
 }
 
@@ -18,6 +20,8 @@ export interface CreateGroupDTO {
   faculty: string
   course: string
   name: string
+  capacity: number
+  description?: string
 }
 
 export interface UpdateGroupDTO {
@@ -26,6 +30,8 @@ export interface UpdateGroupDTO {
   faculty?: string
   course?: string
   name?: string
+  capacity?: number
+  description?: string
 }
 
 export interface DeleteGroupDTO {
@@ -64,7 +70,7 @@ export const groupsApi = baseApi.injectEndpoints({
       invalidatesTags: ['Groups', 'Names'],
     }),
     deleteGroupByID: builder.mutation<{ message: string }, DeleteGroupDTO>({
-      query: (id) => ({
+      query: ({ id }) => ({
         url: `/groups/${id}`,
         method: 'DELETE',
       }),

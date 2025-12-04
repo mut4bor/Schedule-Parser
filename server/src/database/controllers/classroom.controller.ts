@@ -37,8 +37,6 @@ const getClassroomsSchedules = async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'ID обязателен' })
     }
 
-    console.log('1')
-
     const idArray = ids
       .split(',')
       .map((s) => s.trim())
@@ -47,12 +45,10 @@ const getClassroomsSchedules = async (req: Request, res: Response) => {
     const classrooms = await Classroom.find({
       _id: { $in: idArray },
     }).lean()
-    console.log('2')
 
     if (!classrooms || classrooms.length === 0) {
       return res.status(404).json({ message: 'Аудитории не найдены' })
     }
-    console.log('3')
 
     const classroomsList = classrooms.map((c) => ({
       id: String(c._id),
@@ -60,7 +56,6 @@ const getClassroomsSchedules = async (req: Request, res: Response) => {
       capacity: typeof c.capacity === 'number' ? c.capacity : null,
       description: c.description || '',
     }))
-    console.log('4')
 
     const schedules = await Schedule.find({
       'days.lessons.classroom': { $in: idArray },
@@ -69,7 +64,6 @@ const getClassroomsSchedules = async (req: Request, res: Response) => {
       .populate('days.lessons.teacher')
       .populate('days.lessons.classroom')
       .lean()
-    console.log('5')
 
     const weekMap = new Map<string, { weekName: string; isActive: boolean; schedules: any[] }>()
 
@@ -84,8 +78,6 @@ const getClassroomsSchedules = async (req: Request, res: Response) => {
       }
       weekMap.get(weekKey)!.schedules.push(schedule)
     })
-
-    console.log('6')
 
     const weeks = Array.from(weekMap.values()).map((week) => {
       const days = dayNames.map((dayName: string, dayIndex: number) => {
@@ -126,8 +118,6 @@ const getClassroomsSchedules = async (req: Request, res: Response) => {
         days,
       }
     })
-
-    console.log('7')
 
     res.status(200).json({ classrooms: classroomsList, weeks })
   } catch (error) {

@@ -1,5 +1,11 @@
 @use '@/shared/vars/vars' as *;
 
+.headingWrapper {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+}
+
 .skeleton {
   min-width: 10rem;
   min-height: 3.6rem;

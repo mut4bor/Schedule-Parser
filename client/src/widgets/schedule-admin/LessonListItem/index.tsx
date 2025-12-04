@@ -33,6 +33,8 @@ export const LessonListItemAdmin = ({
   onUpdate,
   onDelete,
 }: Props) => {
+  console.log('lesson', lesson)
+
   const accessToken = useAppSelector((store) => store.auth.accessToken)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -89,7 +91,7 @@ export const LessonListItemAdmin = ({
           {lesson.teacher?.lastName && ` ${lesson.teacher.lastName}`}
           {lesson.teacher?.firstName && ` ${lesson.teacher.firstName.charAt(0).toUpperCase()}.`}
           {lesson.teacher?.middleName && ` ${lesson.teacher.middleName.charAt(0).toUpperCase()}.`}
-          {lesson.classroom && `, ${lesson.classroom}`}
+          {lesson.classroom?.name && `, ${lesson.classroom.name}`}
         </p>
 
         {accessToken && (
@@ -137,7 +139,7 @@ export const LessonListItemAdmin = ({
               onChange={(e) => handleChange('teacherID', e.target.value)}
               options={teachersData.map((teacher) => ({
                 value: teacher._id,
-                label: `${teacher.firstName} ${teacher.middleName} ${teacher.lastName}`,
+                label: `${teacher.lastName} ${teacher.firstName} ${teacher.middleName}`,
               }))}
             />
 

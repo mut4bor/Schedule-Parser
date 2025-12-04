@@ -10,9 +10,9 @@ import { useSwipeable } from 'react-swipeable'
 import { GroupHeading } from '@/entities/group'
 import { ErrorComponent } from '@/widgets/error'
 import { Options } from '@/widgets/options'
-import { EditableItem } from '@/widgets/editable-item'
 import { Skeleton } from '@/shared/ui'
 import { PickedWeekType } from '@/pages/groupID'
+import { LockedItems } from '@/shared/redux/slices/locksSlice'
 
 const CreateTapStopPropagationHandler = () =>
   useSwipeable({
@@ -25,6 +25,7 @@ interface Props {
   groupID: string
   pickedWeek: PickedWeekType | null
   pickedDayIndex: number
+  locked: LockedItems
 }
 
 export const GroupInfo = ({ groupID, pickedWeek, pickedDayIndex }: Props) => {
@@ -66,14 +67,7 @@ export const GroupInfo = ({ groupID, pickedWeek, pickedDayIndex }: Props) => {
           {!groupData ? (
             <Skeleton className={style.skeleton} />
           ) : (
-            <EditableItem
-              value={groupData.name}
-              crudHandlers={{
-                onUpdate: async (name) => handleUpdateGroup({ id: groupData._id, name }),
-              }}
-            >
-              <GroupHeading>{groupData.name}</GroupHeading>
-            </EditableItem>
+            <GroupHeading group={groupData} onUpdate={handleUpdateGroup} />
           )}
         </div>
 
